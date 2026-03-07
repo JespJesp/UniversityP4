@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run-dotnet",
+			"type": "shell",
+			"command": "dotnet run",
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+		},
+		{
+			"label": "start-executable",
+			"type": "shell",
+			"command": "start UniversityProjectP4.exe",
+			"options": {
+				"cwd": "${workspaceFolder}/bin/Debug/net10.0"
+			},
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+		},
+	]
+}

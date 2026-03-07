@@ -1,0 +1,73 @@
+
+
+timeline
+  settings
+    timeSignature 4/4
+    bpm 140
+  start
+    16_introLeadGuitar
+  stop 16
+    EVERYTHING
+  start
+    16_verseLeadGuitar
+    32_verseRhythmGuitar
+  start 16
+    4_fourOnTheFloorClosedHihat
+    4_fourOnTheFloorKick
+    4_fourOnTheFloorSnare
+  stop 16
+    16_verseLeadGuitar
+    4_fourOnTheFloorSnare
+
+
+// Guitars
+
+16_introLeadGuitar
+  samples
+    "lead_guitar.wav"
+  notes
+    c5 1-4 
+    d5 3-4 
+    e5 4-8 
+    a5 8-10 
+    e5 10-12 
+16_verseLeadGuitar
+  samples
+    "lead_guitar.wav"
+  notes
+    c5 1-2 
+    d5 3-4 
+    e5 4-6 
+    a5 8-10 
+    e5 10-16
+32_verseRhythmGuitar
+  samples
+    "rhythm_guitar.wav"
+  notes 
+    Em 1-9 
+    GM 9-17
+    DM 17-25
+    CM 25-32
+
+// Drums
+
+4_fourOnTheFloorKick
+  samples
+    "kick.wav"
+  notes 
+    c5 1-1
+    c5 3-3 
+4_fourOnTheFloorSnare
+  samples
+    "snare.wav"
+  notes 
+    c5 3-3
+4_fourOnTheFloorClosedHihat
+  samples
+    "closed_hihat.wav"
+  notes 
+    a5 1-1 volume(0.5)
+    c5 2-2 volume(1)
+    a5 3-3 volume(0.5)
+    d5 4-4 volume(1)
+

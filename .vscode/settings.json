@@ -1,0 +1,6 @@
+{
+	// Indent styling
+	"editor.tabSize": 3,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+}
