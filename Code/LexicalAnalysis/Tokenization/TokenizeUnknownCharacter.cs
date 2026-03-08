@@ -11,7 +11,7 @@ public class TokenizeUnknownCharacter : Tokenizer
 
 	protected override void Tokenize(LexicalAnalyzer a)
 	{
-		a.Tokens.Add(new Token(TokenType.Unknown, a.CurrentChar.ToString(), a.CurrentLine, a.CurrentColumn));
-		a.AdvancePosition();
+		a.Tokens.Add(new Token(TokenType.Unknown, a.CursorChar().ToString(), a.CursorLine, a.CursorColumn));
+		a.AdvanceCursor();
 	}
 }

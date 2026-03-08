@@ -6,19 +6,19 @@ public class TokenizeWhitespace : Tokenizer
 {
 	protected override bool IsTokenizable(LexicalAnalyzer a)
 	{
-		return char.IsWhiteSpace(a.CurrentChar);
+		return char.IsWhiteSpace(a.CursorChar());
 	}
 
 	protected override void Tokenize(LexicalAnalyzer a)
 	{
-		if (a.CurrentChar == '\n')
+		if (a.CursorChar() == '\n')
 		{
-			a.Tokens.Add(new Token(TokenType.NewLine, "\n", a.CurrentLine, a.CurrentColumn));
-			a.AdvancePositionToNewLine();
+			a.Tokens.Add(new Token(TokenType.NewLine, "\n", a.CursorLine, a.CursorColumn));
+			a.AdvanceCursorToNewLine();
 		}
 		else
 		{
-			a.AdvancePosition();
+			a.AdvanceCursor();
 		}
 	}
 }

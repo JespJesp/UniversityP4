@@ -6,15 +6,15 @@ public class LexicalAnalyzer
 {
 	internal List<Token> Tokens = new List<Token>();
 	internal string Input = "";
-	internal int CurrentLine;
-	internal int CurrentColumn;
-	internal int CurrentPosition;
-	internal char CurrentChar;
+	internal int CursorLine;
+	internal int CursorColumn;
+	internal int CursorPosition;
+	internal char CursorChar() => Input[CursorPosition];
 
 	// Tokenizers
 	TokenizeWhitespace tokenizeWhitespace = new();
 	TokenizeNumber tokenizeNumber = new();
-	TokenizeIdentifierAndKeyword tokenizeIdentifierAndKeyword = new();
+	TokenizeIdentifierOrKeyword tokenizeIdentifierAndKeyword = new();
 	TokenizeString tokenizeString = new();
 	TokenizeHyphen tokenizeHyphen = new();
 	TokenizeUnknownCharacter tokenizeUnknownCharacter = new();
@@ -23,9 +23,9 @@ public class LexicalAnalyzer
 	{
 		Tokens.Clear();
 		Input = input;
-		CurrentLine = 1;
-		CurrentColumn = 1;
-		CurrentPosition = 0;
+		CursorLine = 1;
+		CursorColumn = 1;
+		CursorPosition = 0;
 
 		TokenizeInput();
 
@@ -34,10 +34,8 @@ public class LexicalAnalyzer
 
 	private void TokenizeInput()
 	{
-		while (CurrentPosition < Input.Length)
+		while (CursorPosition < Input.Length)
 		{
-			CurrentChar = Input[CurrentPosition];
-
 			if (tokenizeWhitespace.TryTokenize(this)
 				|| tokenizeNumber.TryTokenize(this)
 				|| tokenizeIdentifierAndKeyword.TryTokenize(this)
@@ -50,19 +48,19 @@ public class LexicalAnalyzer
 			tokenizeUnknownCharacter.TryTokenize(this);
 		}
 
-		Tokens.Add(new Token(TokenType.EndOfFile, "", CurrentLine, CurrentColumn));
+		Tokens.Add(new Token(TokenType.EndOfFile, "", CursorLine, CursorColumn));
 	}
 
-	public void AdvancePosition()
+	public void AdvanceCursor()
 	{
-		CurrentPosition++;
-		CurrentColumn++;
+		CursorPosition++;
+		CursorColumn++;
 	}
 
-	public void AdvancePositionToNewLine()
+	public void AdvanceCursorToNewLine()
 	{
-		CurrentPosition++;
-		CurrentLine++;
-		CurrentColumn = 1;
+		CursorPosition++;
+		CursorLine++;
+		CursorColumn = 1;
 	}
 }

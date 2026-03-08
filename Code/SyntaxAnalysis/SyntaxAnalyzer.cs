@@ -8,7 +8,7 @@ namespace SyntaxAnalysis;
 public class SyntaxAnalyzer
 {
 	public Stack<IVisitable> VisitableStack = new Stack<IVisitable>();
-	public Queue<Token> Tokens = new();
+	public Queue<Token> Tokens = new(); // We use a Queue because we need FIFO (First In First Out)
 	public Pattern CurrentPattern = new();
 	public Token CurrentToken;
 
@@ -30,11 +30,11 @@ public class SyntaxAnalyzer
 
 			switch (CurrentToken.Type)
 			{
-				case TokenType.Number: ParseNumber.Parse(this); break;
 				case TokenType.Identifier: ParseIdentifier.Parse(this); break;
-				case TokenType.String: ParseString.Parse(this); break;
-				case TokenType.SamplesKeyword: ParseSample.Parse(this); break;
+				case TokenType.SamplesKeyword: ParseSamplesKeyword.Parse(this); break;
 				case TokenType.NotesKeyword: break;
+				case TokenType.Number: ParseNumber.Parse(this); break;
+				case TokenType.String: ParseString.Parse(this); break;
 				case TokenType.Hyphen: ParseHyphen.Parse(this); break;
 				case TokenType.NewLine: break;
 				case TokenType.EndOfFile: break;
