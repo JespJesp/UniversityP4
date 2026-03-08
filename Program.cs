@@ -9,7 +9,7 @@ internal class Program
 	{
 		string filePath = GetFilePath(args);
 		string fileContent = GetFileContent(filePath);
-		InterpretFileContent(fileContent);
+		InterpretText(fileContent);
 	}
 
 	static string GetFilePath(string[] args)
@@ -37,12 +37,12 @@ internal class Program
 		}
 	}
 
-	static void InterpretFileContent(string fileContent)
+	static void InterpretText(string text)
 	{
 		try
 		{
-			var tokens = new LexicalAnalyzer().Tokenize(fileContent);
-			var pattern = new SyntaxAnalyzer().Parse(tokens);
+			var tokens = new LexicalAnalyzer().Analyze(text);
+			var pattern = new SyntaxAnalyzer().Analyze(tokens);
 			new SemanticAnalyzer().Analyze(pattern);
 			new Printer().Evaluate(pattern);
 		}

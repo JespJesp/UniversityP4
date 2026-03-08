@@ -6,8 +6,8 @@ public enum TokenType
 {
 	Identifier,
 
-	Sample,
-	Note,
+	SamplesKeyword,
+	NotesKeyword,
 
 	Number,
 	String,

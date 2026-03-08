@@ -2,13 +2,17 @@
 
 namespace LexicalAnalysis.Tokenization;
 
-public static class Tokenizer
+public abstract class Tokenizer
 {
-	public static bool TryTokenize(ITokenizerStrategy strategy, LexicalAnalyzer analyzer)
+	protected abstract bool IsTokenizable(LexicalAnalyzer analyzer);
+	protected abstract void Tokenize(LexicalAnalyzer analyzer);
+
+	/// <returns>True if tokenization was applicable to the current char.</returns>
+	public bool TryTokenize(LexicalAnalyzer analyzer)
 	{
-		if (strategy.IsTokenizable(analyzer))
+		if (IsTokenizable(analyzer))
 		{
-			strategy.Tokenize(analyzer);
+			Tokenize(analyzer);
 			return true;
 		}
 		return false;

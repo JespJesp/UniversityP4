@@ -12,7 +12,7 @@ public class SyntaxAnalyzer
 	public Pattern CurrentPattern = new();
 	public Token CurrentToken;
 
-	public Pattern Parse(List<Token> input)
+	public Pattern Analyze(List<Token> input)
 	{
 		Tokens = new Queue<Token>(input);
 		CurrentPattern = new();
@@ -33,8 +33,8 @@ public class SyntaxAnalyzer
 				case TokenType.Number: ParseNumber.Parse(this); break;
 				case TokenType.Identifier: ParseIdentifier.Parse(this); break;
 				case TokenType.String: ParseString.Parse(this); break;
-				case TokenType.Sample: ParseSample.Parse(this); break;
-				case TokenType.Note: break;
+				case TokenType.SamplesKeyword: ParseSample.Parse(this); break;
+				case TokenType.NotesKeyword: break;
 				case TokenType.Hyphen: ParseHyphen.Parse(this); break;
 				case TokenType.NewLine: break;
 				case TokenType.EndOfFile: break;

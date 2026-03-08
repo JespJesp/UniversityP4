@@ -1,5 +1,4 @@
 using LexicalAnalysis.Tokenization;
-using LexicalAnalysis.Tokenization.Strategies;
 
 namespace LexicalAnalysis;
 
@@ -11,6 +10,14 @@ public class LexicalAnalyzer
 	internal int CurrentColumn;
 	internal int CurrentPosition;
 	internal char CurrentChar;
+
+	// Tokenizers
+	TokenizeWhitespace tokenizeWhitespace = new();
+	TokenizeNumber tokenizeNumber = new();
+	TokenizeIdentifierAndKeyword tokenizeIdentifierAndKeyword = new();
+	TokenizeString tokenizeString = new();
+	TokenizeHyphen tokenizeHyphen = new();
+	TokenizeUnknownCharacter tokenizeUnknownCharacter = new();
 
 	public List<Token> Analyze(string input)
 	{
@@ -31,18 +38,31 @@ public class LexicalAnalyzer
 		{
 			CurrentChar = Input[CurrentPosition];
 
-			if (Tokenizer.TryTokenize(new TokenizeWhitespace(), this)
-				|| Tokenizer.TryTokenize(new TokenizeNumber(), this)
-				|| Tokenizer.TryTokenize(new TokenizeIdentifierAndKeyword(), this)
-				|| Tokenizer.TryTokenize(new TokenizeString(), this)
-				|| Tokenizer.TryTokenize(new TokenizeHyphen(), this))
+			if (tokenizeWhitespace.TryTokenize(this)
+				|| tokenizeNumber.TryTokenize(this)
+				|| tokenizeIdentifierAndKeyword.TryTokenize(this)
+				|| tokenizeString.TryTokenize(this)
+				|| tokenizeHyphen.TryTokenize(this))
 			{
 				continue;
 			}
 
-			Tokenizer.TryTokenize(new TokenizeUnknownCharacter(), this);
+			tokenizeUnknownCharacter.TryTokenize(this);
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", CurrentLine, CurrentColumn));
+	}
+
+	public void AdvancePosition()
+	{
+		CurrentPosition++;
+		CurrentColumn++;
+	}
+
+	public void AdvancePositionToNewLine()
+	{
+		CurrentPosition++;
+		CurrentLine++;
+		CurrentColumn = 1;
 	}
 }
