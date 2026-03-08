@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UniversityP4")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+59aae5bf70f7c95e4830707d1fda71d06baba655")]
 [assembly: System.Reflection.AssemblyProductAttribute("UniversityP4")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UniversityP4")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
