@@ -4,11 +4,14 @@ namespace LexicalAnalysis;
 
 public enum TokenType
 {
-	Number,
 	Identifier,
+
+	Sample,
+	Note,
+
+	Number,
 	String,
-	SampleKeyword,
-	NotesKeyword,
+
 	Hyphen,
 	NewLine,
 	EndOfFile,
