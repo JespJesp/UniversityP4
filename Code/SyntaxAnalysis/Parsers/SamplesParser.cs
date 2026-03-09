@@ -7,17 +7,19 @@ public static class SamplesParser
 {
 	public static void Parse(SyntaxAnalyzer a, Pattern pattern)
 	{
+		a.ConsumeToken(TokenType.SamplesKeyword);
+
 		ParseLeaves(a, pattern);
 	}
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasProcessedAllTokens() && !a.HasNewLineTabs(2))
+		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(2))
 		{
 			Sample sample = new();
 			pattern.Samples.Add(sample);
 
-			a.ProcessToken(TokenType.String, () =>
+			a.ConsumeToken(TokenType.String, () =>
 			{
 				sample.FileName = a.CurrentToken().Value;
 			});

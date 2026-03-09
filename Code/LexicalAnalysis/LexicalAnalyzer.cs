@@ -4,35 +4,38 @@ namespace LexicalAnalysis;
 
 public class LexicalAnalyzer
 {
-	internal List<Token> Tokens = new();
-	internal List<string> Errors = new();
-	internal string InputText = "";
-	internal int CursorLine;
-	internal int CursorColumn;
-	internal int CursorPosition { get; private set; }
-	internal char CursorChar() => InputText[CursorPosition];
+	private List<string> _errors = new();
+	private string _inputText = "";
+
+	public List<Token> Tokens = new();
+	public int CursorLine { get; private set; } // Private set because the "AdvanceCursorX" methods handle set
+	public int CursorColumn { get; private set; } // Private set because the "AdvanceCursorX" methods handle set
+	public int CursorPosition { get; private set; } // Private set because the "AdvanceCursorX" methods handle set
+	public char CursorChar() => _inputText[CursorPosition];
+
+	public bool IsNotEndOfFile() => CursorPosition < _inputText.Length;
 
 	// Tokenizers
-	WhitespaceTokenizer whitespaceTokenizer = new();
-	IntegerTokenizer integerTokenizer = new();
-	IdentifierOrKeywordTokenizer identifierOrKeywordTokenizer = new();
-	StringTokenizer stringTokenizer = new();
-	HyphenTokenizer hyphenTokenizer = new();
+	private WhitespaceTokenizer _whitespaceTokenizer = new();
+	private IntegerTokenizer _integerTokenizer = new();
+	private IdentifierOrKeywordTokenizer _identifierOrKeywordTokenizer = new();
+	private StringTokenizer _stringTokenizer = new();
+	private HyphenTokenizer _hyphenTokenizer = new();
 
 	public List<Token> Tokenize(string text)
 	{
 		// Reset variables
 		Tokens.Clear();
-		InputText = text;
+		_inputText = text;
 		CursorLine = 1;
 		CursorColumn = 1;
 		CursorPosition = 0;
 
 		TokenizeText();
 
-		if (Errors.Any())
+		if (_errors.Any())
 		{
-			throw new Exception("Lexical errors:\n" + string.Join("\n", Errors));
+			throw new Exception("Lexical errors:\n" + string.Join("\n- ", _errors));
 		}
 
 		return Tokens;
@@ -40,25 +43,25 @@ public class LexicalAnalyzer
 
 	private void TokenizeText()
 	{
-		while (CursorPosition < InputText.Length)
+		while (CursorPosition < _inputText.Length)
 		{
-			if (whitespaceTokenizer.TryTokenize(this)
-				|| integerTokenizer.TryTokenize(this)
-				|| identifierOrKeywordTokenizer.TryTokenize(this)
-				|| stringTokenizer.TryTokenize(this)
-				|| hyphenTokenizer.TryTokenize(this))
+			if (_whitespaceTokenizer.TryTokenize(this)
+				|| _integerTokenizer.TryTokenize(this)
+				|| _identifierOrKeywordTokenizer.TryTokenize(this)
+				|| _stringTokenizer.TryTokenize(this)
+				|| _hyphenTokenizer.TryTokenize(this))
 			{
 				continue;
 			}
 
-			Errors.Add($"Unknown token type: Starting character: '{CursorChar}',  Line: {CursorLine},  Column: {CursorColumn}");
-			AdvanceCursor();
+			_errors.Add($"Unknown token type: Character: '{CursorChar}',  Line: {CursorLine},  Column: {CursorColumn}");
+			AdvanceCursorToNextColumn();
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", CursorLine, CursorColumn));
 	}
 
-	public void AdvanceCursor()
+	public void AdvanceCursorToNextColumn()
 	{
 		CursorPosition++;
 		CursorColumn++;

@@ -2,9 +2,15 @@ using AST;
 
 namespace Evaluation;
 
-public class Printer
+public class Evaluator
 {
 	public void Evaluate(Song song)
+	{
+		PrintToConsole(song);
+	}
+
+	// TODO: Delete this method. It's just an example
+	private void PrintToConsole(Song song)
 	{
 		foreach (Pattern pattern in song.Patterns)
 		{
@@ -20,7 +26,7 @@ public class Printer
 			Console.WriteLine("Notes:");
 			foreach (Note note in pattern.Notes)
 			{
-				Console.WriteLine($"  Time: {note.StartTime:D2}-{note.EndTime:D2}, Pitch: {note.Pitch}");
+				Console.WriteLine($"  - Time: {note.StartTime:D2}-{note.EndTime:D2}, Pitch: {note.Pitch}");
 			}
 		}
 	}

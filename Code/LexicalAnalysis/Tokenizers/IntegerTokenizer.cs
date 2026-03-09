@@ -11,24 +11,23 @@ public class IntegerTokenizer : Tokenizer
 
 	protected override void Tokenize(LexicalAnalyzer a)
 	{
-		string number = "";
+		string integer = "";
 		int startColumn = a.CursorColumn;
 
-		bool isNotEndOfFile() => a.CursorPosition < a.InputText.Length;
 		bool isDigit() => char.IsDigit(a.CursorChar());
-		bool isNotDecimal() => a.CursorChar() != '\'' || a.CursorChar() != '"';
+		bool isDecimalSymbol() => a.CursorChar() == '\'' || a.CursorChar() == '"';
 
-		while (isNotEndOfFile() && isDigit())
+		while (a.IsNotEndOfFile() && isDigit())
 		{
-			if (isNotDecimal())
+			if (isDecimalSymbol())
 			{
-				throw new Exception("Error while tokenizing integer: Encountered decimal symbols.");
+				throw new Exception($"Encountered decimal symbols while tokenizing integer at Line: {a.CursorLine}, Column: {a.CursorColumn}");
 			}
 
-			number += a.CursorChar();
-			a.AdvanceCursor();
+			integer += a.CursorChar();
+			a.AdvanceCursorToNextColumn();
 		}
 
-		a.Tokens.Add(new Token(TokenType.Integer, number, a.CursorLine, startColumn));
+		a.Tokens.Add(new Token(TokenType.Integer, integer, a.CursorLine, startColumn));
 	}
 }

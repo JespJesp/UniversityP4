@@ -7,31 +7,31 @@ public static class NotesParser
 {
 	public static void Parse(SyntaxAnalyzer a, Pattern pattern)
 	{
-		a.ProcessToken(TokenType.KeywordNotes);
+		a.ConsumeToken(TokenType.NotesKeyword);
 
 		ParseLeaves(a, pattern);
 	}
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasProcessedAllTokens() && !a.HasNewLineTabs(2))
+		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(2))
 		{
 			Note note = new(pattern);
 			pattern.Notes.Add(note);
 
-			a.ProcessToken(TokenType.Integer, () =>
+			a.ConsumeToken(TokenType.Integer, () =>
 			{
 				note.StartTime = int.Parse(a.CurrentToken().Value);
 			});
 
-			a.ProcessToken(TokenType.Hyphen);
+			a.ConsumeToken(TokenType.Hyphen);
 
-			a.ProcessToken(TokenType.Integer, () =>
+			a.ConsumeToken(TokenType.Integer, () =>
 			{
 				note.EndTime = int.Parse(a.CurrentToken().Value);
 			});
 
-			a.ProcessToken(TokenType.Identifier, () =>
+			a.ConsumeToken(TokenType.Identifier, () =>
 			{
 				note.Pitch = a.CurrentToken().Value;
 			});

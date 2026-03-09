@@ -6,18 +6,18 @@ namespace SemanticAnalysis;
 
 public class SemanticAnalyzer
 {
-	protected List<string> Errors = new List<string>();
+	private List<string> _errors = new List<string>();
 
 	public void Validate(Song song)
 	{
 		// Reset variables
-		Errors.Clear();
+		_errors.Clear();
 
 		ValidateRoot(song);
 
-		if (Errors.Any())
+		if (_errors.Any())
 		{
-			throw new Exception("Semantic errors:\n" + string.Join("\n", Errors));
+			throw new Exception("Semantic errors:\n" + string.Join("\n- ", _errors));
 		}
 	}
 
@@ -28,6 +28,6 @@ public class SemanticAnalyzer
 
 	public void AddError(string message)
 	{
-		Errors.Add(message);
+		_errors.Add(message);
 	}
 }

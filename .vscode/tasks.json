@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "run-dotnet-ExampleForDevelopment",
+			"label": "run-dotnet-example-development",
 			"type": "shell",
-			"command": "dotnet run ExamplePrograms/Development",
+			"command": "dotnet run ExamplePrograms/Development.musk",
 			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
 		},
 		{

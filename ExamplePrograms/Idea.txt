@@ -26,30 +26,30 @@ timeline
   samples
     "lead_guitar.wav"
   notes
-    c5 1-4 
-    d5 3-4 
-    e5 4-8 
-    a5 8-10 
-    e5 10-12 
+    1-4 c5
+    3-4 d5
+    4-8 e5
+    8-10 a5
+    10-12 e5
 
 16_verseLeadGuitar
   samples
     "lead_guitar.wav"
   notes
-    c5 1-2 
-    d5 3-4 
-    e5 4-6 
-    a5 8-10 
-    e5 10-16
+    1-2 c5
+    3-4 d4
+    4-6 e4 
+    8-10 a5
+    10-16 e5
 
 32_verseRhythmGuitar
   samples
     "rhythm_guitar.wav"
   notes 
-    Em 1-9 
-    GM 9-17
-    DM 17-25
-    CM 25-32
+    1-9 Em 
+    9-17 GM
+    17-25 DM
+    25-32 CM
 
 // Drums
 
@@ -57,19 +57,19 @@ timeline
   samples
     "kick.wav"
   notes 
-    c5 1-1
-    c5 3-3 
+    1-1 c5
+    3-3 c5
 4_fourOnTheFloorSnare
   samples
     "snare.wav"
   notes 
-    c5 3-3
+    3-3 c5
 4_fourOnTheFloorClosedHihat
   samples
     "closed_hihat.wav"
   notes 
-    a5 1-1 volume(0.5)
-    c5 2-2 volume(1)
-    a5 3-3 volume(0.5)
-    d5 4-4 volume(1)
+    1-1 a5 volume(0.5)
+    2-2 c5 volume(1)
+    3-3 a5 volume(0.5)
+    4-4 d5 volume(1)
 

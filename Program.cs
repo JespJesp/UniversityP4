@@ -44,7 +44,7 @@ internal class Program
 			var tokens = new LexicalAnalyzer().Tokenize(text);
 			var song = new SyntaxAnalyzer().Parse(tokens);
 			new SemanticAnalyzer().Validate(song);
-			new Printer().Evaluate(song);
+			new Evaluator().Evaluate(song);
 		}
 		catch (Exception exception)
 		{

@@ -1,6 +1,15 @@
-8_GuitarPattern
+8_Guitar
 	samples
 		"guitar.wav"
 	notes
 		1-3 c5
-		2-4 d5
+		2-4 d6
+
+16_Piano
+	samples
+		"piano.wav"
+	notes
+		4-8 a4
+		8-12 b5
+		9-12 c5
+

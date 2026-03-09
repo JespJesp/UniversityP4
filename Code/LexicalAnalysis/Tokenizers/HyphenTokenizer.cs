@@ -12,6 +12,6 @@ public class HyphenTokenizer : Tokenizer
 	protected override void Tokenize(LexicalAnalyzer a)
 	{
 		a.Tokens.Add(new Token(TokenType.Hyphen, "-", a.CursorLine, a.CursorColumn));
-		a.AdvanceCursor();
+		a.AdvanceCursorToNextColumn();
 	}
 }

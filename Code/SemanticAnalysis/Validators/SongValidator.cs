@@ -6,9 +6,11 @@ public static class SongValidator
 {
 	public static void Validate(SemanticAnalyzer analyzer, Song song)
 	{
+		// Leaf validation
 		foreach (Pattern pattern in song.Patterns)
 		{
 			PatternValidator.Validate(analyzer, pattern);
 		}
+		TimelineValidator.Validate(analyzer, song.TheTimeline);
 	}
 }

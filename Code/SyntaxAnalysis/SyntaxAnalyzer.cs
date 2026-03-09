@@ -6,17 +6,18 @@ namespace SyntaxAnalysis;
 
 public class SyntaxAnalyzer
 {
-	internal List<Token> Tokens = new();
-	internal Song NewSong = new();
-	internal int CursorPosition { get; private set; }
-	internal Token CurrentToken() => Tokens[CursorPosition];
+	private List<Token> _tokens = new();
+	private int _cursorPosition;
+
+	public Song OutputSong = new();
+	public Token CurrentToken() => _tokens[_cursorPosition];
 
 	public Song Parse(List<Token> inputTokens)
 	{
 		// Reset variables
-		Tokens = inputTokens;
-		CursorPosition = 0;
-		NewSong = new Song();
+		_tokens = inputTokens;
+		_cursorPosition = 0;
+		OutputSong = new Song();
 
 		try
 		{
@@ -24,38 +25,33 @@ public class SyntaxAnalyzer
 		}
 		catch
 		{
-			throw new Exception($"Syntax error:\nUnexpected token: '{CurrentToken().ToString()}'.");
+			throw new Exception($"Syntax error:\n- Unexpected token: '{CurrentToken().ToString()}'.");
 		}
 
-		return NewSong;
+		return OutputSong;
 	}
 
 	private void ParseRoots()
 	{
-		while (HasProcessedAllTokens())
+		while (!HasProcessedAllTokens())
 		{
 			switch (CurrentToken().Type)
 			{
-				case TokenType.KeywordTimeline: TimelineParser.Parse(this); break;
+				case TokenType.TimelineKeyword: TimelineParser.Parse(this); break;
 				case TokenType.Integer: PatternParser.Parse(this); break;
-				case TokenType.NewLine: break;
-				case TokenType.EndOfFile: break;
+				case TokenType.NewLine: ConsumeToken(TokenType.NewLine); break;
+				case TokenType.EndOfFile: ConsumeToken(TokenType.EndOfFile); break;
 				default: throw new Exception();
 			}
 		}
 	}
 
-	private void AdvanceCursor()
-	{
-		CursorPosition++;
-	}
-
-	public bool HasProcessedAllTokens() => CursorPosition > Tokens.Count;
+	public bool HasProcessedAllTokens() => _cursorPosition >= _tokens.Count;
 
 	/// <summary>
-	/// Note: This also advances the cursor.
+	/// Note: This advances the cursor.
 	/// </summary>
-	public void ProcessToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
+	public void ConsumeToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
 	{
 		if (CurrentToken().Type != requiredTokenType)
 		{
@@ -71,28 +67,45 @@ public class SyntaxAnalyzer
 	}
 
 	/// <summary>
-	/// Note: This also advances the cursor.
+	/// Note: If this returns true, it also advances the cursor to consume the new line and tabs.
 	/// </summary>
 	/// <returns> True if the next tokens are a new line followed by the required amount of tabs.</returns>
-	public bool HasNewLineTabs(int requiredTabAmount)
+	public bool TryConsumeNewLineAndTabs(int requiredTabAmount)
 	{
+		int cursorLookahead = 0;
+		Token LookaheadToken() => _tokens[_cursorPosition + cursorLookahead];
+
 		// Check new line
-		if (CurrentToken().Type != TokenType.NewLine)
+		if (LookaheadToken().Type != TokenType.NewLine)
 		{
 			return false;
 		}
-		AdvanceCursor();
+		cursorLookahead++;
 
-		// Check tab amount
+		// Check tabs
 		int tabAmount = 0;
 		for (int i = 0; i < requiredTabAmount; i++)
 		{
-			if (CurrentToken().Type != TokenType.Tab)
+			if (LookaheadToken().Type == TokenType.Tab)
 			{
 				tabAmount++;
-				AdvanceCursor();
+				cursorLookahead++;
+				continue;
 			}
+			break;
 		}
-		return tabAmount == requiredTabAmount;
+		if (tabAmount != requiredTabAmount)
+		{
+			return false;
+		}
+
+		// Consume new line and tabs
+		_cursorPosition += cursorLookahead;
+		return true;
+	}
+
+	private void AdvanceCursor()
+	{
+		_cursorPosition++;
 	}
 }

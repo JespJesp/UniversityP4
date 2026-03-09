@@ -14,21 +14,18 @@ public class IdentifierOrKeywordTokenizer : Tokenizer
 		string identifier = "";
 		int startColumn = a.CursorColumn;
 
-		bool isNotEndOfFile() => a.CursorPosition < a.InputText.Length;
-		bool isLetterOrDigit() => char.IsLetterOrDigit(a.CursorChar()) || a.CursorChar() == '_';
-
-		while (isNotEndOfFile() && isLetterOrDigit())
+		while (a.IsNotEndOfFile() && char.IsLetterOrDigit(a.CursorChar()) || a.CursorChar() == '_')
 		{
 			identifier += a.CursorChar();
-			a.AdvanceCursor();
+			a.AdvanceCursorToNextColumn();
 		}
 
 		TokenType tokenType = identifier switch
 		{
-			"timeline" => TokenType.KeywordTimeline,
-			"samples" => TokenType.KeywordSamples,
-			"notes" => TokenType.KeywordNotes,
-			_ => TokenType.Identifier // Underscore encompasses all other strings
+			"timeline" => TokenType.TimelineKeyword,
+			"samples" => TokenType.SamplesKeyword,
+			"notes" => TokenType.NotesKeyword,
+			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 
 		a.Tokens.Add(new Token(tokenType, identifier, a.CursorLine, startColumn));

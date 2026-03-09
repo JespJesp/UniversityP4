@@ -13,24 +13,23 @@ public class StringTokenizer : Tokenizer
 	{
 		string str = "";
 		int startColumn = a.CursorColumn;
-		a.AdvanceCursor(); // Skip opening quote
+		a.AdvanceCursorToNextColumn(); // Skip opening quote
 
-		bool isNotEndOfFile() => a.CursorPosition < a.InputText.Length;
 		bool isClosingQuote() => a.CursorChar() == '"';
 
-		while (isNotEndOfFile() && !isClosingQuote())
+		while (!isClosingQuote())
 		{
 			str += a.CursorChar();
-			a.AdvanceCursor();
+			a.AdvanceCursorToNextColumn();
+
+			if (!a.IsNotEndOfFile())
+			{
+				throw new Exception(
+					$"String is missing closing quote '\"' at Line:{a.CursorLine} Column:{a.CursorColumn}");
+			}
 		}
 
-		if (!isNotEndOfFile() && !isClosingQuote())
-		{
-			throw new Exception(
-				$"Error while tokenizing string: Missing closing quote '\"' at Line:{a.CursorLine} Column:{a.CursorColumn}");
-		}
-
-		a.AdvanceCursor(); // Skip closing quote
+		a.AdvanceCursorToNextColumn(); // Skip closing quote
 		a.Tokens.Add(new Token(TokenType.String, str, a.CursorLine, startColumn));
 	}
 }

@@ -8,31 +8,30 @@ public static class PatternParser
 {
 	public static void Parse(SyntaxAnalyzer a)
 	{
-		Pattern newPattern = new();
-		a.NewSong.Patterns.Add(newPattern);
+		Pattern pattern = new();
+		a.OutputSong.Patterns.Add(pattern);
 
-		a.ProcessToken(TokenType.Integer, () =>
+		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			newPattern.Length = int.Parse(a.CurrentToken().Value);
+			pattern.Length = int.Parse(a.CurrentToken().Value);
 		});
 
-		a.ProcessToken(TokenType.Identifier, () =>
+		a.ConsumeToken(TokenType.Identifier, () =>
 		{
-			newPattern.Name = a.CurrentToken().Value;
+			pattern.Name = a.CurrentToken().Value;
 		});
 
-		ParseLeaves(a, newPattern);
+		ParseLeaves(a, pattern);
 	}
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasProcessedAllTokens() && !a.HasNewLineTabs(1))
+		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(1))
 		{
-
 			switch (a.CurrentToken().Type)
 			{
-				case TokenType.KeywordNotes: NotesParser.Parse(a, pattern); break;
-				case TokenType.KeywordSamples: SamplesParser.Parse(a, pattern); break;
+				case TokenType.NotesKeyword: NotesParser.Parse(a, pattern); break;
+				case TokenType.SamplesKeyword: SamplesParser.Parse(a, pattern); break;
 				default: throw new Exception();
 			}
 		}

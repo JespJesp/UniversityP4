@@ -8,12 +8,11 @@ public static class SampleValidator
 	{
 		if (string.IsNullOrWhiteSpace(sample.FileName))
 		{
-			analyzer.AddError("Sample filename cannot be empty");
+			analyzer.AddError("Sample file name cannot be empty");
 		}
-
 		if (!sample.FileName.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
 		{
-			analyzer.AddError($"Sample file {sample.FileName} should be a .wav file");
+			analyzer.AddError($"Sample file {sample.FileName} must be a .wav file");
 		}
 	}
 }

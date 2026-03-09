@@ -4,11 +4,11 @@ namespace LexicalAnalysis;
 
 public enum TokenType
 {
-	// Identifiers and keywords
+	// Identifier and keywords
 	Identifier,
-	KeywordTimeline,
-	KeywordSamples,
-	KeywordNotes,
+	TimelineKeyword,
+	SamplesKeyword,
+	NotesKeyword,
 
 	// Values
 	Integer,
