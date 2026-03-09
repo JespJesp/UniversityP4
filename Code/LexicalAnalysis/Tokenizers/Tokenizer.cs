@@ -1,6 +1,6 @@
 
 
-namespace LexicalAnalysis.Tokenization;
+namespace LexicalAnalysis.Tokenizers;
 
 public abstract class Tokenizer
 {

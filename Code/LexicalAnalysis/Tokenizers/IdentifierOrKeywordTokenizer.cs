@@ -1,8 +1,8 @@
 
 
-namespace LexicalAnalysis.Tokenization;
+namespace LexicalAnalysis.Tokenizers;
 
-public class TokenizeIdentifierOrKeyword : Tokenizer
+public class IdentifierOrKeywordTokenizer : Tokenizer
 {
 	protected override bool IsTokenizable(LexicalAnalyzer a)
 	{
@@ -14,7 +14,7 @@ public class TokenizeIdentifierOrKeyword : Tokenizer
 		string identifier = "";
 		int startColumn = a.CursorColumn;
 
-		bool isNotEndOfFile() => a.CursorPosition < a.Input.Length;
+		bool isNotEndOfFile() => a.CursorPosition < a.InputText.Length;
 		bool isLetterOrDigit() => char.IsLetterOrDigit(a.CursorChar()) || a.CursorChar() == '_';
 
 		while (isNotEndOfFile() && isLetterOrDigit())
@@ -25,9 +25,10 @@ public class TokenizeIdentifierOrKeyword : Tokenizer
 
 		TokenType tokenType = identifier switch
 		{
-			"samples" => TokenType.SamplesKeyword,
-			"notes" => TokenType.NotesKeyword,
-			_ => TokenType.Identifier
+			"timeline" => TokenType.KeywordTimeline,
+			"samples" => TokenType.KeywordSamples,
+			"notes" => TokenType.KeywordNotes,
+			_ => TokenType.Identifier // Underscore encompasses all other strings
 		};
 
 		a.Tokens.Add(new Token(tokenType, identifier, a.CursorLine, startColumn));

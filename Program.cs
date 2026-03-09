@@ -41,10 +41,10 @@ internal class Program
 	{
 		try
 		{
-			var tokens = new LexicalAnalyzer().Analyze(text);
-			var pattern = new SyntaxAnalyzer().Analyze(tokens);
-			new SemanticAnalyzer().Analyze(pattern);
-			new Printer().Evaluate(pattern);
+			var tokens = new LexicalAnalyzer().Tokenize(text);
+			var song = new SyntaxAnalyzer().Parse(tokens);
+			new SemanticAnalyzer().Validate(song);
+			new Printer().Evaluate(song);
 		}
 		catch (Exception exception)
 		{

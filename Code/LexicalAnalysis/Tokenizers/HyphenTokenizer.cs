@@ -1,8 +1,8 @@
 
 
-namespace LexicalAnalysis.Tokenization;
+namespace LexicalAnalysis.Tokenizers;
 
-public class TokenizeHyphen : Tokenizer
+public class HyphenTokenizer : Tokenizer
 {
 	protected override bool IsTokenizable(LexicalAnalyzer a)
 	{

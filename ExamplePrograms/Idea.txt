@@ -31,6 +31,7 @@ timeline
     e5 4-8 
     a5 8-10 
     e5 10-12 
+
 16_verseLeadGuitar
   samples
     "lead_guitar.wav"
@@ -40,6 +41,7 @@ timeline
     e5 4-6 
     a5 8-10 
     e5 10-16
+
 32_verseRhythmGuitar
   samples
     "rhythm_guitar.wav"

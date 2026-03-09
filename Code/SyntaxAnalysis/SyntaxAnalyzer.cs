@@ -1,47 +1,101 @@
 using LexicalAnalysis;
-using Song;
-using SyntaxAnalysis.Parsing;
-using Visitation;
+using AST;
+using SyntaxAnalysis.Parsers;
 
 namespace SyntaxAnalysis;
 
 public class SyntaxAnalyzer
 {
-	public Stack<IVisitable> VisitableStack = new Stack<IVisitable>();
-	public Queue<Token> Tokens = new(); // We use a Queue because we need FIFO (First In First Out)
-	public Pattern CurrentPattern = new();
-	public Token CurrentToken;
+	internal List<Token> Tokens = new();
+	internal Song NewSong = new();
+	internal int CursorPosition { get; private set; }
+	internal Token CurrentToken() => Tokens[CursorPosition];
 
-	public Pattern Analyze(List<Token> input)
+	public Song Parse(List<Token> inputTokens)
 	{
-		Tokens = new Queue<Token>(input);
-		CurrentPattern = new();
+		// Reset varaibles
+		Tokens = inputTokens;
+		CursorPosition = 0;
+		NewSong = new Song();
 
-		ParseTokens();
+		try
+		{
+			ParseRoots();
+		}
+		catch
+		{
+			throw new Exception($"Syntax error:\nUnexpected token: '{CurrentToken().ToString()}'.");
+		}
 
-		return CurrentPattern;
+		return NewSong;
 	}
 
-	private void ParseTokens()
+	private void ParseRoots()
 	{
+		// TODO: FIX
 		while (Tokens.Count > 0)
 		{
-			CurrentToken = Tokens.Dequeue();
-
-			switch (CurrentToken.Type)
+			switch (CurrentToken().Type)
 			{
-				case TokenType.Identifier: ParseIdentifier.Parse(this); break;
-				case TokenType.SamplesKeyword: ParseSamplesKeyword.Parse(this); break;
-				case TokenType.NotesKeyword: break;
-				case TokenType.Number: ParseNumber.Parse(this); break;
-				case TokenType.String: ParseString.Parse(this); break;
-				case TokenType.Hyphen: ParseHyphen.Parse(this); break;
+				case TokenType.KeywordTimeline: TimelineParser.Parse(this); break;
+				case TokenType.Integer: PatternParser.Parse(this); break;
 				case TokenType.NewLine: break;
 				case TokenType.EndOfFile: break;
-				default:
-					throw new NotImplementedException(
-						$"Error while parsing: Token type not implented for token: '{CurrentToken.ToString()}'");
+				default: throw new Exception();
 			}
 		}
 	}
+
+	#region Helper methods
+
+	public void AdvanceCursor()
+	{
+		CursorPosition++;
+	}
+
+	/// <summary>
+	/// Note: This also advances the cursor.
+	/// </summary>
+	public void ProcessToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
+	{
+		if (CurrentToken().Type != requiredTokenType)
+		{
+			throw new Exception();
+		}
+
+		if (actionBeforeAdvancingCursor != null)
+		{
+			actionBeforeAdvancingCursor();
+		}
+
+		AdvanceCursor();
+	}
+
+	/// <summary>
+	/// Note: This also advances the cursor.
+	/// </summary>
+	/// <returns> True if the next tokens are a new line followed by the required amount of tabs.</returns>
+	public bool HasNewLineTabs(int requiredTabAmount)
+	{
+		// Check new line
+		if (CurrentToken().Type != TokenType.NewLine)
+		{
+			return false;
+		}
+		AdvanceCursor();
+
+		// Check tab amount
+		int tabAmount = 0;
+		for (int i = 0; i < requiredTabAmount; i++)
+		{
+			if (CurrentToken().Type != TokenType.Tab)
+			{
+				tabAmount++;
+				AdvanceCursor();
+			}
+		}
+		return tabAmount == requiredTabAmount;
+	}
+
+	#endregion
 }

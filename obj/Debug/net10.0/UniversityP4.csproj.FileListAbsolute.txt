@@ -12,3 +12,4 @@ C:\Jesp active\GitHub repositories\University\UniversityP4\obj\Debug\net10.0\ref
 C:\Jesp active\GitHub repositories\University\UniversityP4\obj\Debug\net10.0\UniversityP4.pdb
 C:\Jesp active\GitHub repositories\University\UniversityP4\obj\Debug\net10.0\UniversityP4.genruntimeconfig.cache
 C:\Jesp active\GitHub repositories\University\UniversityP4\obj\Debug\net10.0\ref\UniversityP4.dll
+C:\Jesp active\GitHub repositories\University\UniversityP4\obj\Debug\net10.0\UniversityP4.sourcelink.json

@@ -1,55 +1,66 @@
-using LexicalAnalysis.Tokenization;
+using LexicalAnalysis.Tokenizers;
 
 namespace LexicalAnalysis;
 
 public class LexicalAnalyzer
 {
-	internal List<Token> Tokens = new List<Token>();
-	internal string Input = "";
+	internal List<Token> Tokens = new();
+	internal List<string> Errors = new();
+	internal string InputText = "";
 	internal int CursorLine;
 	internal int CursorColumn;
-	internal int CursorPosition;
-	internal char CursorChar() => Input[CursorPosition];
+	internal int CursorPosition { get; private set; }
+	internal char CursorChar() => InputText[CursorPosition];
 
 	// Tokenizers
-	TokenizeWhitespace tokenizeWhitespace = new();
-	TokenizeNumber tokenizeNumber = new();
-	TokenizeIdentifierOrKeyword tokenizeIdentifierAndKeyword = new();
-	TokenizeString tokenizeString = new();
-	TokenizeHyphen tokenizeHyphen = new();
-	TokenizeUnknownCharacter tokenizeUnknownCharacter = new();
+	WhitespaceTokenizer whitespaceTokenizer = new();
+	IntegerTokenizer integerTokenizer = new();
+	IdentifierOrKeywordTokenizer identifierOrKeywordTokenizer = new();
+	StringTokenizer stringTokenizer = new();
+	HyphenTokenizer hyphenTokenizer = new();
 
-	public List<Token> Analyze(string input)
+	public List<Token> Tokenize(string text)
 	{
+		// Reset variables
 		Tokens.Clear();
-		Input = input;
+		InputText = text;
 		CursorLine = 1;
 		CursorColumn = 1;
 		CursorPosition = 0;
 
-		TokenizeInput();
+		TokenizeText();
+
+		if (Errors.Any())
+		{
+			throw new Exception("Lexical errors:\n" + string.Join("\n", Errors));
+		}
 
 		return Tokens;
 	}
 
-	private void TokenizeInput()
+	private void TokenizeText()
 	{
-		while (CursorPosition < Input.Length)
+		// TODO: Throw exception containing all unknown characters
+
+		while (CursorPosition < InputText.Length)
 		{
-			if (tokenizeWhitespace.TryTokenize(this)
-				|| tokenizeNumber.TryTokenize(this)
-				|| tokenizeIdentifierAndKeyword.TryTokenize(this)
-				|| tokenizeString.TryTokenize(this)
-				|| tokenizeHyphen.TryTokenize(this))
+			if (whitespaceTokenizer.TryTokenize(this)
+				|| integerTokenizer.TryTokenize(this)
+				|| identifierOrKeywordTokenizer.TryTokenize(this)
+				|| stringTokenizer.TryTokenize(this)
+				|| hyphenTokenizer.TryTokenize(this))
 			{
 				continue;
 			}
 
-			tokenizeUnknownCharacter.TryTokenize(this);
+			Errors.Add($"Unknown token type: Character:'{CursorChar}' Line:{CursorLine} Column:{CursorColumn}");
+			AdvanceCursor();
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", CursorLine, CursorColumn));
 	}
+
+	#region Helper methods
 
 	public void AdvanceCursor()
 	{
@@ -63,4 +74,6 @@ public class LexicalAnalyzer
 		CursorLine++;
 		CursorColumn = 1;
 	}
+
+	#endregion
 }

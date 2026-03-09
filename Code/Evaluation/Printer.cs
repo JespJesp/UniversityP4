@@ -1,41 +1,27 @@
-using Visitation;
-using Song;
+using AST;
 
 namespace Evaluation;
 
-public class Printer : IVisitor
+public class Printer
 {
-	private Pattern _currentPattern;
-
-	public void Evaluate(Pattern pattern)
+	public void Evaluate(Song song)
 	{
-		_currentPattern = pattern;
-		pattern.Accept(this);
-	}
+		foreach (Pattern pattern in song.Patterns)
+		{
+			Console.WriteLine($"\n=== Pattern: {pattern.Name} ===");
+			Console.WriteLine($"Length: {pattern.Length}");
 
-	public void VisitPattern(Pattern pattern)
-	{
-		Console.WriteLine($"\n=== Pattern: {pattern.Name} ===");
-		Console.WriteLine($"Length: {pattern.Length}");
+			Console.WriteLine("Samples:");
+			foreach (Sample sample in pattern.Samples)
+			{
+				Console.WriteLine($"  - {sample.FileName}");
+			}
 
-		// Visit all samples first (as requested in the requirement)
-		Console.WriteLine("Samples:");
-		foreach (var sample in pattern.Samples)
-			sample.Accept(this);
-
-		// Then visit notes
-		Console.WriteLine("Notes:");
-		foreach (var note in pattern.Notes)
-			note.Accept(this);
-	}
-
-	public void VisitSample(Sample sample)
-	{
-		Console.WriteLine($"  - {sample.FileName}");
-	}
-
-	public void VisitNote(Note note)
-	{
-		Console.WriteLine($"  Time: {note.StartTime:D2}-{note.EndTime:D2}, Pitch: {note.Pitch}");
+			Console.WriteLine("Notes:");
+			foreach (Note note in pattern.Notes)
+			{
+				Console.WriteLine($"  Time: {note.StartTime:D2}-{note.EndTime:D2}, Pitch: {note.Pitch}");
+			}
+		}
 	}
 }

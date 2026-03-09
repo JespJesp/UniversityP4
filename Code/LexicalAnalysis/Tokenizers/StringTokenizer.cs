@@ -1,8 +1,8 @@
 
 
-namespace LexicalAnalysis.Tokenization;
+namespace LexicalAnalysis.Tokenizers;
 
-public class TokenizeString : Tokenizer
+public class StringTokenizer : Tokenizer
 {
 	protected override bool IsTokenizable(LexicalAnalyzer a)
 	{
@@ -15,7 +15,7 @@ public class TokenizeString : Tokenizer
 		int startColumn = a.CursorColumn;
 		a.AdvanceCursor(); // Skip opening quote
 
-		bool isNotEndOfFile() => a.CursorPosition < a.Input.Length;
+		bool isNotEndOfFile() => a.CursorPosition < a.InputText.Length;
 		bool isClosingQuote() => a.CursorChar() == '"';
 
 		while (isNotEndOfFile() && !isClosingQuote())
