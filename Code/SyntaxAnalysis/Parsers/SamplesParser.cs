@@ -12,13 +12,8 @@ public static class SamplesParser
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (a.Tokens.Count > 0)
+		while (!a.HasProcessedAllTokens() && !a.HasNewLineTabs(2))
 		{
-			if (a.HasNewLineTabs(2) == false)
-			{
-				break;
-			}
-
 			Sample sample = new();
 			pattern.Samples.Add(sample);
 

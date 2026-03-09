@@ -4,7 +4,7 @@
 		{
 			"label": "run-dotnet-ExampleForDevelopment",
 			"type": "shell",
-			"command": "dotnet run ExamplePrograms/ExampleForDevelopment",
+			"command": "dotnet run ExamplePrograms/Development",
 			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
 		},
 		{

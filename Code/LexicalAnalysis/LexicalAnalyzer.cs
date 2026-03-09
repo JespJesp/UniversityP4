@@ -40,8 +40,6 @@ public class LexicalAnalyzer
 
 	private void TokenizeText()
 	{
-		// TODO: Throw exception containing all unknown characters
-
 		while (CursorPosition < InputText.Length)
 		{
 			if (whitespaceTokenizer.TryTokenize(this)
@@ -53,14 +51,12 @@ public class LexicalAnalyzer
 				continue;
 			}
 
-			Errors.Add($"Unknown token type: Character:'{CursorChar}' Line:{CursorLine} Column:{CursorColumn}");
+			Errors.Add($"Unknown token type: Starting character: '{CursorChar}',  Line: {CursorLine},  Column: {CursorColumn}");
 			AdvanceCursor();
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", CursorLine, CursorColumn));
 	}
-
-	#region Helper methods
 
 	public void AdvanceCursor()
 	{
@@ -74,6 +70,4 @@ public class LexicalAnalyzer
 		CursorLine++;
 		CursorColumn = 1;
 	}
-
-	#endregion
 }

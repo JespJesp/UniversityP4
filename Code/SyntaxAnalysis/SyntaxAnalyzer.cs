@@ -13,7 +13,7 @@ public class SyntaxAnalyzer
 
 	public Song Parse(List<Token> inputTokens)
 	{
-		// Reset varaibles
+		// Reset variables
 		Tokens = inputTokens;
 		CursorPosition = 0;
 		NewSong = new Song();
@@ -32,8 +32,7 @@ public class SyntaxAnalyzer
 
 	private void ParseRoots()
 	{
-		// TODO: FIX
-		while (Tokens.Count > 0)
+		while (HasProcessedAllTokens())
 		{
 			switch (CurrentToken().Type)
 			{
@@ -46,12 +45,12 @@ public class SyntaxAnalyzer
 		}
 	}
 
-	#region Helper methods
-
-	public void AdvanceCursor()
+	private void AdvanceCursor()
 	{
 		CursorPosition++;
 	}
+
+	public bool HasProcessedAllTokens() => CursorPosition > Tokens.Count;
 
 	/// <summary>
 	/// Note: This also advances the cursor.
@@ -96,6 +95,4 @@ public class SyntaxAnalyzer
 		}
 		return tabAmount == requiredTabAmount;
 	}
-
-	#endregion
 }

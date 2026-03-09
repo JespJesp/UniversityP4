@@ -15,24 +15,19 @@ public static class PatternParser
 		{
 			newPattern.Length = int.Parse(a.CurrentToken().Value);
 		});
+
 		a.ProcessToken(TokenType.Identifier, () =>
 		{
 			newPattern.Name = a.CurrentToken().Value;
 		});
 
 		ParseLeaves(a, newPattern);
-
-		a.AdvanceCursor();
 	}
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (a.Tokens.Count > 0)
+		while (!a.HasProcessedAllTokens() && !a.HasNewLineTabs(1))
 		{
-			if (a.HasNewLineTabs(1) == false)
-			{
-				break;
-			}
 
 			switch (a.CurrentToken().Type)
 			{

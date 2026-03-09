@@ -10,7 +10,7 @@ public class SemanticAnalyzer
 
 	public void Validate(Song song)
 	{
-		// Reset varaibles
+		// Reset variables
 		Errors.Clear();
 
 		ValidateRoot(song);
@@ -26,12 +26,8 @@ public class SemanticAnalyzer
 		SongValidator.Validate(this, song);
 	}
 
-	#region Helper methods
-
 	public void AddError(string message)
 	{
 		Errors.Add(message);
 	}
-
-	#endregion
 }

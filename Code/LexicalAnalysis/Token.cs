@@ -19,6 +19,6 @@ public class Token
 
 	public override string ToString()
 	{
-		return $"Token(Type:{Type}, Value:'{Value}', Line:{Line}, Col:{Column})";
+		return $"Token(Type: {Type}, Value: '{Value}', Line: {Line}, Column: {Column})";
 	}
 }
