@@ -1,5 +1,3 @@
-
-
 namespace LexicalAnalysis;
 
 public class Token

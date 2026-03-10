@@ -1,15 +1,8 @@
+namespace LexicalAnalysis.Lexers;
 
-
-namespace LexicalAnalysis.Tokenizers;
-
-public class WhitespaceTokenizer : Tokenizer
+public static class WhitespaceLexer
 {
-	protected override bool IsTokenizable(LexicalAnalyzer a)
-	{
-		return char.IsWhiteSpace(a.CursorChar());
-	}
-
-	protected override void Tokenize(LexicalAnalyzer a)
+	public static void Lex(LexicalAnalyzer a)
 	{
 		if (a.CursorChar() == '\n')
 		{
