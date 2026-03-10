@@ -14,7 +14,7 @@ public static class NotesParser
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(2))
+		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
 		{
 			Note note = new(pattern);
 			pattern.Notes.Add(note);

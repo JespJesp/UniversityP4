@@ -25,7 +25,7 @@ public static class PatternParser
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(1))
+		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(1))
 		{
 			switch (a.CursorToken().Type)
 			{

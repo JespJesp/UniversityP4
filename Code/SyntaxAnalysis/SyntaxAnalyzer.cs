@@ -33,7 +33,7 @@ public class SyntaxAnalyzer
 
 	private void ParseRoots()
 	{
-		while (!HasProcessedAllTokens())
+		while (!HasConsumedAllTokens())
 		{
 			switch (CursorToken().Type)
 			{
@@ -46,10 +46,11 @@ public class SyntaxAnalyzer
 		}
 	}
 
-	public bool HasProcessedAllTokens() => _cursor.Position >= _tokens.Count;
+	public bool HasConsumedAllTokens() => _cursor.Position >= _tokens.Count;
 
 	/// <summary>
-	/// Note: This advances the cursor.
+	/// Moves cursor to next token, if current token is a specific type (and throws an exception if it is not). 
+	/// Can optionally perform an action before moving the cursor.
 	/// </summary>
 	public void ConsumeToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
 	{
@@ -67,9 +68,9 @@ public class SyntaxAnalyzer
 	}
 
 	/// <summary>
-	/// Note: If this returns true, it also advances the cursor to consume the new line and tabs.
+	/// Tries to consume the next tokens if they are a new line followed by a specific amount of tabs.
 	/// </summary>
-	/// <returns> True if the next tokens are a new line followed by the required amount of tabs.</returns>
+	/// <returns> True on success.</returns>
 	public bool TryConsumeNewLineAndTabs(int requiredTabAmount)
 	{
 		int cursorLookahead = 0;
