@@ -4,7 +4,7 @@ public static class CommentLexer
 {
 	public static void Lex(LexicalAnalyzer a)
 	{
-		a.Cursor.MoveToNextColumn(); // Skip opening ashtag
+		a.Cursor.MoveToNextColumn(); // Skip opening hashtag
 		while (a.CursorChar() != '#')
 		{
 			a.Cursor.MoveToNextColumn();

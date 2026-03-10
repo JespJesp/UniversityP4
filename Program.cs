@@ -7,7 +7,7 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		if (args.Length == 0)
+		if (args.Length != 1)
 		{
 			throw new Exception("Error in program argument: No file path provided to be interpreted.");
 		}
