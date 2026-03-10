@@ -5,12 +5,12 @@ public static class IdentifierOrKeywordLexer
 	public static void Lex(LexicalAnalyzer a)
 	{
 		string identifier = "";
-		int startColumn = a.CursorColumn;
+		int startColumn = a.Cursor.Column;
 
 		while (a.IsNotEndOfFile() && char.IsLetterOrDigit(a.CursorChar()) || a.CursorChar() == '_')
 		{
 			identifier += a.CursorChar();
-			a.AdvanceCursorToNextColumn();
+			a.Cursor.MoveToNextColumn();
 		}
 
 		TokenType tokenType = identifier switch
@@ -21,6 +21,6 @@ public static class IdentifierOrKeywordLexer
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 
-		a.Tokens.Add(new Token(tokenType, identifier, a.CursorLine, startColumn));
+		a.Tokens.Add(new Token(tokenType, identifier, a.Cursor.Line, startColumn));
 	}
 }

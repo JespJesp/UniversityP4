@@ -4,16 +4,16 @@ public static class CommentLexer
 {
 	public static void Lex(LexicalAnalyzer a)
 	{
-		a.AdvanceCursorToNextColumn(); // Skip opening ashtag
+		a.Cursor.MoveToNextColumn(); // Skip opening ashtag
 		while (a.CursorChar() != '#')
 		{
-			a.AdvanceCursorToNextColumn();
+			a.Cursor.MoveToNextColumn();
 			if (!a.IsNotEndOfFile())
 			{
 				throw new Exception(
-					$"String is missing closing quote '\"' at Line:{a.CursorLine} Column:{a.CursorColumn}");
+					$"String is missing closing quote '\"' at Line:{a.Cursor.Line} Column:{a.Cursor.Column}");
 			}
 		}
-		a.AdvanceCursorToNextColumn(); // Skip closing hashtag
+		a.Cursor.MoveToNextColumn(); // Skip closing hashtag
 	}
 }

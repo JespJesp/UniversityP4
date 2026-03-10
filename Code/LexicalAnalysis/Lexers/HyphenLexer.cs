@@ -4,7 +4,7 @@ public static class HyphenLexer
 {
 	public static void Lex(LexicalAnalyzer a)
 	{
-		a.Tokens.Add(new Token(TokenType.Hyphen, "-", a.CursorLine, a.CursorColumn));
-		a.AdvanceCursorToNextColumn();
+		a.Tokens.Add(new Token(TokenType.Hyphen, "-", a.Cursor.Line, a.Cursor.Column));
+		a.Cursor.MoveToNextColumn();
 	}
 }

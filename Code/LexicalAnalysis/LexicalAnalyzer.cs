@@ -8,23 +8,19 @@ public class LexicalAnalyzer
 	private string _inputText = "";
 
 	public List<Token> Tokens = new();
-	public int CursorLine { get; private set; } // Private set because the "AdvanceCursorX" methods handle set
-	public int CursorColumn { get; private set; } // Private set because the "AdvanceCursorX" methods handle set
-	public int CursorPosition { get; private set; } // Private set because the "AdvanceCursorX" methods handle set
-	public char CursorChar() => _inputText[CursorPosition];
+	public LexicalAnalyzerCursor Cursor = new();
 
-	public bool IsNotEndOfFile() => CursorPosition < _inputText.Length;
+	public char CursorChar() => _inputText[Cursor.Position];
+	public bool IsNotEndOfFile() => Cursor.Position < _inputText.Length;
 
-	public List<Token> Tokenize(string text)
+	public List<Token> Lex(string text)
 	{
 		// Reset variables
 		Tokens.Clear();
 		_inputText = text;
-		CursorLine = 1;
-		CursorColumn = 1;
-		CursorPosition = 0;
+		Cursor.MoveToStartPosition();
 
-		TokenizeText();
+		LexText();
 
 		if (_errors.Any())
 		{
@@ -34,11 +30,11 @@ public class LexicalAnalyzer
 		return Tokens;
 	}
 
-	private void TokenizeText()
+	private void LexText()
 	{
 		// TODO: Add max size to e.g. float and string
 
-		while (CursorPosition < _inputText.Length)
+		while (Cursor.Position < _inputText.Length)
 		{
 			if (char.IsWhiteSpace(CursorChar()))
 			{
@@ -66,24 +62,11 @@ public class LexicalAnalyzer
 			}
 			else
 			{
-				_errors.Add($"Unknown token type: Character: '{CursorChar}',  Line: {CursorLine},  Column: {CursorColumn}");
-				AdvanceCursorToNextColumn();
+				_errors.Add($"Unknown token type: Character: '{CursorChar}',  Line: {Cursor.Line},  Column: {Cursor.Column}");
+				Cursor.MoveToNextColumn();
 			}
 		}
 
-		Tokens.Add(new Token(TokenType.EndOfFile, "", CursorLine, CursorColumn));
-	}
-
-	public void AdvanceCursorToNextColumn()
-	{
-		CursorPosition++;
-		CursorColumn++;
-	}
-
-	public void AdvanceCursorToNewLine()
-	{
-		CursorPosition++;
-		CursorLine++;
-		CursorColumn = 1;
+		Tokens.Add(new Token(TokenType.EndOfFile, "", Cursor.Line, Cursor.Column));
 	}
 }

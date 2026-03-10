@@ -14,14 +14,14 @@ public static class SamplesParser
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(2))
+		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
 		{
 			Sample sample = new();
 			pattern.Samples.Add(sample);
 
 			a.ConsumeToken(TokenType.String, () =>
 			{
-				sample.FileName = a.CurrentToken().Value;
+				sample.FileName = a.CursorToken().Value;
 			});
 		}
 	}
