@@ -19,8 +19,7 @@ timeline
     16_verseLeadGuitar
     4_fourOnTheFloorSnare
 
-
-// Guitars
+# Guitars #
 
 16_introLeadGuitar
   samples
@@ -51,7 +50,7 @@ timeline
     17-25 DM
     25-32 CM
 
-// Drums
+# Drums #
 
 4_fourOnTheFloorKick
   samples

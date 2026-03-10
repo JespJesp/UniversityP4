@@ -1,15 +1,8 @@
+namespace LexicalAnalysis.Lexers;
 
-
-namespace LexicalAnalysis.Tokenizers;
-
-public class IdentifierOrKeywordTokenizer : Tokenizer
+public static class IdentifierOrKeywordLexer
 {
-	protected override bool IsTokenizable(LexicalAnalyzer a)
-	{
-		return char.IsLetter(a.CursorChar()) || a.CursorChar() == '_';
-	}
-
-	protected override void Tokenize(LexicalAnalyzer a)
+	public static void Lex(LexicalAnalyzer a)
 	{
 		string identifier = "";
 		int startColumn = a.CursorColumn;

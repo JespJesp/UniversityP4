@@ -1,4 +1,4 @@
-using LexicalAnalysis.Tokenizers;
+using LexicalAnalysis.Lexers;
 
 namespace LexicalAnalysis;
 
@@ -14,13 +14,6 @@ public class LexicalAnalyzer
 	public char CursorChar() => _inputText[CursorPosition];
 
 	public bool IsNotEndOfFile() => CursorPosition < _inputText.Length;
-
-	// Tokenizers
-	private WhitespaceTokenizer _whitespaceTokenizer = new();
-	private IntegerTokenizer _integerTokenizer = new();
-	private IdentifierOrKeywordTokenizer _identifierOrKeywordTokenizer = new();
-	private StringTokenizer _stringTokenizer = new();
-	private HyphenTokenizer _hyphenTokenizer = new();
 
 	public List<Token> Tokenize(string text)
 	{
@@ -43,19 +36,39 @@ public class LexicalAnalyzer
 
 	private void TokenizeText()
 	{
+		// TODO: Add max size to e.g. float and string
+
 		while (CursorPosition < _inputText.Length)
 		{
-			if (_whitespaceTokenizer.TryTokenize(this)
-				|| _integerTokenizer.TryTokenize(this)
-				|| _identifierOrKeywordTokenizer.TryTokenize(this)
-				|| _stringTokenizer.TryTokenize(this)
-				|| _hyphenTokenizer.TryTokenize(this))
+			if (char.IsWhiteSpace(CursorChar()))
 			{
-				continue;
+				WhitespaceLexer.Lex(this);
 			}
-
-			_errors.Add($"Unknown token type: Character: '{CursorChar}',  Line: {CursorLine},  Column: {CursorColumn}");
-			AdvanceCursorToNextColumn();
+			else if (CursorChar() == '#')
+			{
+				CommentLexer.Lex(this);
+			}
+			else if (CursorChar() == '"')
+			{
+				StringLexer.Lex(this);
+			}
+			else if (CursorChar() == '-')
+			{
+				HyphenLexer.Lex(this);
+			}
+			else if (char.IsDigit(CursorChar()))
+			{
+				NumberLexer.Lex(this);
+			}
+			else if (CursorChar() == '_' || char.IsLetter(CursorChar()))
+			{
+				IdentifierOrKeywordLexer.Lex(this);
+			}
+			else
+			{
+				_errors.Add($"Unknown token type: Character: '{CursorChar}',  Line: {CursorLine},  Column: {CursorColumn}");
+				AdvanceCursorToNextColumn();
+			}
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", CursorLine, CursorColumn));

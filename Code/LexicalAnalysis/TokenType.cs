@@ -1,5 +1,3 @@
-
-
 namespace LexicalAnalysis;
 
 public enum TokenType
@@ -12,6 +10,7 @@ public enum TokenType
 
 	// Values
 	Integer,
+	Float,
 	String,
 
 	// Formatting
