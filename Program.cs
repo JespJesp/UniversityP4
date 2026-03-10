@@ -41,7 +41,7 @@ internal class Program
 	{
 		try
 		{
-			var tokens = new LexicalAnalyzer().Tokenize(text);
+			var tokens = new LexicalAnalyzer().Lex(text);
 			var song = new SyntaxAnalyzer().Parse(tokens);
 			new SemanticAnalyzer().Validate(song);
 			new Evaluator().Evaluate(song);

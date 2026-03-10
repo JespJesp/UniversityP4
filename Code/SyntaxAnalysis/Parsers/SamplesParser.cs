@@ -21,7 +21,7 @@ public static class SamplesParser
 
 			a.ConsumeToken(TokenType.String, () =>
 			{
-				sample.FileName = a.CurrentToken().Value;
+				sample.FileName = a.CursorToken().Value;
 			});
 		}
 	}

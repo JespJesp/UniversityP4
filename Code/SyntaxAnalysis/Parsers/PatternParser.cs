@@ -12,12 +12,12 @@ public static class PatternParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			pattern.Length = int.Parse(a.CurrentToken().Value);
+			pattern.Length = int.Parse(a.CursorToken().Value);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
 		{
-			pattern.Name = a.CurrentToken().Value;
+			pattern.Name = a.CursorToken().Value;
 		});
 
 		ParseLeaves(a, pattern);
@@ -27,7 +27,7 @@ public static class PatternParser
 	{
 		while (!a.HasProcessedAllTokens() && a.TryConsumeNewLineAndTabs(1))
 		{
-			switch (a.CurrentToken().Type)
+			switch (a.CursorToken().Type)
 			{
 				case TokenType.NotesKeyword: NotesParser.Parse(a, pattern); break;
 				case TokenType.SamplesKeyword: SamplesParser.Parse(a, pattern); break;

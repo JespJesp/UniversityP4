@@ -21,19 +21,19 @@ public static class NotesParser
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{
-				note.StartTime = int.Parse(a.CurrentToken().Value);
+				note.StartTime = int.Parse(a.CursorToken().Value);
 			});
 
 			a.ConsumeToken(TokenType.Hyphen);
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{
-				note.EndTime = int.Parse(a.CurrentToken().Value);
+				note.EndTime = int.Parse(a.CursorToken().Value);
 			});
 
 			a.ConsumeToken(TokenType.Identifier, () =>
 			{
-				note.Pitch = a.CurrentToken().Value;
+				note.Pitch = a.CursorToken().Value;
 			});
 		}
 	}
