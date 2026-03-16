@@ -3,7 +3,7 @@ using AST;
 
 namespace SyntaxAnalysis.Parsers;
 
-public static class NotesParser
+public static class PatternNotesParser
 {
 	public static void Parse(SyntaxAnalyzer a, Pattern pattern)
 	{
@@ -14,7 +14,7 @@ public static class NotesParser
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
+		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(2))
 		{
 			Note note = new(pattern);
 			pattern.Notes.Add(note);
@@ -33,7 +33,7 @@ public static class NotesParser
 
 			a.ConsumeToken(TokenType.Identifier, () =>
 			{
-				note.Pitch = a.CursorToken().Value;
+				note.Pitch = new Pitch(a.CursorToken().Value);
 			});
 		}
 	}

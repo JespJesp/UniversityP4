@@ -5,23 +5,33 @@ namespace SyntaxAnalysis.Parsers;
 
 public static class SamplesParser
 {
-	public static void Parse(SyntaxAnalyzer a, Pattern pattern)
+	public static void Parse(SyntaxAnalyzer a, Song song)
 	{
 		a.ConsumeToken(TokenType.SamplesKeyword);
 
-		ParseLeaves(a, pattern);
+		ParseLeaves(a, song);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
+	private static void ParseLeaves(SyntaxAnalyzer a, Song song)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
+		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(1))
 		{
-			Sample sample = new();
-			pattern.Samples.Add(sample);
+			Sample sample = new(song);
+			song.Samples.Add(sample);
+
+			a.ConsumeToken(TokenType.Identifier, () =>
+			{
+				sample.Id = a.CursorToken().Value;
+			});
 
 			a.ConsumeToken(TokenType.String, () =>
 			{
-				sample.FileName = a.CursorToken().Value;
+				sample.FilePath = a.CursorToken().Value;
+			});
+
+			a.TryConsumeToken(TokenType.Identifier, () =>
+			{
+				sample.ReferencePitch = new Pitch(a.CursorToken().Value);
 			});
 		}
 	}

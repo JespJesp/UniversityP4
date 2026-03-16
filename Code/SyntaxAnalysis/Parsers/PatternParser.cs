@@ -5,9 +5,9 @@ namespace SyntaxAnalysis.Parsers;
 
 public static class PatternParser
 {
-	public static void Parse(SyntaxAnalyzer a)
+	public static void Parse(SyntaxAnalyzer a, Song song)
 	{
-		Pattern pattern = new();
+		Pattern pattern = new(song);
 		a.OutputSong.Patterns.Add(pattern);
 
 		a.ConsumeToken(TokenType.Integer, () =>
@@ -17,7 +17,7 @@ public static class PatternParser
 
 		a.ConsumeToken(TokenType.Identifier, () =>
 		{
-			pattern.Name = a.CursorToken().Value;
+			pattern.Id = a.CursorToken().Value;
 		});
 
 		ParseLeaves(a, pattern);
@@ -25,13 +25,13 @@ public static class PatternParser
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(1))
+		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(1))
 		{
 			switch (a.CursorToken().Type)
 			{
-				case TokenType.NotesKeyword: NotesParser.Parse(a, pattern); break;
-				case TokenType.SamplesKeyword: SamplesParser.Parse(a, pattern); break;
-				default: throw new Exception();
+				case TokenType.NotesKeyword: PatternNotesParser.Parse(a, pattern); break;
+				case TokenType.SamplesKeyword: PatternSamplesParser.Parse(a, pattern); break;
+				default: throw new ArgumentOutOfRangeException();
 			}
 		}
 	}

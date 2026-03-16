@@ -7,6 +7,7 @@ public static class NoteValidator
 {
 	public static void Validate(SemanticAnalyzer analyzer, Note note)
 	{
+		// Time
 		if (note.StartTime < 0 || note.EndTime < 0)
 		{
 			analyzer.AddError($"Note times must be positive: {note.StartTime}-{note.EndTime}");
@@ -18,10 +19,6 @@ public static class NoteValidator
 		if (note.EndTime > note.ParentPattern.Length)
 		{
 			analyzer.AddError($"Note end time {note.EndTime} exceeds pattern length {note.ParentPattern.Length}");
-		}
-		if (!Regex.IsMatch(note.Pitch, @"^[a-g][0-9]$"))
-		{
-			analyzer.AddError($"Invalid note pitch format: {note.Pitch}. Expected format like 'c5'");
 		}
 	}
 }

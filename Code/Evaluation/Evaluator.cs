@@ -6,27 +6,28 @@ public class Evaluator
 {
 	public void Evaluate(Song song)
 	{
-		PrintToConsole(song);
+		PrintToConsole(song); // TODO: Remove after debugging.
+		AudioRenderer.Render(song);
 	}
 
-	// TODO: Delete this method. It's just an example
-	private void PrintToConsole(Song song)
+	private void PrintToConsole(Song song) // TODO: Remove after debugging. It's just an example.
 	{
 		foreach (Pattern pattern in song.Patterns)
 		{
-			Console.WriteLine($"\n=== Pattern: {pattern.Name} ===");
+			Console.WriteLine($"\n=== Pattern: {pattern.Id} ===");
 			Console.WriteLine($"Length: {pattern.Length}");
 
 			Console.WriteLine("Samples:");
-			foreach (Sample sample in pattern.Samples)
+			foreach (string sampleId in pattern.SampleIds)
 			{
-				Console.WriteLine($"  - {sample.FileName}");
+				Sample sample = song.GetSample(sampleId);
+				Console.WriteLine($"  - {sample.Id} = '{sample.FilePath}', reference note octave = {sample.ReferencePitch.Octave}");
 			}
 
 			Console.WriteLine("Notes:");
 			foreach (Note note in pattern.Notes)
 			{
-				Console.WriteLine($"  - Time: {note.StartTime:D2}-{note.EndTime:D2}, Pitch: {note.Pitch}");
+				Console.WriteLine($"  - Time: {note.StartTime:D2}-{note.EndTime:D2}, Octave: {note.Pitch.Octave}, Pitch class: {note.Pitch.PitchClass}");
 			}
 		}
 	}

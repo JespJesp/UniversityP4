@@ -23,9 +23,9 @@ public class SyntaxAnalyzer
 		{
 			ParseRoots();
 		}
-		catch
+		catch (Exception exception)
 		{
-			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'.");
+			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'. {exception.Message}");
 		}
 
 		return OutputSong;
@@ -38,10 +38,11 @@ public class SyntaxAnalyzer
 			switch (CursorToken().Type)
 			{
 				case TokenType.TimelineKeyword: TimelineParser.Parse(this); break;
-				case TokenType.Integer: PatternParser.Parse(this); break;
+				case TokenType.SamplesKeyword: SamplesParser.Parse(this, OutputSong); break;
+				case TokenType.Integer: PatternParser.Parse(this, OutputSong); break;
 				case TokenType.NewLine: ConsumeToken(TokenType.NewLine); break;
 				case TokenType.EndOfFile: ConsumeToken(TokenType.EndOfFile); break;
-				default: throw new Exception();
+				default: throw new ArgumentOutOfRangeException();
 			}
 		}
 	}
@@ -56,7 +57,7 @@ public class SyntaxAnalyzer
 	{
 		if (CursorToken().Type != requiredTokenType)
 		{
-			throw new Exception();
+			throw new Exception($"Expected token of type '{requiredTokenType}'");
 		}
 
 		if (actionBeforeAdvancingCursor != null)
@@ -68,10 +69,23 @@ public class SyntaxAnalyzer
 	}
 
 	/// <summary>
+	/// If the cursor's token is not of the required type, return false and do nothing.
+	/// </summary>
+	public bool TryConsumeToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
+	{
+		if (CursorToken().Type == requiredTokenType)
+		{
+			ConsumeToken(requiredTokenType, actionBeforeAdvancingCursor);
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>
 	/// Tries to consume the next tokens if they are a new line followed by a specific amount of tabs.
 	/// </summary>
 	/// <returns> True on success.</returns>
-	public bool TryConsumeNewLineAndTabs(int requiredTabAmount)
+	public bool TryConsumeIndents(int requiredTabAmount)
 	{
 		int cursorLookahead = 0;
 		Token LookaheadToken() => _tokens[_cursor.Position + cursorLookahead];

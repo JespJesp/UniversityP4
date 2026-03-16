@@ -40,10 +40,6 @@ public class LexicalAnalyzer
 			{
 				WhitespaceLexer.Lex(this);
 			}
-			else if (CursorChar() == '#')
-			{
-				CommentLexer.Lex(this);
-			}
 			else if (CursorChar() == '"')
 			{
 				StringLexer.Lex(this);
@@ -56,9 +52,13 @@ public class LexicalAnalyzer
 			{
 				NumberLexer.Lex(this);
 			}
-			else if (CursorChar() == '_' || char.IsLetter(CursorChar()))
+			else if (CursorChar() == '_' || CursorChar() == '#' || char.IsLetter(CursorChar()))
 			{
 				IdentifierOrKeywordLexer.Lex(this);
+			}
+			else if (CursorChar() == '%')
+			{
+				CommentLexer.Lex(this);
 			}
 			else
 			{

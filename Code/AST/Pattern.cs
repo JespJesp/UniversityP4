@@ -2,8 +2,14 @@ namespace AST;
 
 public class Pattern
 {
+	public Song ParentSong;
 	public int Length;
-	public string Name = "";
-	public List<Sample> Samples = new List<Sample>();
-	public List<Note> Notes = new List<Note>();
+	public string Id = "";
+	public List<string> SampleIds = new();
+	public List<Note> Notes = new();
+
+	public Pattern(Song parentSong)
+	{
+		ParentSong = parentSong;
+	}
 }

@@ -1,23 +1,20 @@
+% References %
 
-# This is a comment #
+samples
+	flute "/ExampleSamples/Instruments/flute E.wav" e5
+	snare "/ExampleSamples/Drums/snare.wav"
 
-8_Guitar
+% Patterns %
+
+8_flute
 	samples
-		"guitar.wav"
+		flute
 	notes
-		1-3 c5
-		2-4 d6
+		2-4 g5
 
-# 
-This is a multi-line
-comment that is quite long 
-#
-
-16_Piano
+4_snare
 	samples
-		"piano.wav"
+		snare
 	notes
-		4-8 a4
-		8-12 b5
-		9-12 c5
+		2-3 c5
 
