@@ -9,6 +9,8 @@ public enum TokenType
 	NotesKeyword,
 	GainKeyword,
 
+	PanKeyword,
+
 	// Values
 	Integer,
 	Float,

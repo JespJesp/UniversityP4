@@ -25,8 +25,12 @@ public static class NoteValidator
 		}
 	
 		if (note.Volume < 0.0f || note.Volume > 1.0f)
-        {
-            analyzer.AddError($"Note volume must be between 0.0 and 1.0, but was: {note.Volume}");
-        }
+      {
+         analyzer.AddError($"Note volume must be between 0.0 and 1.0, but was: {note.Volume}");
+      }
+		if (note.Pan < -1.0f || note.Pan > 1.0f)
+		{
+    		analyzer.AddError($"Note pan must be between -100 and 100, but was: {(int)(note.Pan * 100)}");
+		}
 	}
 }

@@ -8,6 +8,7 @@ public class Note
 	public string Pitch = "";
 	public float Volume = 1.0f;
 
+	public float Pan = 0.0f;
 	public Note(Pattern parentPattern)
 	{
 		ParentPattern = parentPattern;
