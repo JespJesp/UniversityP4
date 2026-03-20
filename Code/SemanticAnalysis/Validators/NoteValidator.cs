@@ -23,5 +23,10 @@ public static class NoteValidator
 		{
 			analyzer.AddError($"Invalid note pitch format: {note.Pitch}. Expected format like 'c5'");
 		}
+	
+		if (note.Volume < 0.0f || note.Volume > 1.0f)
+        {
+            analyzer.AddError($"Note volume must be between 0.0 and 1.0, but was: {note.Volume}");
+        }
 	}
 }

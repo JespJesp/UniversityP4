@@ -35,6 +35,14 @@ public static class NotesParser
 			{
 				note.Pitch = a.CurrentToken().Value;
 			});
+			if (a.CurrentToken().Type == TokenType.GainKeyword)
+{
+    		a.ConsumeToken(TokenType.GainKeyword);
+   		a.ConsumeToken(TokenType.Integer, () =>
+    		{
+        		note.Volume = int.Parse(a.CurrentToken().Value) / 100f;
+    });
+}
 		}
 	}
 }

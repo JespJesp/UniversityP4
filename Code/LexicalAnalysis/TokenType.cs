@@ -9,6 +9,7 @@ public enum TokenType
 	TimelineKeyword,
 	SamplesKeyword,
 	NotesKeyword,
+	GainKeyword,
 
 	// Values
 	Integer,

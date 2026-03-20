@@ -25,6 +25,7 @@ public class IdentifierOrKeywordTokenizer : Tokenizer
 			"timeline" => TokenType.TimelineKeyword,
 			"samples" => TokenType.SamplesKeyword,
 			"notes" => TokenType.NotesKeyword,
+			"gain"     => TokenType.GainKeyword,
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 
