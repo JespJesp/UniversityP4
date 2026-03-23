@@ -31,13 +31,18 @@ public static class NotesParser
 				note.EndTime = int.Parse(a.CursorToken().Value);
 			});
 
-			a.ConsumeToken(TokenType.Identifier, () =>
+			if (a.CursorToken().Type == TokenType.Identifier && a.CursorToken().Value == "random")
 			{
-				note.Pitch = a.CursorToken().Value;
-			});
+				note.PitchExpression = ExpressionParser.Parse(a);
+			}
+			else
+			{
+				a.ConsumeToken(TokenType.Identifier, () =>
+				{
+					note.Pitch = a.CursorToken().Value;
+				});
+			}
 
-			pattern.Notes.Add(note);
-			
 			// Chords
 			while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
 			{
@@ -52,6 +57,6 @@ public static class NotesParser
 
 				a.ConsumeToken(TokenType.Identifier);
 			}
-		}	
+		}
 	}
 }

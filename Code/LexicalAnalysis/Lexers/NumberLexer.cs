@@ -9,7 +9,7 @@ public static class NumberLexer
 		bool hasDecimalSymbol = false;
 
 		// Chain characters together
-		while (a.IsNotEndOfFile() && char.IsDigit(a.CursorChar()))
+		while (a.IsNotEndOfFile() && (char.IsDigit(a.CursorChar()) || a.CursorChar() == '.'))
 		{
 			if (a.CursorChar() == '.')
 			{
