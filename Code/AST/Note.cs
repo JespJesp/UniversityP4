@@ -7,6 +7,7 @@ public class Note
 	public int EndTime;
 	public string Pitch = "";
 	public float Volume = 1.0f;
+	public IExpression? PitchExpression;
 
 	public float Pan = 0.0f;
 	public Note(Pattern parentPattern)

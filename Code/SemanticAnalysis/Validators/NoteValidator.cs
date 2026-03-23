@@ -19,7 +19,11 @@ public static class NoteValidator
 		{
 			analyzer.AddError($"Note end time {note.EndTime} exceeds pattern length {note.ParentPattern.Length}");
 		}
-		if (!Regex.IsMatch(note.Pitch, @"^[a-g][0-9]$"))
+		if (note.PitchExpression != null)
+		{
+			ExpressionValidator.Validate(analyzer, note.PitchExpression);
+		}
+		else if (!Regex.IsMatch(note.Pitch, @"^[a-g][0-9]$"))
 		{
 			analyzer.AddError($"Invalid note pitch format: {note.Pitch}. Expected format like 'c5'");
 		}
