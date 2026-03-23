@@ -6,6 +6,7 @@ public class Note
 	public int StartTime;
 	public int EndTime;
 	public string Pitch = "";
+	public IExpression? PitchExpression;
 
 	public Note(Pattern parentPattern)
 	{

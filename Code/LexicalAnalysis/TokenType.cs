@@ -15,6 +15,9 @@ public enum TokenType
 
 	// Formatting
 	Hyphen,
+	LeftParen,
+	RightParen,
+	Comma,
 	NewLine,
 	Tab,
 	EndOfFile,
