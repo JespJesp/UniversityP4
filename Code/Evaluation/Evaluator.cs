@@ -6,7 +6,15 @@ public class Evaluator
 {
 	public void Evaluate()
 	{
-		PrintToConsole(); // TODO: Remove after debugging.
+		// TODO: Remove; it's for debugging
+		PrintToConsole();
+
+		// TODO: Remove; it's for debugging
+		AST.TheTimeline.Loops.Add(new(AST.Melodies["16_mainMelody"], 0, 48));
+		AST.TheTimeline.Loops.Add(new(AST.Melodies["16_loopingTest1of3"], 0, 64));
+		AST.TheTimeline.Loops.Add(new(AST.Melodies["16_loopingTest2of3"], 16, 64));
+		AST.TheTimeline.Loops.Add(new(AST.Melodies["16_loopingTest3of3"], 32, 64));
+
 		AudioRenderer.Render();
 	}
 
@@ -39,7 +47,7 @@ public class Evaluator
 			Console.WriteLine("Notes:");
 			foreach (Note note in melody.Notes)
 			{
-				Console.WriteLine($"  - Time: {note.StartTime:D2}-{note.EndTime:D2}, Octave: {note.Pitch.Octave}, Pitch class: {note.Pitch.PitchClass}");
+				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Octave: {note.ThePitch.Octave}, Pitch class: {note.ThePitch.PitchClass}");
 			}
 		}
 	}

@@ -28,7 +28,7 @@ internal class Program
 		}
 		catch (Exception exception)
 		{
-			Console.WriteLine($"Error interpreting file: {exception.Message}");
+			Console.WriteLine($"Error interpreting file: {exception}");
 		}
 	}
 }

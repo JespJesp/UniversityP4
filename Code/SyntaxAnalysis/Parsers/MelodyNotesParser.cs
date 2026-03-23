@@ -21,19 +21,19 @@ public static class MelodyNotesParser
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{
-				note.StartTime = int.Parse(a.CursorToken().Value);
+				note.StartBeat = float.Parse(a.CursorToken().Value);
 			});
 
 			a.ConsumeToken(TokenType.Hyphen);
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{
-				note.EndTime = int.Parse(a.CursorToken().Value);
+				note.EndBeat = float.Parse(a.CursorToken().Value);
 			});
 
 			a.ConsumeToken(TokenType.Identifier, () =>
 			{
-				note.Pitch = new Pitch(a.CursorToken().Value);
+				note.ThePitch = new Pitch(a.CursorToken().Value);
 			});
 		}
 	}

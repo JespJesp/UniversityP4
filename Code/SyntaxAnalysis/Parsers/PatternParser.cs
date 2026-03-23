@@ -13,7 +13,7 @@ public static class PatternParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			pattern.Length = int.Parse(a.CursorToken().Value);
+			pattern.Length = float.Parse(a.CursorToken().Value);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>

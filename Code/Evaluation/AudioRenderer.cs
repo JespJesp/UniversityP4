@@ -4,6 +4,8 @@ using AbstractSyntax;
 
 namespace Evaluation;
 
+// TODO: Implement support for time signature 
+
 public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
@@ -19,16 +21,24 @@ public static class AudioRenderer
 	{
 		List<ISampleProvider> sounds = new();
 
-		foreach (string melodyId in AST.TheTimeline.MelodyIds)
+		foreach (Loop loop in AST.TheTimeline.Loops)
 		{
-			Melody melody = AST.Melodies[melodyId];
+			Melody melody = loop.TheMelody;
 			foreach (string sampleId in melody.SampleIds)
 			{
 				Sample sample = AST.Samples[sampleId];
 				foreach (Note note in melody.Notes)
 				{
-					ISampleProvider sound = CreateSound(melody, sample, note);
-					sounds.Add(sound);
+					int loops = (int)Math.Floor(loop.Length / loop.TheMelody.Length);
+
+					for (int i = 0; i < loops; i++)
+					{
+						float melodyStartBeat = loop.StartBeat + i * loop.TheMelody.Length;
+						ISampleProvider sound = CreateSound(melodyStartBeat, sample, note);
+						sounds.Add(sound);
+					}
+
+					// TODO: Add playing loops not the whole way through (e.g. a loop with a length of 2 beats, but its melody has the length 4)
 				}
 			}
 		}
@@ -36,7 +46,7 @@ public static class AudioRenderer
 		return sounds;
 	}
 
-	private static ISampleProvider CreateSound(Melody melody, Sample sample, Note note)
+	private static ISampleProvider CreateSound(float melodyStartBeat, Sample sample, Note note)
 	{
 		// TODO: Don't use "Directory.GetCurrentDirectory()"
 		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
@@ -51,42 +61,37 @@ public static class AudioRenderer
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
 		{
-			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
+			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.ThePitch)
 		};
 
 		var offsetter = new OffsetSampleProvider(pitchShifter)
 		{
-			DelayBy = TimeSpan.FromSeconds(GetStartTime(note)),
-			Take = TimeSpan.FromSeconds(GetDuration(note))
+			DelayBy = TimeSpan.FromSeconds(GetNoteStartTime(melodyStartBeat, note)),
+			Take = TimeSpan.FromSeconds(GetNoteDuration(note))
 		};
 
 		return offsetter;
 	}
 
-	private static float GetStartTime(Note note)
+	private static float GetNoteStartTime(float melodyStartBeat, Note note)
 	{
-		// TODO: Not implemented
-		return 0;
+		return ConvertBeatsToSeconds(melodyStartBeat) + ConvertBeatsToSeconds(note.StartBeat);
 	}
 
-	private static float GetDuration(Note note)
+	private static float GetNoteDuration(Note note)
 	{
-		// TODO: Not implemented
-		return 0;
+		return ConvertBeatsToSeconds(note.EndBeat) - ConvertBeatsToSeconds(note.StartBeat);
+	}
+
+	private static float ConvertBeatsToSeconds(float beats)
+	{
+		return beats / AST.BeatNoteValue * 60f / AST.BeatsPerMinute;
 	}
 
 	private static float GetPitchFactor(Pitch samplePitch, Pitch notePitch)
 	{
-		float pitchFactor = 1;
-
-		// Going an octave up is the same as adding the pitch factor to the itself, so doubling it (for example, from 1.0 to 2.0)
-		int octaveDifference = notePitch.Octave - samplePitch.Octave;
-		pitchFactor *= MathF.Pow(2, octaveDifference);
-
-		// Going a pitch class up is the same as adding 1/12 of the pitch factor to the itself
-		int pitchClassDifference = notePitch.PitchClass - samplePitch.PitchClass;
-		pitchFactor *= 1 + pitchClassDifference / 12f;
-
-		return pitchFactor;
+		int halfstepDifference = (notePitch.Octave - samplePitch.Octave) * 12
+									  + (notePitch.PitchClass - samplePitch.PitchClass);
+		return MathF.Pow(2, halfstepDifference / 12f);
 	}
 }

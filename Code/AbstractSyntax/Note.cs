@@ -3,9 +3,9 @@ namespace AbstractSyntax;
 public class Note
 {
 	public Melody ParentMelody;
-	public int StartTime;
-	public int EndTime;
-	public Pitch Pitch = new("c5");
+	public float StartBeat;
+	public float EndBeat;
+	public Pitch ThePitch = new("c5"); // Default value
 
 	public Note(Melody parentMelody)
 	{

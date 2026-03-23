@@ -8,17 +8,17 @@ public static class NoteValidator
 	public static void Validate(SemanticAnalyzer analyzer, Note note)
 	{
 		// Time
-		if (note.StartTime < 0 || note.EndTime < 0)
+		if (note.StartBeat < 0 || note.EndBeat < 0)
 		{
-			analyzer.AddError($"Note times must be positive: {note.StartTime}-{note.EndTime}");
+			analyzer.AddError($"Note times must be positive: {note.StartBeat}-{note.EndBeat}");
 		}
-		if (note.StartTime >= note.EndTime)
+		if (note.StartBeat >= note.EndBeat)
 		{
-			analyzer.AddError($"Note start time must be less than end time: {note.StartTime}-{note.EndTime}");
+			analyzer.AddError($"Note start time must be less than end time: {note.StartBeat}-{note.EndBeat}");
 		}
-		if (note.EndTime > note.ParentMelody.Length)
+		if (note.EndBeat > note.ParentMelody.Length)
 		{
-			analyzer.AddError($"Note end time {note.EndTime} exceeds melody length {note.ParentMelody.Length}");
+			analyzer.AddError($"Note end time {note.EndBeat} exceeds melody length {note.ParentMelody.Length}");
 		}
 	}
 }

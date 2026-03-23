@@ -2,7 +2,7 @@ namespace AbstractSyntax;
 
 public class Pattern
 {
-	public int Length;
+	public float Length;
 	public string Id = "";
 	public List<string> PatternAndMelodyIds = new();
 }

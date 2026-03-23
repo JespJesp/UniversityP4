@@ -1,5 +1,8 @@
 namespace AbstractSyntax;
 
+/// <summary>
+/// This is just the default "Dictionary" class extended with some additional functionalities.
+/// </summary>
 public class CustomDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
 {
 	/// <summary>

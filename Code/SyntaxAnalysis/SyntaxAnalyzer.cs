@@ -25,7 +25,7 @@ public class SyntaxAnalyzer
 		}
 		catch (Exception exception)
 		{
-			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'. {exception.Message}");
+			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'. {exception}");
 		}
 	}
 

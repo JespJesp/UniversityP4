@@ -13,7 +13,7 @@ public static class MelodyParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			melody.Length = int.Parse(a.CursorToken().Value);
+			melody.Length = float.Parse(a.CursorToken().Value);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
