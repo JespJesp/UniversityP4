@@ -15,6 +15,7 @@ public enum TokenType
 
 	// Formatting
 	Hyphen,
+	ForwardSlash,
 	NewLine,
 	Tab,
 	EndOfFile,

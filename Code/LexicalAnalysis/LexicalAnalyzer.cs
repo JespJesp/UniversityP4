@@ -52,6 +52,10 @@ public class LexicalAnalyzer
 			{
 				HyphenLexer.Lex(this);
 			}
+			else if (CursorChar() == '/')
+			{
+				ForwardSlashLexer.Lex(this);
+			}
 			else if (char.IsDigit(CursorChar()))
 			{
 				NumberLexer.Lex(this);

@@ -1,0 +1,33 @@
+timeline
+	settings
+		timeSignature 2/2
+		bpm 140
+	intro start
+		8_Guitar
+	break stop 16
+		EVERYTHING
+	verse start
+		16_Piano
+
+# This is a comment #
+
+8_Guitar
+	samples
+		"guitar.wav"
+	notes
+		1-3 c5
+		2-4 d6
+
+# 
+This is a multi-line
+comment that is quite long 
+#
+
+16_Piano
+	samples
+		"piano.wav"
+	notes
+		4-8 a4
+		8-12 b5
+		9-12 c5
+

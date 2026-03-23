@@ -8,6 +8,12 @@
 			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
 		},
 		{
+			"label": "run-dotnet-timeline-test",
+			"type": "shell",
+			"command": "dotnet run ExamplePrograms/TimelineTest.mude",
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+		},
+		{
 			"label": "start-executable",
 			"type": "shell",
 			"command": "start UniversityProjectP4.exe",
