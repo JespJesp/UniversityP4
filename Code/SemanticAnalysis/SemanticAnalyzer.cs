@@ -22,7 +22,7 @@ public class SemanticAnalyzer
 
 	public void ValidateRoot()
 	{
-		SongValidator.Validate(this);
+		ASTValidator.Validate(this);
 	}
 
 	public void AddError(string message)

@@ -12,6 +12,18 @@ public class Evaluator
 
 	private void PrintToConsole() // TODO: Remove after debugging. It's just an example.
 	{
+		foreach (Pattern pattern in AST.Patterns.Values)
+		{
+			Console.WriteLine($"\n=== Pattern: {pattern.Id} ===");
+			Console.WriteLine($"Length: {pattern.Length}");
+
+			Console.WriteLine("Children:");
+			foreach (string patternAndMelodyIds in pattern.PatternAndMelodyIds)
+			{
+				Console.WriteLine($"  - {patternAndMelodyIds}");
+			}
+		}
+
 		foreach (Melody melody in AST.Melodies.Values)
 		{
 			Console.WriteLine($"\n=== Melody: {melody.Id} ===");

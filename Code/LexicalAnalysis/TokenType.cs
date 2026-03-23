@@ -7,6 +7,8 @@ public enum TokenType
 	TimelineKeyword,
 	SamplesKeyword,
 	NotesKeyword,
+	MelodyKeyword,
+	PatternKeyword,
 
 	// Values
 	Integer,

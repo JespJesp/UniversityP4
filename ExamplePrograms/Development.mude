@@ -6,13 +6,17 @@ samples
 
 % Melodies %
 
-8_flute
+pattern 16_introSection
+	8_flute
+	4_snare
+
+melody 8_flute
 	samples
 		flute
 	notes
 		2-4 g5
 
-4_snare
+melody 4_snare
 	samples
 		snare
 	notes

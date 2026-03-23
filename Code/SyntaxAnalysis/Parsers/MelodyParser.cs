@@ -9,6 +9,8 @@ public static class MelodyParser
 	{
 		Melody melody = new();
 
+		a.ConsumeToken(TokenType.MelodyKeyword);
+
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
 			melody.Length = int.Parse(a.CursorToken().Value);

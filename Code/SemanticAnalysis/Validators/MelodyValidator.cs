@@ -13,10 +13,6 @@ public static class MelodyValidator
 		}
 
 		// Samples
-		if (melody.SampleIds.Count == 0)
-		{
-			analyzer.AddError($"Melody '{melody.Id}' must have at least one sample");
-		}
 		foreach (string sampleId in melody.SampleIds)
 		{
 			if (!AST.Samples.ContainsKey(sampleId))
@@ -25,7 +21,7 @@ public static class MelodyValidator
 			}
 		}
 
-		// Misc
+		// Length
 		if (melody.Length <= 0)
 		{
 			analyzer.AddError("Melody length cannot be <= 0");

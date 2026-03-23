@@ -36,8 +36,9 @@ public class SyntaxAnalyzer
 			switch (CursorToken().Type)
 			{
 				case TokenType.TimelineKeyword: TimelineParser.Parse(this); break;
+				case TokenType.PatternKeyword: PatternParser.Parse(this); break;
+				case TokenType.MelodyKeyword: MelodyParser.Parse(this); break;
 				case TokenType.SamplesKeyword: SamplesParser.Parse(this); break;
-				case TokenType.Integer: MelodyParser.Parse(this); break;
 				case TokenType.NewLine: ConsumeToken(TokenType.NewLine); break;
 				case TokenType.EndOfFile: ConsumeToken(TokenType.EndOfFile); break;
 				default: throw new ArgumentOutOfRangeException();

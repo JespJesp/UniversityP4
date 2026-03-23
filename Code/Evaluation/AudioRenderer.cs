@@ -41,7 +41,7 @@ public static class AudioRenderer
 		// TODO: Don't use "Directory.GetCurrentDirectory()"
 		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
 
-		// Resample the sound to ensure it uses the song's sample rate
+		// Resample the sound to ensure it uses the AST's sample rate
 		var resampler = new WdlResamplingSampleProvider(reader, AST.SampleRate);
 
 		var volumeProvider = new VolumeSampleProvider(resampler)

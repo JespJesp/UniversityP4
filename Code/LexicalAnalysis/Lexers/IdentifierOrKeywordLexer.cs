@@ -16,6 +16,8 @@ public static class IdentifierOrKeywordLexer
 		TokenType tokenType = id switch
 		{
 			"timeline" => TokenType.TimelineKeyword,
+			"pattern" => TokenType.PatternKeyword,
+			"melody" => TokenType.MelodyKeyword,
 			"samples" => TokenType.SamplesKeyword,
 			"notes" => TokenType.NotesKeyword,
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
