@@ -38,7 +38,7 @@ public static class NotesParser
 
 			pattern.Notes.Add(note);
 			
-			// If more pitches follow, create additional notes with the same timing (chord)
+			// Chords
 			while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
 			{
 				Note chordNote = new(pattern)
