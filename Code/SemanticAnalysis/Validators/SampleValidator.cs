@@ -1,4 +1,4 @@
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 
@@ -10,10 +10,6 @@ public static class SampleValidator
 		if (string.IsNullOrWhiteSpace(sample.Id))
 		{
 			analyzer.AddError("Sample ID cannot be empty");
-		}
-		if (sample.ParentSong.Samples.FindAll(aSample => aSample.Id == sample.Id).Count > 1)
-		{
-			analyzer.AddError($"More than one sample is using the ID '{sample.Id}'");
 		}
 
 		// File path

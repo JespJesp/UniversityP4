@@ -1,23 +1,22 @@
 using LexicalAnalysis;
-using AST;
+using AbstractSyntax;
 
 namespace SyntaxAnalysis.Parsers;
 
 public static class SamplesParser
 {
-	public static void Parse(SyntaxAnalyzer a, Song song)
+	public static void Parse(SyntaxAnalyzer a)
 	{
 		a.ConsumeToken(TokenType.SamplesKeyword);
 
-		ParseLeaves(a, song);
+		ParseLeaves(a);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Song song)
+	private static void ParseLeaves(SyntaxAnalyzer a)
 	{
 		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(1))
 		{
-			Sample sample = new(song);
-			song.Samples.Add(sample);
+			Sample sample = new();
 
 			a.ConsumeToken(TokenType.Identifier, () =>
 			{
@@ -33,6 +32,8 @@ public static class SamplesParser
 			{
 				sample.ReferencePitch = new Pitch(a.CursorToken().Value);
 			});
+
+			AST.Samples.Add(sample.Id, sample);
 		}
 	}
 }

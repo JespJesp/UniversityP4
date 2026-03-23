@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 
@@ -16,9 +16,9 @@ public static class NoteValidator
 		{
 			analyzer.AddError($"Note start time must be less than end time: {note.StartTime}-{note.EndTime}");
 		}
-		if (note.EndTime > note.ParentPattern.Length)
+		if (note.EndTime > note.ParentMelody.Length)
 		{
-			analyzer.AddError($"Note end time {note.EndTime} exceeds pattern length {note.ParentPattern.Length}");
+			analyzer.AddError($"Note end time {note.EndTime} exceeds melody length {note.ParentMelody.Length}");
 		}
 	}
 }

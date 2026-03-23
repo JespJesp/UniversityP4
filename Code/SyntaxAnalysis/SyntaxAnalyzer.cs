@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AST;
+using AbstractSyntax;
 using SyntaxAnalysis.Parsers;
 
 namespace SyntaxAnalysis;
@@ -8,16 +8,16 @@ public class SyntaxAnalyzer
 {
 	private List<Token> _tokens = new();
 	private SyntaxAnalyzerCursor _cursor = new();
-
-	public Song OutputSong = new();
 	public Token CursorToken() => _tokens[_cursor.Position];
 
-	public Song Parse(List<Token> inputTokens)
+	/// <summary>
+	/// Updates the static AST class.
+	/// </summary>
+	public void Parse(List<Token> inputTokens)
 	{
 		// Reset variables
 		_tokens = inputTokens;
 		_cursor.MoveToStartPosition();
-		OutputSong = new Song();
 
 		try
 		{
@@ -27,8 +27,6 @@ public class SyntaxAnalyzer
 		{
 			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'. {exception.Message}");
 		}
-
-		return OutputSong;
 	}
 
 	private void ParseRoots()
@@ -38,8 +36,8 @@ public class SyntaxAnalyzer
 			switch (CursorToken().Type)
 			{
 				case TokenType.TimelineKeyword: TimelineParser.Parse(this); break;
-				case TokenType.SamplesKeyword: SamplesParser.Parse(this, OutputSong); break;
-				case TokenType.Integer: PatternParser.Parse(this, OutputSong); break;
+				case TokenType.SamplesKeyword: SamplesParser.Parse(this); break;
+				case TokenType.Integer: MelodyParser.Parse(this); break;
 				case TokenType.NewLine: ConsumeToken(TokenType.NewLine); break;
 				case TokenType.EndOfFile: ConsumeToken(TokenType.EndOfFile); break;
 				default: throw new ArgumentOutOfRangeException();

@@ -22,9 +22,9 @@ internal class Program
 		try
 		{
 			var tokens = new LexicalAnalyzer().Lex(text);
-			var song = new SyntaxAnalyzer().Parse(tokens);
-			new SemanticAnalyzer().Validate(song);
-			new Evaluator().Evaluate(song);
+			new SyntaxAnalyzer().Parse(tokens);
+			new SemanticAnalyzer().Validate();
+			new Evaluator().Evaluate();
 		}
 		catch (Exception exception)
 		{

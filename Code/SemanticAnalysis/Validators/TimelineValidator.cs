@@ -1,4 +1,4 @@
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 

@@ -1,20 +1,20 @@
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 
 public static class SongValidator
 {
-	public static void Validate(SemanticAnalyzer analyzer, Song song)
+	public static void Validate(SemanticAnalyzer analyzer)
 	{
 		// Leaf validation
-		foreach (Sample sample in song.Samples)
+		foreach (Sample sample in AST.Samples.Values)
 		{
 			SampleValidator.Validate(analyzer, sample);
 		}
-		foreach (Pattern pattern in song.Patterns)
+		foreach (Melody melody in AST.Melodies.Values)
 		{
-			PatternValidator.Validate(analyzer, pattern);
+			MelodyValidator.Validate(analyzer, melody);
 		}
-		TimelineValidator.Validate(analyzer, song.TheTimeline);
+		TimelineValidator.Validate(analyzer, AST.TheTimeline);
 	}
 }

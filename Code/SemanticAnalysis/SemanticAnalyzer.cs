@@ -1,5 +1,5 @@
 using SemanticAnalysis.Validators;
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis;
 
@@ -7,12 +7,12 @@ public class SemanticAnalyzer
 {
 	private List<string> _errors = new List<string>();
 
-	public void Validate(Song song)
+	public void Validate()
 	{
 		// Reset variables
 		_errors.Clear();
 
-		ValidateRoot(song);
+		ValidateRoot();
 
 		if (_errors.Any())
 		{
@@ -20,9 +20,9 @@ public class SemanticAnalyzer
 		}
 	}
 
-	public void ValidateRoot(Song song)
+	public void ValidateRoot()
 	{
-		SongValidator.Validate(this, song);
+		SongValidator.Validate(this);
 	}
 
 	public void AddError(string message)

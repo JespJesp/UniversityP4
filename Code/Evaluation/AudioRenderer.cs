@@ -1,6 +1,6 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using AST;
+using AbstractSyntax;
 
 namespace Evaluation;
 
@@ -8,48 +8,59 @@ public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void Render(Song song)
+	public static void Render()
 	{
-		List<ISampleProvider> sounds = new();
-
-		AddSounds(sounds, song);
-
+		List<ISampleProvider> sounds = CreateSounds();
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 	}
 
-	public static void AddSounds(List<ISampleProvider> sources, Song song)
+	public static List<ISampleProvider> CreateSounds()
 	{
-		foreach (string patternId in song.TheTimeline.PatternIds)
+		List<ISampleProvider> sounds = new();
+
+		foreach (string melodyId in AST.TheTimeline.MelodyIds)
 		{
-			Pattern pattern = song.GetPattern(patternId);
-
-			foreach (string sampleId in pattern.SampleIds)
+			Melody melody = AST.Melodies[melodyId];
+			foreach (string sampleId in melody.SampleIds)
 			{
-				Sample sample = song.GetSample(sampleId);
-
-				foreach (Note note in pattern.Notes)
+				Sample sample = AST.Samples[sampleId];
+				foreach (Note note in melody.Notes)
 				{
-					// TODO: Don't use "Directory.GetCurrentDirectory()"
-					var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
-					var resampler = new WdlResamplingSampleProvider(reader, song.SampleRate); // Resample to esnure it uses the song's sample rate
-					var volumeProvider = new VolumeSampleProvider(resampler)
-					{
-						Volume = 1 // TODO: Implement volume control
-					};
-					var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
-					{
-						PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
-					};
-					var offsetter = new OffsetSampleProvider(pitchShifter)
-					{
-						DelayBy = TimeSpan.FromSeconds(GetStartTime(note)),
-						Take = TimeSpan.FromSeconds(GetDuration(note))
-					};
-					sources.Add(offsetter);
+					ISampleProvider sound = CreateSound(melody, sample, note);
+					sounds.Add(sound);
 				}
 			}
 		}
+
+		return sounds;
+	}
+
+	private static ISampleProvider CreateSound(Melody melody, Sample sample, Note note)
+	{
+		// TODO: Don't use "Directory.GetCurrentDirectory()"
+		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
+
+		// Resample the sound to ensure it uses the song's sample rate
+		var resampler = new WdlResamplingSampleProvider(reader, AST.SampleRate);
+
+		var volumeProvider = new VolumeSampleProvider(resampler)
+		{
+			Volume = 1 // TODO: Implement volume control
+		};
+
+		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
+		{
+			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
+		};
+
+		var offsetter = new OffsetSampleProvider(pitchShifter)
+		{
+			DelayBy = TimeSpan.FromSeconds(GetStartTime(note)),
+			Take = TimeSpan.FromSeconds(GetDuration(note))
+		};
+
+		return offsetter;
 	}
 
 	private static float GetStartTime(Note note)
@@ -68,9 +79,11 @@ public static class AudioRenderer
 	{
 		float pitchFactor = 1;
 
+		// Going an octave up is the same as adding the pitch factor to the itself, so doubling it (for example, from 1.0 to 2.0)
 		int octaveDifference = notePitch.Octave - samplePitch.Octave;
 		pitchFactor *= MathF.Pow(2, octaveDifference);
 
+		// Going a pitch class up is the same as adding 1/12 of the pitch factor to the itself
 		int pitchClassDifference = notePitch.PitchClass - samplePitch.PitchClass;
 		pitchFactor *= 1 + pitchClassDifference / 12f;
 

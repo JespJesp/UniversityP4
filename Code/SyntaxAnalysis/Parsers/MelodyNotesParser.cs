@@ -1,23 +1,23 @@
 using LexicalAnalysis;
-using AST;
+using AbstractSyntax;
 
 namespace SyntaxAnalysis.Parsers;
 
-public static class PatternNotesParser
+public static class MelodyNotesParser
 {
-	public static void Parse(SyntaxAnalyzer a, Pattern pattern)
+	public static void Parse(SyntaxAnalyzer a, Melody melody)
 	{
 		a.ConsumeToken(TokenType.NotesKeyword);
 
-		ParseLeaves(a, pattern);
+		ParseLeaves(a, melody);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
+	private static void ParseLeaves(SyntaxAnalyzer a, Melody melody)
 	{
 		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(2))
 		{
-			Note note = new(pattern);
-			pattern.Notes.Add(note);
+			Note note = new(melody);
+			melody.Notes.Add(note);
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{

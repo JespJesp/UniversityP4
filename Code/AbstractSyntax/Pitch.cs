@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace AST;
+namespace AbstractSyntax;
 
 public class Pitch
 {
@@ -12,6 +12,7 @@ public class Pitch
 
 	/// <summary>
 	/// Note: This converts the input pitch string to lower case before processing it.
+	/// For example, this pitch string could be "C5" or "c#3".
 	/// </summary>
 	public Pitch(string pitch)
 	{
