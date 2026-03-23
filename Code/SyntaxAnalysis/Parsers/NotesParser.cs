@@ -42,6 +42,21 @@ public static class NotesParser
 					note.Pitch = a.CursorToken().Value;
 				});
 			}
+
+			// Chords
+			while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
+			{
+				Note chordNote = new(pattern)
+				{
+					StartTime = note.StartTime,
+					EndTime = note.EndTime,
+					Pitch = a.CursorToken().Value
+				};
+
+				pattern.Notes.Add(chordNote);
+
+				a.ConsumeToken(TokenType.Identifier);
+			}
 		}
 	}
 }
