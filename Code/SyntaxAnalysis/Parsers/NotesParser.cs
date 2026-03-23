@@ -17,7 +17,7 @@ public static class NotesParser
 		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
 		{
 			Note note = new(pattern);
-			pattern.Notes.Add(note);
+			
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{
