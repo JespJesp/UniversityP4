@@ -22,8 +22,21 @@ public static class TimelineParser
 			{
 				ParseSettings(a, timeline.Settings);
 			}
+			else if (firstIdentifier == "start" || firstIdentifier == "stop")
+			{
+				// Command without identifier
+				string commandType = firstIdentifier;
+				a.ConsumeToken(TokenType.Identifier);
+				
+				switch (commandType)
+				{
+					case "start": ParseStartCommandWithId(a, timeline, ""); break;
+					case "stop": ParseStopCommandWithId(a, timeline, ""); break;
+				}
+			}
 			else
 			{
+				// Identifier followed by command type
 				string commandId = firstIdentifier;
 				a.ConsumeToken(TokenType.Identifier);
 				
