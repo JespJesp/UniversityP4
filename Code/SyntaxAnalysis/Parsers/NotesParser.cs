@@ -17,7 +17,7 @@ public static class NotesParser
 		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
 		{
 			Note note = new(pattern);
-			pattern.Notes.Add(note);
+			
 
 			a.ConsumeToken(TokenType.Integer, () =>
 			{
@@ -35,6 +35,23 @@ public static class NotesParser
 			{
 				note.Pitch = a.CursorToken().Value;
 			});
-		}
+
+			pattern.Notes.Add(note);
+			
+			// Chords
+			while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
+			{
+				Note chordNote = new(pattern)
+				{
+					StartTime = note.StartTime,
+					EndTime = note.EndTime,
+					Pitch = a.CursorToken().Value
+				};
+
+				pattern.Notes.Add(chordNote);
+
+				a.ConsumeToken(TokenType.Identifier);
+			}
+		}	
 	}
 }
