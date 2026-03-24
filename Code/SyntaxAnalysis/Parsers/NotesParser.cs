@@ -5,19 +5,13 @@ namespace SyntaxAnalysis.Parsers;
 
 public static class NotesParser
 {
-    public static void Parse(SyntaxAnalyzer a, Pattern pattern)
-    {
-        a.ConsumeToken(TokenType.NotesKeyword);
+	public static void Parse(SyntaxAnalyzer a, Pattern pattern)
+   {
+   	a.ConsumeToken(TokenType.NotesKeyword);
 
-        ParseLeaves(a, pattern);
-    }
-
-	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
-	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
-		{
-			Note note = new(pattern);
-			
+   	ParseLeaves(a, pattern);
+   }
+	
     private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
     {
         while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
@@ -36,30 +30,12 @@ public static class NotesParser
                 note.EndTime = int.Parse(a.CursorToken().Value);
             });
 
-			a.ConsumeToken(TokenType.Identifier, () =>
-			{
-				note.Pitch = a.CursorToken().Value;
-			});
-
-			pattern.Notes.Add(note);
-			
-			// Chords
-			while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
-			{
-				Note chordNote = new(pattern)
+				a.ConsumeToken(TokenType.Identifier, () =>
 				{
-					StartTime = note.StartTime,
-					EndTime = note.EndTime,
-					Pitch = a.CursorToken().Value
-				};
+					note.Pitch = a.CursorToken().Value;
+				});
 
-				pattern.Notes.Add(chordNote);
-
-				a.ConsumeToken(TokenType.Identifier);
-			}
-		}	
-	}
-            if (a.CursorToken().Type == TokenType.Identifier && a.CursorToken().Value == "random")
+				if (a.CursorToken().Type == TokenType.Identifier && a.CursorToken().Value == "random")
             {
                 note.PitchExpression = ExpressionParser.Parse(a);
             }
@@ -71,38 +47,38 @@ public static class NotesParser
                 });
             }
 
-            if (a.CurrentToken().Type == TokenType.GainKeyword)
+            if (a.CursorToken().Type == TokenType.GainKeyword)
             {
                 a.ConsumeToken(TokenType.GainKeyword);
                 a.ConsumeToken(TokenType.Integer, () =>
                 {
-                    note.Volume = int.Parse(a.CurrentToken().Value) / 100f;
+                    note.Volume = int.Parse(a.CursorToken().Value) / 100f;
                 });
             }
 
-            if (a.CurrentToken().Type == TokenType.PanKeyword)
+            if (a.CursorToken().Type == TokenType.PanKeyword)
             {
                 a.ConsumeToken(TokenType.PanKeyword);
                 a.ConsumeToken(TokenType.Integer, () =>
                 {
-                    note.Pan = int.Parse(a.CurrentToken().Value) / 100f;
+                    note.Pan = int.Parse(a.CursorToken().Value) / 100f;
                 });
             }
+				
+				// Chords
+				while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
+				{
+					Note chordNote = new(pattern)
+					{
+						StartTime = note.StartTime,
+						EndTime = note.EndTime,
+						Pitch = a.CursorToken().Value
+					};
 
-            // Chords
-            while (!a.HasConsumedAllTokens() && a.CursorToken().Type == TokenType.Identifier)
-            {
-                Note chordNote = new(pattern)
-                {
-                    StartTime = note.StartTime,
-                    EndTime = note.EndTime,
-                    Pitch = a.CursorToken().Value
-                };
+					pattern.Notes.Add(chordNote);
 
-                pattern.Notes.Add(chordNote);
-
-                a.ConsumeToken(TokenType.Identifier);
-            }
-        }
-    }
-}
+					a.ConsumeToken(TokenType.Identifier);
+				}
+			}	
+		}
+	}
