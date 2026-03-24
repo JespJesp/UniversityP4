@@ -18,6 +18,8 @@ public static class IdentifierOrKeywordLexer
 			"timeline" => TokenType.TimelineKeyword,
 			"samples" => TokenType.SamplesKeyword,
 			"notes" => TokenType.NotesKeyword,
+			"gain"     => TokenType.GainKeyword,
+			"pan" => TokenType.PanKeyword,
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 

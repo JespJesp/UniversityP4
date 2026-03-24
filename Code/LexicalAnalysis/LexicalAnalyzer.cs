@@ -52,6 +52,21 @@ public class LexicalAnalyzer
 			{
 				HyphenLexer.Lex(this);
 			}
+			else if (CursorChar() == '(')
+			{
+				Tokens.Add(new Token(TokenType.LeftParen, "(", Cursor.Line, Cursor.Column));
+				Cursor.MoveToNextColumn();
+			}
+			else if (CursorChar() == ')')
+			{
+				Tokens.Add(new Token(TokenType.RightParen, ")", Cursor.Line, Cursor.Column));
+				Cursor.MoveToNextColumn();
+			}
+			else if (CursorChar() == ',')
+			{
+				Tokens.Add(new Token(TokenType.Comma, ",", Cursor.Line, Cursor.Column));
+				Cursor.MoveToNextColumn();
+			}
 			else if (char.IsDigit(CursorChar()))
 			{
 				NumberLexer.Lex(this);
