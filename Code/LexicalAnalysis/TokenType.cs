@@ -20,6 +20,7 @@ public enum TokenType
 	Hyphen,
 	LeftParen,
 	RightParen,
+	ForwardSlash,
 	Comma,
 	NewLine,
 	Tab,

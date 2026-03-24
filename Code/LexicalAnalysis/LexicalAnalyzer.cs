@@ -52,6 +52,10 @@ public class LexicalAnalyzer
 			{
 				HyphenLexer.Lex(this);
 			}
+			else if (CursorChar() == '/')
+			{
+				stingLexer.Lex(this);
+			}
 			else if (CursorChar() == '(')
 			{
 				Tokens.Add(new Token(TokenType.LeftParen, "(", Cursor.Line, Cursor.Column));

@@ -4,7 +4,7 @@ timeline
 		bpm 140
 	intro start
 		8_Guitar
-	break stop 16
+	stop 16
 		EVERYTHING
 	verse start
 		16_Piano
