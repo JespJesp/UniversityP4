@@ -13,15 +13,15 @@ public static class PatternParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			pattern.Length = float.Parse(a.CursorToken().Value);
+			pattern.LengthInBeats = float.Parse(a.CursorToken().Value);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
 		{
-			pattern.Id = pattern.Length + a.CursorToken().Value;
+			pattern.Id = pattern.LengthInBeats + a.CursorToken().Value;
 		});
 
-		AST.Patterns.Add(pattern.Id, pattern);
+		RuntimeEnvironment.Patterns.Add(pattern.Id, pattern);
 
 		ParseLeaves(a, pattern);
 	}

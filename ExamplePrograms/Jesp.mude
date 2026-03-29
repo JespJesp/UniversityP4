@@ -1,7 +1,8 @@
 % References %
 
 samples
-	flute "/ExampleSamples/Instruments/electric guitar E4.wav" e4
+	guitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
+	flute "/ExampleSamples/Instruments/flute E.wav" e5
 	snare "/ExampleSamples/Drums/snap.wav"
 	kick "/ExampleSamples/Drums/kick A#.wav"
 	closed_hihat "/ExampleSamples/Drums/closed hihat.wav"
@@ -13,14 +14,21 @@ pattern 16_introSection
 
 melody 16_mainMelody
 	samples
+		guitar
+	notes
+		0-2 eb3
+		6-7 eb3
+		7-8 f3
+		8-10 gb3
+		11-13 gb3
+		13-15 f3
+
+melody 32_longNotes
+	samples
 		flute
 	notes
-		0-2 eb4
-		6-7 eb4
-		7-8 f4
-		8-10 gb4
-		11-13 gb4
-		13-15 f4
+		0-16 eb4
+		16-32 gb4
 
 % Loop timing testing %
 

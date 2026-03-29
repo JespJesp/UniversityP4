@@ -33,7 +33,7 @@ public static class SamplesParser
 				sample.ReferencePitch = new Pitch(a.CursorToken().Value);
 			});
 
-			AST.Samples.Add(sample.Id, sample);
+			RuntimeEnvironment.Samples.Add(sample.Id, sample);
 		}
 	}
 }

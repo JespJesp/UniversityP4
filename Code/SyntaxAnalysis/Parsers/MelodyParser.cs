@@ -13,15 +13,15 @@ public static class MelodyParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			melody.Length = float.Parse(a.CursorToken().Value);
+			melody.LengthInBeats = float.Parse(a.CursorToken().Value);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
 		{
-			melody.Id = melody.Length + a.CursorToken().Value;
+			melody.Id = melody.LengthInBeats + a.CursorToken().Value;
 		});
 
-		AST.Melodies.Add(melody.Id, melody);
+		RuntimeEnvironment.Melodies.Add(melody.Id, melody);
 
 		ParseLeaves(a, melody);
 	}

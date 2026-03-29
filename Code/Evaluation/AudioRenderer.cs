@@ -21,24 +21,47 @@ public static class AudioRenderer
 	{
 		List<ISampleProvider> sounds = new();
 
-		foreach (Loop loop in AST.TheTimeline.Loops)
+		foreach (Loop loop in RuntimeEnvironment.TheTimeline.Loops)
 		{
 			Melody melody = loop.TheMelody;
 			foreach (string sampleId in melody.SampleIds)
 			{
-				Sample sample = AST.Samples[sampleId];
+				Sample sample = RuntimeEnvironment.Samples[sampleId];
 				foreach (Note note in melody.Notes)
 				{
-					int loops = (int)Math.Floor(loop.Length / loop.TheMelody.Length);
+					float loops = loop.LengthInBeats / loop.TheMelody.LengthInBeats;
 
-					for (int i = 0; i < loops; i++)
+					int wholeLoops = (int)Math.Floor(loops);
+					for (int i = 0; i < wholeLoops; i++)
 					{
-						float melodyStartBeat = loop.StartBeat + i * loop.TheMelody.Length;
-						ISampleProvider sound = CreateSound(melodyStartBeat, sample, note);
+						float melodyStartBeat = loop.StartBeat + i * loop.TheMelody.LengthInBeats;
+
+						float startTime = ConvertBeatsToSeconds(melodyStartBeat + note.StartBeat);
+
+						float durationTime = ConvertBeatsToSeconds(note.EndBeat - note.StartBeat);
+
+						ISampleProvider sound = CreateSound(sample, note, startTime, durationTime);
 						sounds.Add(sound);
 					}
 
-					// TODO: Add playing loops not the whole way through (e.g. a loop with a length of 2 beats, but its melody has the length 4)
+					float loopsRemainder = loops - wholeLoops;
+					if (loopsRemainder != 0)
+					{
+						float melodyStartBeat = loop.StartBeat + wholeLoops * loop.TheMelody.LengthInBeats;
+						if (melodyStartBeat + note.StartBeat >= loop.LengthInBeats)
+						{
+							continue; // Skip "dead" notes that are played afte the loop has ended
+						}
+
+						float startTime = ConvertBeatsToSeconds(melodyStartBeat + note.StartBeat);
+
+						float durationTimeMax = ConvertBeatsToSeconds(loop.LengthInBeats - wholeLoops * loop.TheMelody.LengthInBeats - note.StartBeat);
+						float unclampedDurationTime = ConvertBeatsToSeconds(note.EndBeat - note.StartBeat);
+						float durationTime = Math.Clamp(unclampedDurationTime, 0, durationTimeMax);
+
+						ISampleProvider sound = CreateSound(sample, note, startTime, durationTime);
+						sounds.Add(sound);
+					}
 				}
 			}
 		}
@@ -46,13 +69,13 @@ public static class AudioRenderer
 		return sounds;
 	}
 
-	private static ISampleProvider CreateSound(float melodyStartBeat, Sample sample, Note note)
+	private static ISampleProvider CreateSound(Sample sample, Note note, float startTimeSeconds, float durationTimeSeconds)
 	{
 		// TODO: Don't use "Directory.GetCurrentDirectory()"
 		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
 
 		// Resample the sound to ensure it uses the AST's sample rate
-		var resampler = new WdlResamplingSampleProvider(reader, AST.SampleRate);
+		var resampler = new WdlResamplingSampleProvider(reader, RuntimeEnvironment.SampleRate);
 
 		var volumeProvider = new VolumeSampleProvider(resampler)
 		{
@@ -66,26 +89,16 @@ public static class AudioRenderer
 
 		var offsetter = new OffsetSampleProvider(pitchShifter)
 		{
-			DelayBy = TimeSpan.FromSeconds(GetNoteStartTime(melodyStartBeat, note)),
-			Take = TimeSpan.FromSeconds(GetNoteDuration(note))
+			DelayBy = TimeSpan.FromSeconds(startTimeSeconds),
+			Take = TimeSpan.FromSeconds(durationTimeSeconds)
 		};
 
 		return offsetter;
 	}
 
-	private static float GetNoteStartTime(float melodyStartBeat, Note note)
-	{
-		return ConvertBeatsToSeconds(melodyStartBeat) + ConvertBeatsToSeconds(note.StartBeat);
-	}
-
-	private static float GetNoteDuration(Note note)
-	{
-		return ConvertBeatsToSeconds(note.EndBeat) - ConvertBeatsToSeconds(note.StartBeat);
-	}
-
 	private static float ConvertBeatsToSeconds(float beats)
 	{
-		return beats / AST.BeatNoteValue * 60f / AST.BeatsPerMinute;
+		return beats / RuntimeEnvironment.BeatNoteValue * 60f / RuntimeEnvironment.BeatsPerMinute;
 	}
 
 	private static float GetPitchFactor(Pitch samplePitch, Pitch notePitch)

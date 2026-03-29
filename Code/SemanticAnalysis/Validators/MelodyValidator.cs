@@ -15,14 +15,14 @@ public static class MelodyValidator
 		// Samples
 		foreach (string sampleId in melody.SampleIds)
 		{
-			if (!AST.Samples.ContainsKey(sampleId))
+			if (!RuntimeEnvironment.Samples.ContainsKey(sampleId))
 			{
 				analyzer.AddError($"The sample '{sampleId}' reference in melody '{melody.Id}' is undefined.");
 			}
 		}
 
 		// Length
-		if (melody.Length <= 0)
+		if (melody.LengthInBeats <= 0)
 		{
 			analyzer.AddError("Melody length cannot be <= 0");
 		}

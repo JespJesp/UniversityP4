@@ -16,9 +16,9 @@ public static class NoteValidator
 		{
 			analyzer.AddError($"Note start time must be less than end time: {note.StartBeat}-{note.EndBeat}");
 		}
-		if (note.EndBeat > note.ParentMelody.Length)
+		if (note.EndBeat > note.ParentMelody.LengthInBeats)
 		{
-			analyzer.AddError($"Note end time {note.EndBeat} exceeds melody length {note.ParentMelody.Length}");
+			analyzer.AddError($"Note end time {note.EndBeat} exceeds melody length {note.ParentMelody.LengthInBeats}");
 		}
 	}
 }

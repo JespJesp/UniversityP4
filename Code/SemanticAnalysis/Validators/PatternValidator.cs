@@ -15,14 +15,14 @@ public static class PatternValidator
 		// Children
 		foreach (string patternOrMelodyId in pattern.PatternAndMelodyIds)
 		{
-			if (!AST.Patterns.ContainsKey(patternOrMelodyId) && !AST.Melodies.ContainsKey(patternOrMelodyId))
+			if (!RuntimeEnvironment.Patterns.ContainsKey(patternOrMelodyId) && !RuntimeEnvironment.Melodies.ContainsKey(patternOrMelodyId))
 			{
 				analyzer.AddError($"The reference '{patternOrMelodyId}' in pattern '{pattern.Id}' is undefined.");
 			}
 		}
 
 		// Length
-		if (pattern.Length <= 0)
+		if (pattern.LengthInBeats <= 0)
 		{
 			analyzer.AddError("Pattern length cannot be <= 0");
 		}
