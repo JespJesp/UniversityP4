@@ -36,11 +36,11 @@ public static class AudioRenderer
 					{
 						float melodyStartBeat = loop.StartBeat + i * loop.TheMelody.LengthInBeats;
 
-						float startTime = ConvertBeatsToSeconds(melodyStartBeat + note.StartBeat);
+						float globalStartBeat = melodyStartBeat + note.StartBeat;
 
-						float durationTime = ConvertBeatsToSeconds(note.EndBeat - note.StartBeat);
+						float durationInBeats = note.EndBeat - note.StartBeat;
 
-						ISampleProvider sound = CreateSound(sample, note, startTime, durationTime);
+						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats);
 						sounds.Add(sound);
 					}
 
@@ -53,13 +53,13 @@ public static class AudioRenderer
 							continue; // Skip "dead" notes that are played afte the loop has ended
 						}
 
-						float startTime = ConvertBeatsToSeconds(melodyStartBeat + note.StartBeat);
+						float globalStartBeat = melodyStartBeat + note.StartBeat;
 
-						float durationTimeMax = ConvertBeatsToSeconds(loop.LengthInBeats - wholeLoops * loop.TheMelody.LengthInBeats - note.StartBeat);
-						float unclampedDurationTime = ConvertBeatsToSeconds(note.EndBeat - note.StartBeat);
-						float durationTime = Math.Clamp(unclampedDurationTime, 0, durationTimeMax);
+						float durationInBeatsMax = loop.LengthInBeats - wholeLoops * loop.TheMelody.LengthInBeats - note.StartBeat;
+						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
+						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
-						ISampleProvider sound = CreateSound(sample, note, startTime, durationTime);
+						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats);
 						sounds.Add(sound);
 					}
 				}
@@ -69,7 +69,7 @@ public static class AudioRenderer
 		return sounds;
 	}
 
-	private static ISampleProvider CreateSound(Sample sample, Note note, float startTimeSeconds, float durationTimeSeconds)
+	private static ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats)
 	{
 		// TODO: Don't use "Directory.GetCurrentDirectory()"
 		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
@@ -89,8 +89,8 @@ public static class AudioRenderer
 
 		var offsetter = new OffsetSampleProvider(pitchShifter)
 		{
-			DelayBy = TimeSpan.FromSeconds(startTimeSeconds),
-			Take = TimeSpan.FromSeconds(durationTimeSeconds)
+			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(globalStartBeat)),
+			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(durationInBeats))
 		};
 
 		return offsetter;

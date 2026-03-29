@@ -13,6 +13,4 @@ public class Loop
 		StartBeat = startBeat;
 		EndBeat = endBeat;
 	}
-
-
 }
