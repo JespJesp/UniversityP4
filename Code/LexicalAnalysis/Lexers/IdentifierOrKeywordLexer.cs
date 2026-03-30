@@ -20,6 +20,8 @@ public static class IdentifierOrKeywordLexer
 			"melody" => TokenType.MelodyKeyword,
 			"samples" => TokenType.SamplesKeyword,
 			"notes" => TokenType.NotesKeyword,
+			"gain"     => TokenType.GainKeyword,
+			"pan" => TokenType.PanKeyword,
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 

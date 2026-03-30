@@ -9,6 +9,8 @@ public enum TokenType
 	NotesKeyword,
 	MelodyKeyword,
 	PatternKeyword,
+	GainKeyword,
+	PanKeyword,
 
 	// Values
 	Integer,
@@ -17,6 +19,9 @@ public enum TokenType
 
 	// Formatting
 	Hyphen,
+	LeftParen,
+	RightParen,
+	Comma,
 	NewLine,
 	Tab,
 	EndOfFile,
