@@ -18,9 +18,8 @@ public enum TokenType
 	String,
 
 	// Formatting
-	Hyphen,
-	LeftParen,
-	RightParen,
+	LeftParentheses,
+	RightParentheses,
 	Comma,
 	NewLine,
 	Tab,

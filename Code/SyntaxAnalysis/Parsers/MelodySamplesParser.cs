@@ -9,12 +9,12 @@ public static class MelodySamplesParser
 	{
 		a.ConsumeToken(TokenType.SamplesKeyword);
 
-		ParseLeaves(a, melody);
+		ParseBranches(a, melody);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Melody melody)
+	private static void ParseBranches(SyntaxAnalyzer a, Melody melody)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(2))
+		while (a.TryConsumeIndents(2))
 		{
 			a.ConsumeToken(TokenType.Identifier, () =>
 			{

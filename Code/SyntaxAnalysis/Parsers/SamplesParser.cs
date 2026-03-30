@@ -9,12 +9,12 @@ public static class SamplesParser
 	{
 		a.ConsumeToken(TokenType.SamplesKeyword);
 
-		ParseLeaves(a);
+		ParseBranches(a);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a)
+	private static void ParseBranches(SyntaxAnalyzer a)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(1))
+		while (a.TryConsumeIndents(1))
 		{
 			Sample sample = new();
 

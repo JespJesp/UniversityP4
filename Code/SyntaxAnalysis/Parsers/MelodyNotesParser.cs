@@ -1,5 +1,6 @@
 using LexicalAnalysis;
 using AbstractSyntax;
+using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
 
@@ -9,32 +10,43 @@ public static class MelodyNotesParser
 	{
 		a.ConsumeToken(TokenType.NotesKeyword);
 
-		ParseLeaves(a, melody);
+		ParseChords(a, melody);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Melody melody)
+	private static void ParseChords(SyntaxAnalyzer a, Melody melody)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(2))
+		while (a.TryConsumeIndents(2))
 		{
-			Note note = new(melody);
-			melody.Notes.Add(note);
+			float startBeat = default;
+			float endBeat = default;
 
-			a.ConsumeToken(TokenType.Integer, () =>
+			a.ConsumeToken(TokenType.Float, () =>
 			{
-				note.StartBeat = float.Parse(a.CursorToken().Value);
+				startBeat = float.Parse(a.CursorToken().Value, CultureInfo.InvariantCulture);
+			});
+			a.ConsumeToken(TokenType.Float, () =>
+			{
+				endBeat = float.Parse(a.CursorToken().Value, CultureInfo.InvariantCulture);
 			});
 
-			a.ConsumeToken(TokenType.Hyphen);
-
-			a.ConsumeToken(TokenType.Integer, () =>
+			while (a.CursorToken().Type == TokenType.Identifier)
 			{
-				note.EndBeat = float.Parse(a.CursorToken().Value);
-			});
+				Note chordNote = new(melody)
+				{
+					StartBeat = startBeat,
+					EndBeat = endBeat,
+				};
 
-			a.ConsumeToken(TokenType.Identifier, () =>
-			{
-				note.ThePitch = new Pitch(a.CursorToken().Value);
-			});
+				a.ConsumeToken(TokenType.Identifier, () =>
+				{
+					chordNote.ThePitch = new Pitch(a.CursorToken().Value);
+				});
+
+
+				NoteModifiersParser.TryParse(a, chordNote);
+
+				melody.Notes.Add(chordNote);
+			}
 		}
 	}
 }

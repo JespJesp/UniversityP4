@@ -10,11 +10,15 @@ public class Evaluator
 		PrintToConsole();
 
 		// TODO: Remove; it's for debugging, because the Timeline hasn't been implemented yet
-		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_mainMelody"], 0, 10));
-		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["32_longNotes"], 0, 18));
-		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest1of3"], 0, 64));
-		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest2of3"], 16, 64));
-		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest3of3"], 32, 64));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_mainMelody"], 0, 10));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["32_longNotes"], 0, 18));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest1of3"], 0, 64));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest2of3"], 16, 64));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest3of3"], 32, 64));
+
+		// TODO: Remove; it's for debugging, because the Timeline hasn't been implemented yet
+		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["8_guitar"], 0, 8));
+		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_flute"], 12, 64));
 
 		AudioRenderer.Render();
 	}

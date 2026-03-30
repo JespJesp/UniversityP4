@@ -1,5 +1,6 @@
 using LexicalAnalysis;
 using AbstractSyntax;
+using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
 
@@ -13,7 +14,7 @@ public static class MelodyParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			melody.LengthInBeats = float.Parse(a.CursorToken().Value);
+			melody.LengthInBeats = float.Parse(a.CursorToken().Value, CultureInfo.InvariantCulture);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
@@ -23,12 +24,12 @@ public static class MelodyParser
 
 		RuntimeEnvironment.Melodies.Add(melody.Id, melody);
 
-		ParseLeaves(a, melody);
+		ParseBranches(a, melody);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Melody melody)
+	private static void ParseBranches(SyntaxAnalyzer a, Melody melody)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(1))
+		while (a.TryConsumeIndents(1))
 		{
 			switch (a.CursorToken().Type)
 			{

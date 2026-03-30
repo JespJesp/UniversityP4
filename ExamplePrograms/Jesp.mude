@@ -16,19 +16,19 @@ melody 16_mainMelody
 	samples
 		guitar
 	notes
-		0-2 eb3
-		6-7 eb3
-		7-8 f3
-		8-10 gb3
-		11-13 gb3
-		13-15 f3
+		0 2 eb3
+		6 7 eb3
+		7 8 f3
+		8 10 gb3
+		11 13 gb3
+		13 15 f3
 
 melody 32_longNotes
 	samples
 		flute
 	notes
-		0-16 eb4
-		16-32 gb4
+		0 16 eb4
+		16 32 gb4
 
 % Loop timing testing %
 
@@ -36,22 +36,22 @@ melody 16_loopingTest1of3
 	samples
 		snare
 	notes
-		0-4 c5
-		4-8 c5
-		8-12 c5
-		12-16 c5
+		0 4 c5
+		4 8 c5
+		8 12 c5
+		12 16 c5
 
 melody 16_loopingTest2of3
 	samples
 		snare
 	notes
-		0-4 c5
-		8-12 c5
+		0 4 c5
+		8 12 c5
 
 melody 16_loopingTest3of3
 	samples
 		snare
 	notes
-		0-4 c5
-		4-8 c5
+		0 4 c5
+		4 8 c5
 

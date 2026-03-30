@@ -4,14 +4,25 @@ public static class CommentLexer
 {
 	public static void Lex(LexicalAnalyzer a)
 	{
+		int startLine = a.Cursor.Line;
+		int startColumn = a.Cursor.Column;
+
 		a.Cursor.MoveToNextColumn(); // Skip opening percentage
 		while (a.CursorChar() != '%')
 		{
-			a.Cursor.MoveToNextColumn();
+			if (a.CursorChar() == '\n')
+			{
+				a.Cursor.MoveoToNewLine();
+			}
+			else
+			{
+				a.Cursor.MoveToNextColumn();
+			}
+
 			if (!a.IsNotEndOfFile())
 			{
-				throw new Exception(
-					$"String is missing closing quote '\"' at Line:{a.Cursor.Line} Column:{a.Cursor.Column}");
+				a.AddError(new LexicalError(startLine, startColumn, "Comment is missing closing percentage '%'"));
+				return;
 			}
 		}
 		a.Cursor.MoveToNextColumn(); // Skip closing percentage

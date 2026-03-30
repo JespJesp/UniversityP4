@@ -21,13 +21,13 @@ public static class NoteValidator
 			analyzer.AddError($"Note end time {note.EndBeat} exceeds melody length {note.ParentMelody.LengthInBeats}");
 		}
 
-		if (note.Volume < 0.0f || note.Volume > 1.0f)
+		if (note.Volume < 0.0f)
 		{
-			analyzer.AddError($"Note volume must be between 0.0 and 1.0, but was: {note.Volume}");
+			analyzer.AddError($"Note volume cannot be negative, but was: {note.Volume}");
 		}
 		if (note.Pan < -1.0f || note.Pan > 1.0f)
 		{
-			analyzer.AddError($"Note pan must be between -100 and 100, but was: {(int)(note.Pan * 100)}");
+			analyzer.AddError($"Note pan must be between -1 and 1, but was: {note.Pan}");
 		}
 	}
 }

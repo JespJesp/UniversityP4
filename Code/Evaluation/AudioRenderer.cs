@@ -74,13 +74,15 @@ public static class AudioRenderer
 		// TODO: Don't use "Directory.GetCurrentDirectory()"
 		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
 
-		// Resample the sound to ensure it uses the AST's sample rate
+		// Resample the sound to ensure it uses the output's sample rate
 		var resampler = new WdlResamplingSampleProvider(reader, RuntimeEnvironment.SampleRate);
 
 		var volumeProvider = new VolumeSampleProvider(resampler)
 		{
-			Volume = 1 // TODO: Implement volume control
+			Volume = note.Volume
 		};
+
+		// TODO: Implement panning
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
 		{
@@ -90,7 +92,7 @@ public static class AudioRenderer
 		var offsetter = new OffsetSampleProvider(pitchShifter)
 		{
 			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(globalStartBeat)),
-			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(durationInBeats))
+			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(durationInBeats)) // duration of sample
 		};
 
 		return offsetter;

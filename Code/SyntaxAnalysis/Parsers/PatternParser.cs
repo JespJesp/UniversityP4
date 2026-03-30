@@ -1,5 +1,6 @@
 using LexicalAnalysis;
 using AbstractSyntax;
+using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
 
@@ -13,7 +14,7 @@ public static class PatternParser
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			pattern.LengthInBeats = float.Parse(a.CursorToken().Value);
+			pattern.LengthInBeats = float.Parse(a.CursorToken().Value, CultureInfo.InvariantCulture);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
@@ -23,12 +24,12 @@ public static class PatternParser
 
 		RuntimeEnvironment.Patterns.Add(pattern.Id, pattern);
 
-		ParseLeaves(a, pattern);
+		ParseBranches(a, pattern);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
+	private static void ParseBranches(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeIndents(1))
+		while (a.TryConsumeIndents(1))
 		{
 			string length = "";
 

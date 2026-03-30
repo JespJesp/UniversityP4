@@ -5,6 +5,7 @@ public static class StringLexer
 	public static void Lex(LexicalAnalyzer a)
 	{
 		string str = "";
+		int startLine = a.Cursor.Line;
 		int startColumn = a.Cursor.Column;
 		a.Cursor.MoveToNextColumn(); // Skip opening quote
 
@@ -15,10 +16,10 @@ public static class StringLexer
 			str += a.CursorChar();
 			a.Cursor.MoveToNextColumn();
 
-			if (!a.IsNotEndOfFile())
+			if (!a.IsNotEndOfFile() || a.CursorChar() == '\n')
 			{
-				throw new Exception(
-					$"String is missing closing quote '\"' at Line:{a.Cursor.Line} Column:{a.Cursor.Column}");
+				a.AddError(new LexicalError(startLine, startColumn, "String is missing closing quote '\"'"));
+				return;
 			}
 		}
 

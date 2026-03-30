@@ -8,6 +8,12 @@ public static class NumberLexer
 		int startColumn = a.Cursor.Column;
 		bool hasDecimalSymbol = false;
 
+		if (a.CursorChar() == '-')
+		{
+			value += a.CursorChar();
+			a.Cursor.MoveToNextColumn();
+		}
+
 		// Chain characters together
 		while (a.IsNotEndOfFile() && (char.IsDigit(a.CursorChar()) || a.CursorChar() == '.'))
 		{
@@ -15,7 +21,8 @@ public static class NumberLexer
 			{
 				if (hasDecimalSymbol)
 				{
-					throw new Exception($"Encountered multiple decimal symbols '.' while tokenizing float at Line: {a.Cursor.Line}, Column: {a.Cursor.Column}");
+					a.AddError(new LexicalError(a.Cursor.Line, a.Cursor.Column, "Encountered multiple decimal symbols '.'"));
+					return;
 				}
 				hasDecimalSymbol = true;
 			}
