@@ -4,8 +4,6 @@ using AbstractSyntax;
 
 namespace Evaluation;
 
-// TODO: Implement support for time signature 
-
 public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
