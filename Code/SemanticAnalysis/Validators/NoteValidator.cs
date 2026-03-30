@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 
@@ -7,34 +7,27 @@ public static class NoteValidator
 {
 	public static void Validate(SemanticAnalyzer analyzer, Note note)
 	{
-		if (note.StartTime < 0 || note.EndTime < 0)
+		// Time
+		if (note.StartBeat < 0 || note.EndBeat < 0)
 		{
-			analyzer.AddError($"Note times must be positive: {note.StartTime}-{note.EndTime}");
+			analyzer.AddError($"Note times must be positive: {note.StartBeat}-{note.EndBeat}");
 		}
-		if (note.StartTime >= note.EndTime)
+		if (note.StartBeat >= note.EndBeat)
 		{
-			analyzer.AddError($"Note start time must be less than end time: {note.StartTime}-{note.EndTime}");
+			analyzer.AddError($"Note start time must be less than end time: {note.StartBeat}-{note.EndBeat}");
 		}
-		if (note.EndTime > note.ParentPattern.Length)
+		if (note.EndBeat > note.ParentMelody.LengthInBeats)
 		{
-			analyzer.AddError($"Note end time {note.EndTime} exceeds pattern length {note.ParentPattern.Length}");
+			analyzer.AddError($"Note end time {note.EndBeat} exceeds melody length {note.ParentMelody.LengthInBeats}");
 		}
-		if (note.PitchExpression != null)
+
+		if (note.Volume < 0.0f)
 		{
-			ExpressionValidator.Validate(analyzer, note.PitchExpression);
+			analyzer.AddError($"Note volume cannot be negative, but was: {note.Volume}");
 		}
-		else if (!Regex.IsMatch(note.Pitch, @"^[a-g][0-9]$"))
-		{
-			analyzer.AddError($"Invalid note pitch format: {note.Pitch}. Expected format like 'c5'");
-		}
-	
-		if (note.Volume < 0.0f || note.Volume > 1.0f)
-      {
-         analyzer.AddError($"Note volume must be between 0.0 and 1.0, but was: {note.Volume}");
-      }
 		if (note.Pan < -1.0f || note.Pan > 1.0f)
 		{
-    		analyzer.AddError($"Note pan must be between -100 and 100, but was: {(int)(note.Pan * 100)}");
+			analyzer.AddError($"Note pan must be between -1 and 1, but was: {note.Pan}");
 		}
 	}
 }

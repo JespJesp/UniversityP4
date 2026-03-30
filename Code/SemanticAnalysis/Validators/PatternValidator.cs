@@ -1,4 +1,4 @@
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 
@@ -6,27 +6,25 @@ public static class PatternValidator
 {
 	public static void Validate(SemanticAnalyzer analyzer, Pattern pattern)
 	{
-		if (pattern.Length <= 0)
+		// ID
+		if (string.IsNullOrWhiteSpace(pattern.Id))
 		{
-			analyzer.AddError("Pattern length cannot be <= 0");
-		}
-		if (string.IsNullOrWhiteSpace(pattern.Name))
-		{
-			analyzer.AddError("Pattern name cannot be empty");
-		}
-		if (pattern.Samples.Count == 0)
-		{
-			analyzer.AddError("Pattern must have at least one sample");
+			analyzer.AddError("Pattern ID cannot be empty");
 		}
 
-		// Leaf validation
-		foreach (Sample sample in pattern.Samples)
+		// Children
+		foreach (string patternOrMelodyId in pattern.PatternAndMelodyIds)
 		{
-			SampleValidator.Validate(analyzer, sample);
+			if (!RuntimeEnvironment.Patterns.ContainsKey(patternOrMelodyId) && !RuntimeEnvironment.Melodies.ContainsKey(patternOrMelodyId))
+			{
+				analyzer.AddError($"The reference '{patternOrMelodyId}' in pattern '{pattern.Id}' is undefined.");
+			}
 		}
-		foreach (Note note in pattern.Notes)
+
+		// Length
+		if (pattern.LengthInBeats <= 0)
 		{
-			NoteValidator.Validate(analyzer, note);
+			analyzer.AddError("Pattern length cannot be <= 0");
 		}
 	}
 }

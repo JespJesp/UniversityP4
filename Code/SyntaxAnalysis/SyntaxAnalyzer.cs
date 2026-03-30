@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AST;
+using AbstractSyntax;
 using SyntaxAnalysis.Parsers;
 
 namespace SyntaxAnalysis;
@@ -8,27 +8,25 @@ public class SyntaxAnalyzer
 {
 	private List<Token> _tokens = new();
 	private SyntaxAnalyzerCursor _cursor = new();
-
-	public Song OutputSong = new();
 	public Token CursorToken() => _tokens[_cursor.Position];
 
-	public Song Parse(List<Token> inputTokens)
+	/// <summary>
+	/// Updates the static AST class.
+	/// </summary>
+	public void Parse(List<Token> inputTokens)
 	{
 		// Reset variables
 		_tokens = inputTokens;
 		_cursor.MoveToStartPosition();
-		OutputSong = new Song();
 
 		try
 		{
 			ParseRoots();
 		}
-		catch
+		catch (Exception exception)
 		{
-			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'.");
+			throw new Exception($"Syntax error:\n- Unexpected token: '{CursorToken().ToString()}'. {exception}");
 		}
-
-		return OutputSong;
 	}
 
 	private void ParseRoots()
@@ -38,10 +36,12 @@ public class SyntaxAnalyzer
 			switch (CursorToken().Type)
 			{
 				case TokenType.TimelineKeyword: TimelineParser.Parse(this); break;
-				case TokenType.Integer: PatternParser.Parse(this); break;
+				case TokenType.PatternKeyword: PatternParser.Parse(this); break;
+				case TokenType.MelodyKeyword: MelodyParser.Parse(this); break;
+				case TokenType.SamplesKeyword: SamplesParser.Parse(this); break;
 				case TokenType.NewLine: ConsumeToken(TokenType.NewLine); break;
 				case TokenType.EndOfFile: ConsumeToken(TokenType.EndOfFile); break;
-				default: throw new Exception();
+				default: throw new ArgumentOutOfRangeException();
 			}
 		}
 	}
@@ -49,14 +49,29 @@ public class SyntaxAnalyzer
 	public bool HasConsumedAllTokens() => _cursor.Position >= _tokens.Count;
 
 	/// <summary>
+	/// Useful for allowing type conversion, for example letting an integer be used as a float.
+	/// </summary>
+	public bool IsCompatibleTokenType(TokenType candidate, TokenType target)
+	{
+		if (target == TokenType.Float && candidate == TokenType.Integer)
+		{
+			return true;
+		}
+		else
+		{
+			return candidate == target;
+		}
+	}
+
+	/// <summary>
 	/// Moves cursor to next token, if current token is a specific type (and throws an exception if it is not). 
 	/// Can optionally perform an action before moving the cursor.
 	/// </summary>
 	public void ConsumeToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
 	{
-		if (CursorToken().Type != requiredTokenType)
+		if (!IsCompatibleTokenType(CursorToken().Type, requiredTokenType))
 		{
-			throw new Exception();
+			throw new Exception($"Expected token of type '{requiredTokenType}'");
 		}
 
 		if (actionBeforeAdvancingCursor != null)
@@ -68,11 +83,74 @@ public class SyntaxAnalyzer
 	}
 
 	/// <summary>
+	/// If all tokens have been consumed, return false.
+	/// If the cursor's token is not of the required type, return false and do nothing.
+	/// </summary>
+	public bool TryConsumeToken(TokenType requiredTokenType, Action? actionBeforeAdvancingCursor = null)
+	{
+		if (HasConsumedAllTokens())
+		{
+			return false;
+		}
+
+		if (IsCompatibleTokenType(CursorToken().Type, requiredTokenType))
+		{
+			ConsumeToken(requiredTokenType, actionBeforeAdvancingCursor);
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	public void ConsumeUniqueOptions(SyntaxAnalyzer a, Dictionary<TokenType, Action> cases, TokenType? separator = null)
+	{
+		List<TokenType> usedTokenTypes = new();
+
+		while (!HasConsumedAllTokens())
+		{
+			TokenType currentTokenType = CursorToken().Type;
+			if (cases.TryGetValue(currentTokenType, out Action? actionAfterConsumption))
+			{
+				// Check for duplicate token types
+				if (usedTokenTypes.Contains(currentTokenType))
+				{
+					throw new Exception($"Duplicate optional token '{currentTokenType}'");
+				}
+				usedTokenTypes.Add(currentTokenType);
+
+				ConsumeToken(currentTokenType);
+				actionAfterConsumption();
+
+				// Consume (optional) separator
+				if (separator is not null)
+				{
+					if (!TryConsumeToken(separator.Value)) // We must do ".Value" because else the compiler bitches about the TokenType? being nullable
+					{
+						return;
+					}
+				}
+			}
+			else // We've reached the end of the optional tokens
+			{
+				return;
+			}
+		}
+	}
+
+	/// <summary>
+	/// If all tokens have been consumed, return false.
 	/// Tries to consume the next tokens if they are a new line followed by a specific amount of tabs.
 	/// </summary>
 	/// <returns> True on success.</returns>
-	public bool TryConsumeNewLineAndTabs(int requiredTabAmount)
+	public bool TryConsumeIndents(int requiredTabAmount)
 	{
+		if (HasConsumedAllTokens())
+		{
+			return false;
+		}
+
 		int cursorLookahead = 0;
 		Token LookaheadToken() => _tokens[_cursor.Position + cursorLookahead];
 

@@ -4,18 +4,20 @@ public static class IdentifierOrKeywordLexer
 {
 	public static void Lex(LexicalAnalyzer a)
 	{
-		string identifier = "";
+		string id = "";
 		int startColumn = a.Cursor.Column;
 
-		while (a.IsNotEndOfFile() && char.IsLetterOrDigit(a.CursorChar()) || a.CursorChar() == '_')
+		while (a.IsNotEndOfFile() && a.CursorChar() == '_' || a.CursorChar() == '#' || char.IsLetterOrDigit(a.CursorChar()))
 		{
-			identifier += a.CursorChar();
+			id += a.CursorChar();
 			a.Cursor.MoveToNextColumn();
 		}
 
-		TokenType tokenType = identifier switch
+		TokenType tokenType = id switch
 		{
 			"timeline" => TokenType.TimelineKeyword,
+			"pattern" => TokenType.PatternKeyword,
+			"melody" => TokenType.MelodyKeyword,
 			"samples" => TokenType.SamplesKeyword,
 			"notes" => TokenType.NotesKeyword,
 			"gain"     => TokenType.GainKeyword,
@@ -23,6 +25,6 @@ public static class IdentifierOrKeywordLexer
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 
-		a.Tokens.Add(new Token(tokenType, identifier, a.Cursor.Line, startColumn));
+		a.Tokens.Add(new Token(tokenType, id, a.Cursor.Line, startColumn));
 	}
 }

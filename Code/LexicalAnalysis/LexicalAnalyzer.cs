@@ -4,8 +4,8 @@ namespace LexicalAnalysis;
 
 public class LexicalAnalyzer
 {
-	private List<string> _errors = new();
 	private string _inputText = "";
+	private List<LexicalError> _errors = new();
 
 	public List<Token> Tokens = new();
 	public LexicalAnalyzerCursor Cursor = new();
@@ -24,7 +24,12 @@ public class LexicalAnalyzer
 
 		if (_errors.Any())
 		{
-			throw new Exception("Lexical errors:\n" + string.Join("\n- ", _errors));
+			string errorMessage = "Lexical errors:";
+			foreach (LexicalError error in _errors)
+			{
+				errorMessage += $"\n- Line: {error.Line}, Column: {error.Column}, Message: {error.Message}";
+			}
+			throw new Exception(errorMessage);
 		}
 
 		return Tokens;
@@ -40,26 +45,18 @@ public class LexicalAnalyzer
 			{
 				WhitespaceLexer.Lex(this);
 			}
-			else if (CursorChar() == '#')
-			{
-				CommentLexer.Lex(this);
-			}
 			else if (CursorChar() == '"')
 			{
 				StringLexer.Lex(this);
 			}
-			else if (CursorChar() == '-')
-			{
-				HyphenLexer.Lex(this);
-			}
 			else if (CursorChar() == '(')
 			{
-				Tokens.Add(new Token(TokenType.LeftParen, "(", Cursor.Line, Cursor.Column));
+				Tokens.Add(new Token(TokenType.LeftParentheses, "(", Cursor.Line, Cursor.Column));
 				Cursor.MoveToNextColumn();
 			}
 			else if (CursorChar() == ')')
 			{
-				Tokens.Add(new Token(TokenType.RightParen, ")", Cursor.Line, Cursor.Column));
+				Tokens.Add(new Token(TokenType.RightParentheses, ")", Cursor.Line, Cursor.Column));
 				Cursor.MoveToNextColumn();
 			}
 			else if (CursorChar() == ',')
@@ -67,21 +64,30 @@ public class LexicalAnalyzer
 				Tokens.Add(new Token(TokenType.Comma, ",", Cursor.Line, Cursor.Column));
 				Cursor.MoveToNextColumn();
 			}
-			else if (char.IsDigit(CursorChar()))
+			else if (CursorChar() == '-' || char.IsDigit(CursorChar()))
 			{
 				NumberLexer.Lex(this);
 			}
-			else if (CursorChar() == '_' || char.IsLetter(CursorChar()))
+			else if (CursorChar() == '_' || CursorChar() == '#' || char.IsLetter(CursorChar()))
 			{
 				IdentifierOrKeywordLexer.Lex(this);
 			}
+			else if (CursorChar() == '%')
+			{
+				CommentLexer.Lex(this);
+			}
 			else
 			{
-				_errors.Add($"Unknown token type: Character: '{CursorChar}',  Line: {Cursor.Line},  Column: {Cursor.Column}");
+				_errors.Add(new LexicalError(Cursor.Column, Cursor.Line, $"Unknown token type: Character: '{CursorChar()}'"));
 				Cursor.MoveToNextColumn();
 			}
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", Cursor.Line, Cursor.Column));
+	}
+
+	public void AddError(LexicalError error)
+	{
+		_errors.Add(error);
 	}
 }

@@ -1,5 +1,6 @@
 using LexicalAnalysis;
-using AST;
+using AbstractSyntax;
+using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
 
@@ -8,33 +9,39 @@ public static class PatternParser
 	public static void Parse(SyntaxAnalyzer a)
 	{
 		Pattern pattern = new();
-		a.OutputSong.Patterns.Add(pattern);
+
+		a.ConsumeToken(TokenType.PatternKeyword);
 
 		a.ConsumeToken(TokenType.Integer, () =>
 		{
-			pattern.Length = int.Parse(a.CursorToken().Value);
+			pattern.LengthInBeats = float.Parse(a.CursorToken().Value, CultureInfo.InvariantCulture);
 		});
 
 		a.ConsumeToken(TokenType.Identifier, () =>
 		{
-			pattern.Name = a.CursorToken().Value;
+			pattern.Id = pattern.LengthInBeats + a.CursorToken().Value;
 		});
 
-		ParseLeaves(a, pattern);
+		RuntimeEnvironment.Patterns.Add(pattern.Id, pattern);
+
+		ParseBranches(a, pattern);
 	}
 
-	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)
+	private static void ParseBranches(SyntaxAnalyzer a, Pattern pattern)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(1))
+		while (a.TryConsumeIndents(1))
 		{
-			switch (a.CursorToken().Type)
+			string length = "";
+
+			a.ConsumeToken(TokenType.Integer, () =>
 			{
-				case TokenType.NotesKeyword: NotesParser.Parse(a, pattern); break;
-				case TokenType.SamplesKeyword: SamplesParser.Parse(a, pattern); break;
-				default: throw new Exception();
-			}
+				length = a.CursorToken().Value;
+			});
+
+			a.ConsumeToken(TokenType.Identifier, () =>
+			{
+				pattern.PatternAndMelodyIds.Add(length + a.CursorToken().Value);
+			});
 		}
 	}
-
-
 }
