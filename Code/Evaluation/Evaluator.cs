@@ -1,92 +1,58 @@
-using AST;
+using AbstractSyntax;
 
 namespace Evaluation;
 
 public class Evaluator
 {
-	private static readonly Random _rng = new();
-
-	public void Evaluate(Song song)
+	public void Evaluate()
 	{
-		PrintToConsole(song);
+		// TODO: Remove; it's for debugging
+		PrintToConsole();
+
+		// TODO: Remove; it's for debugging, because the Timeline hasn't been implemented yet
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_mainMelody"], 0, 10));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["32_longNotes"], 0, 18));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest1of3"], 0, 64));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest2of3"], 16, 64));
+		// RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_loopingTest3of3"], 32, 64));
+
+		// TODO: Remove; it's for debugging, because the Timeline hasn't been implemented yet
+		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["8_guitar"], 0, 8));
+		RuntimeEnvironment.TheTimeline.Loops.Add(new(RuntimeEnvironment.Melodies["16_flute"], 12, 64));
+
+		AudioRenderer.Render();
 	}
 
-	private double EvaluateExpression(AST.IExpression expr)
+	private void PrintToConsole() // TODO: Remove after debugging. It's just an example.
 	{
-		switch (expr)
+		foreach (Pattern pattern in RuntimeEnvironment.Patterns.Values)
 		{
-			case AST.NumericExpression num:
-				return num.Value;
-			case AST.RandomExpression random:
-				return EvaluateRandom(random);
-			default:
-				throw new Exception($"Unsupported expression type in evaluation: {expr?.GetType().Name}");
-		}
-	}
+			Console.WriteLine($"\n=== Pattern: {pattern.Id} ===");
+			Console.WriteLine($"Length: {pattern.LengthInBeats}");
 
-	private double EvaluateRandom(AST.RandomExpression expr)
-	{
-		double min = EvaluateExpression(expr.Min);
-		double max = EvaluateExpression(expr.Max);
-
-		if (min > max)
-		{
-			throw new Exception($"Runtime random() bounds invalid: min ({min}) cannot be greater than max ({max}).");
-		}
-
-		bool minIsInteger = Math.Abs(min % 1) < 1e-9;
-		bool maxIsInteger = Math.Abs(max % 1) < 1e-9;
-
-		if (minIsInteger && maxIsInteger)
-		{
-			int minInt = (int)Math.Ceiling(min);
-			int maxInt = (int)Math.Floor(max);
-			if (maxInt < minInt)
+			Console.WriteLine("Children:");
+			foreach (string patternAndMelodyIds in pattern.PatternAndMelodyIds)
 			{
-				return min;
+				Console.WriteLine($"  - {patternAndMelodyIds}");
 			}
-			return _rng.Next(minInt, maxInt + 1);
 		}
 
-		return min + _rng.NextDouble() * (max - min);
-	}
-
-	// TODO: Delete this method. It's just an example
-	private void PrintToConsole(Song song)
-	{
-		foreach (Pattern pattern in song.Patterns)
+		foreach (Melody melody in RuntimeEnvironment.Melodies.Values)
 		{
-			Console.WriteLine($"\n=== Pattern: {pattern.Name} ===");
-			Console.WriteLine($"Length: {pattern.Length}");
+			Console.WriteLine($"\n=== Melody: {melody.Id} ===");
+			Console.WriteLine($"Length: {melody.LengthInBeats}");
 
 			Console.WriteLine("Samples:");
-			foreach (Sample sample in pattern.Samples)
+			foreach (string sampleId in melody.SampleIds)
 			{
-				Console.WriteLine($"  - {sample.FileName}");
+				Sample sample = RuntimeEnvironment.Samples[sampleId];
+				Console.WriteLine($"  - {sample.Id} = '{sample.FilePath}', reference note octave = {sample.ReferencePitch.Octave}");
 			}
 
 			Console.WriteLine("Notes:");
-			foreach (Note note in pattern.Notes)
+			foreach (Note note in melody.Notes)
 			{
-				string pitchText;
-				if (note.PitchExpression != null)
-				{
-					double pitchValue = EvaluateExpression(note.PitchExpression);
-					if ((pitchValue % 1) == 0)
-					{
-						pitchText = ((int)pitchValue).ToString();
-					}
-					else
-					{
-						pitchText = pitchValue.ToString("0.###");
-					}
-				}
-				else
-				{
-					pitchText = note.Pitch;
-				}
-
-				Console.WriteLine($"  - Time: {note.StartTime:D2}-{note.EndTime:D2}, Pitch: {pitchText}");
+				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Octave: {note.ThePitch.Octave}, Pitch class: {note.ThePitch.PitchClass}");
 			}
 		}
 	}

@@ -2,15 +2,15 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "run-dotnet-example-development",
+			"label": "run-development",
 			"type": "shell",
 			"command": "dotnet run ExamplePrograms/Development.mude",
 			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
 		},
 		{
-			"label": "run-dotnet-timeline-test",
+			"label": "run-jesp",
 			"type": "shell",
-			"command": "dotnet run ExamplePrograms/TimelineTest.mude",
+			"command": "dotnet run ExamplePrograms/Jesp.mude",
 			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
 		},
 		{

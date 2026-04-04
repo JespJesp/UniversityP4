@@ -1,4 +1,4 @@
-using AST;
+using AbstractSyntax;
 
 namespace SemanticAnalysis.Validators;
 
@@ -6,13 +6,20 @@ public static class SampleValidator
 {
 	public static void Validate(SemanticAnalyzer analyzer, Sample sample)
 	{
-		if (string.IsNullOrWhiteSpace(sample.FileName))
+		// ID
+		if (string.IsNullOrWhiteSpace(sample.Id))
 		{
-			analyzer.AddError("Sample file name cannot be empty");
+			analyzer.AddError("Sample ID cannot be empty");
 		}
-		if (!sample.FileName.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+
+		// File path
+		if (string.IsNullOrWhiteSpace(sample.FilePath))
 		{
-			analyzer.AddError($"Sample file {sample.FileName} must be a .wav file");
+			analyzer.AddError($"Sample '{sample.Id}' file path name cannot be empty");
+		}
+		if (!sample.FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+		{
+			analyzer.AddError($"Sample '{sample.Id}' with file path '{sample.FilePath}' must be a .wav file");
 		}
 	}
 }

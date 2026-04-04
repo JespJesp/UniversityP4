@@ -7,8 +7,9 @@ public enum TokenType
 	TimelineKeyword,
 	SamplesKeyword,
 	NotesKeyword,
+	MelodyKeyword,
+	PatternKeyword,
 	GainKeyword,
-
 	PanKeyword,
 
 	// Values
@@ -17,10 +18,8 @@ public enum TokenType
 	String,
 
 	// Formatting
-	Hyphen,
-	LeftParen,
-	RightParen,
-	ForwardSlash,
+	LeftParentheses,
+	RightParentheses,
 	Comma,
 	NewLine,
 	Tab,
