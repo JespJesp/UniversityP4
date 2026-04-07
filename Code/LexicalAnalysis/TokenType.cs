@@ -9,6 +9,8 @@ public enum TokenType
 	TimelineKeyword,
 	SamplesKeyword,
 	NotesKeyword,
+	ScaleKeyword,
+
 
 	// Values
 	Integer,
@@ -16,6 +18,7 @@ public enum TokenType
 
 	// Formatting
 	Hyphen,
+	Comma,
 	NewLine,
 	Tab,
 	EndOfFile,

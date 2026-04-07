@@ -37,6 +37,7 @@ public class SyntaxAnalyzer
 		{
 			switch (CurrentToken().Type)
 			{
+				case TokenType.ScaleKeyword: ScaleParser.Parse(this); break;
 				case TokenType.TimelineKeyword: TimelineParser.Parse(this); break;
 				case TokenType.Integer: PatternParser.Parse(this); break;
 				case TokenType.NewLine: ConsumeToken(TokenType.NewLine); break;

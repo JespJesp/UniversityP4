@@ -9,7 +9,16 @@ public static class NotesParser
 	{
 		a.ConsumeToken(TokenType.NotesKeyword);
 
-		ParseLeaves(a, pattern);
+// OPTIONAL scale reference
+if (a.CurrentToken().Type == TokenType.Identifier)
+{
+	a.ConsumeToken(TokenType.Identifier, () =>
+	{
+		pattern.ScaleName = a.CurrentToken().Value;
+	});
+}
+
+ParseLeaves(a, pattern);
 	}
 
 	private static void ParseLeaves(SyntaxAnalyzer a, Pattern pattern)

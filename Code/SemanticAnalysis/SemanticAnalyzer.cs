@@ -13,6 +13,8 @@ public class SemanticAnalyzer
 		// Reset variables
 		_errors.Clear();
 
+		RomanNumeralResolver.Resolve(song);
+
 		ValidateRoot(song);
 
 		if (_errors.Any())

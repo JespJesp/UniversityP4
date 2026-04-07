@@ -21,6 +21,7 @@ public class LexicalAnalyzer
 	private IdentifierOrKeywordTokenizer _identifierOrKeywordTokenizer = new();
 	private StringTokenizer _stringTokenizer = new();
 	private HyphenTokenizer _hyphenTokenizer = new();
+	private CommaTokenizer _commaTokenizer = new();
 
 	public List<Token> Tokenize(string text)
 	{
@@ -49,7 +50,8 @@ public class LexicalAnalyzer
 				|| _integerTokenizer.TryTokenize(this)
 				|| _identifierOrKeywordTokenizer.TryTokenize(this)
 				|| _stringTokenizer.TryTokenize(this)
-				|| _hyphenTokenizer.TryTokenize(this))
+				|| _hyphenTokenizer.TryTokenize(this)
+				|| _commaTokenizer.TryTokenize(this))
 			{
 				continue;
 			}
