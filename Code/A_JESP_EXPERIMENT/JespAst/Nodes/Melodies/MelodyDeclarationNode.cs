@@ -1,5 +1,5 @@
 using System.Globalization;
-using JespRuntime;
+using JespAst.Tables;
 using JespRuntime.Nodes;
 using JespAst.Nodes.Melodies.Chords;
 using JespAst.Nodes.Melodies.Samples;
@@ -32,9 +32,9 @@ public class MelodyDeclarationNode(Node parent) : Node(parent)
 		Parser.TryConsumeUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
-		localSymbolTable.Add((typeof(MelodyDeclarationNode), Id));
+		localSymbols.Add(typeof(MelodyDeclarationNode), Id);
 
 		if (string.IsNullOrWhiteSpace(Id))
 		{
@@ -46,14 +46,13 @@ public class MelodyDeclarationNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
 		Melody melody = new()
 		{
 			LengthInBeats = this.LengthInBeats
 		};
-		localSymbolTable.Add(melody);
-		GlobalVariables.Add(melody, Id);
+		localVariables.Upsert(melody, Id);
 	}
 }
 

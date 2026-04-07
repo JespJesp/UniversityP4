@@ -1,4 +1,4 @@
-using JespRuntime;
+using JespAst.Tables;
 using JespRuntime.Nodes;
 using LexicalAnalysis.Tokens;
 using System.Globalization;
@@ -23,9 +23,9 @@ public class PatternDeclarationNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
-		localSymbolTable.Add((typeof(PatternDeclarationNode), Id));
+		localSymbols.Add(typeof(PatternDeclarationNode), Id);
 
 		if (string.IsNullOrWhiteSpace(Id))
 		{
@@ -37,13 +37,12 @@ public class PatternDeclarationNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
 		Pattern pattern = new()
 		{
 			LengthInBeats = this.LengthInBeats
 		};
-		localSymbolTable.Add(pattern);
-		GlobalVariables.Add(pattern, Id);
+		localVariables.Upsert(pattern, Id);
 	}
 }

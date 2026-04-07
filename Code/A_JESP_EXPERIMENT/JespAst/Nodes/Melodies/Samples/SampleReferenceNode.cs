@@ -1,5 +1,5 @@
+using JespAst.Tables;
 using JespAst.Nodes.Samples;
-using JespRuntime;
 using JespRuntime.Nodes;
 using LexicalAnalysis.Tokens;
 
@@ -14,18 +14,18 @@ public class SampleReferenceNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Identifier, (value) => value = Id);
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
-		if (!localSymbolTable.Contains((typeof(SampleDeclaration), Id)))
+		if (!localSymbols.Contains(typeof(SampleDeclaration), Id))
 		{
 			AddSemanticError($"The sample reference '{Id}' is not declared");
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
-		Melody melody = localSymbolTable.Get<Melody>();
-		Sample sample = GlobalVariables.Get<Sample>(Id);
+		Melody melody = localVariables.Get<Melody>(localNodes.Get<MelodyDeclarationNode>().Id);
+		Sample sample = localVariables.Get<Sample>(Id);
 		melody.Samples.Add(sample);
 	}
 }

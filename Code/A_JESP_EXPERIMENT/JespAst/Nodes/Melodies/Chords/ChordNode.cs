@@ -1,6 +1,5 @@
 using System.Globalization;
-using JespRuntime;
-using JespRuntime.Nodes;
+using JespAst.Tables;
 using JespAst.Nodes.Melodies.Chords.Notes;
 using LexicalAnalysis.Tokens;
 
@@ -22,8 +21,14 @@ public class ChordNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
+		MelodyDeclarationNode melodyDeclarationNode = localNodes.Get<MelodyDeclarationNode>();
+
+		if (EndBeat > melodyDeclarationNode.LengthInBeats)
+		{
+			AddSemanticError($"Note end time {EndBeat} exceeds melody length {melodyDeclarationNode.LengthInBeats}");
+		}
 		if (StartBeat < 0 || EndBeat < 0)
 		{
 			AddSemanticError($"Start time and end time must be positive: {StartBeat}-{EndBeat}");
@@ -32,15 +37,6 @@ public class ChordNode(Node parent) : Node(parent)
 		{
 			AddSemanticError($"Start time must be less than end time: {StartBeat}-{EndBeat}");
 		}
-		if (EndBeat > ParentMelody.LengthInBeats)
-		{
-			AddSemanticError($"Note end time {EndBeat} exceeds melody length {ParentMelody.LengthInBeats}");
-		}
-	}
-
-	protected override void Evaluate(LocalVariables localSymbolTable)
-	{
-		localSymbolTable.Add(this);
 	}
 }
 

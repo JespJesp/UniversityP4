@@ -1,3 +1,4 @@
+using JespAst.Tables;
 using JespRuntime;
 
 namespace JespAst.Nodes;
@@ -28,31 +29,45 @@ public abstract class Node
 		}
 	}
 
-	protected virtual void Annotate(HashSet<(Type, object)> parentNodesTable, HashSet<(Type, string)> localSymbolTable) { }
-	public void CascadeAnnotate(HashSet<(Type, object)> parentNodesTable, HashSet<(Type, string)> localSymbolTable)
+	protected virtual void Annotate(NodeTable localNodes, SymbolTable localSymbols) { }
+	public void CascadeAnnotateChildren(NodeTable localNodes, SymbolTable localSymbols)
 	{
-		Annotate(localSymbolTable);
-
-		// TODO: Rewrite this comment explanation to be better.
-		// Letting the children to work on and modify a clone of the symbol table
-		// ensures that they don't affect nodes outside of their scope.
-		var childrensLocalSymbolTable = new HashSet<(Type, string)>(localSymbolTable);
 		foreach (Node child in _children)
 		{
-			child.CascadeAnnotate(childrensLocalSymbolTable);
+			child.Annotate(localNodes, localSymbols);
+		}
+		
+		// TODO: Rewrite this comment explanation to be better.
+		// Letting the children to work on and modify a clones
+		// ensures that they don't affect nodes outside of their scope.
+
+		var childrensLocalNodes = localNodes.Clone();
+		childrensLocalNodes.Upsert(this);
+		var childrensLocalSymbols = localSymbols.Clone();
+		
+		foreach (Node child in _children)
+		{
+			child.CascadeAnnotateChildren(childrensLocalNodes, childrensLocalSymbols);
 		}
 	}
 
-	protected virtual void Evaluate(HashSet<(Type, object)> parentNodesTable, HashSet<(Type, string, object)> localVariables) { }
-	public void CascadeEvaluate(HashSet<(Type, object)> parentNodesTable, HashSet<(Type, string, object)> localVariables)
+	protected virtual void Evaluate(NodeTable localNodes, VariableTable localVariables) { }
+	public void CascadeEvaluateChildren(NodeTable localNodes, VariableTable localVariables)
 	{
-		Evaluate(localVariables);
-
-		// TODO: Write comment explanation of why we use clone here
-		var childrensLocalVariables = localVariables.Clone();
 		foreach (Node child in _children)
 		{
-			child.CascadeEvaluate(childrensLocalVariables);
+			child.Evaluate(localNodes, localVariables);
+		}
+
+		// TODO: Write comment explanation of why we use clone here
+
+		var childrensLocalNodes = localNodes.Clone();
+		childrensLocalNodes.Upsert(this);
+		var childrensLocalVariables = localVariables.Clone();
+
+		foreach (Node child in _children)
+		{
+			child.CascadeEvaluateChildren(childrensLocalNodes, childrensLocalVariables);
 		}
 	}
 }

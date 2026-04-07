@@ -1,5 +1,5 @@
+using JespAst.Tables;
 using JespAst.Nodes.Melodies;
-using JespRuntime;
 using JespRuntime.Nodes;
 using LexicalAnalysis.Tokens;
 
@@ -16,23 +16,23 @@ public class ReferenceNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = length + value; });
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
-		if (!localSymbolTable.Contains((typeof(PatternDeclarationNode), Id)) && !localSymbolTable.Contains((typeof(MelodyDeclarationNode), Id)))
+		if (!localSymbols.Contains(typeof(PatternDeclarationNode), Id) && !localSymbols.Contains(typeof(MelodyDeclarationNode), Id))
 		{
 			AddSemanticError($"The pattern or melody reference '{Id}' is not declared");
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
-		Pattern pattern = localSymbolTable.Get<Pattern>();
+		Pattern pattern = localVariables.Get<Pattern>(localNodes.Get<PatternDeclarationNode>().Id);
 
-		if (GlobalVariables.TryGet(this.Id, out Pattern childPattern))
+		if (localVariables.TryGet(this.Id, out Pattern childPattern))
 		{
 			pattern.Patterns.Add(childPattern);
 		}
-		else if (GlobalVariables.TryGet(this.Id, out Melody childMelody))
+		else if (localVariables.TryGet(this.Id, out Melody childMelody))
 		{
 			pattern.Melodies.Add(childMelody);
 		}

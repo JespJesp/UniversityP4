@@ -1,4 +1,4 @@
-using JespRuntime;
+using JespAst.Tables;
 using JespRuntime.Nodes;
 using LexicalAnalysis.Tokens;
 
@@ -17,9 +17,9 @@ public class SampleDeclaration(Node parent) : Node(parent)
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
-		localSymbolTable.Add((typeof(SampleDeclaration), Id));
+		localSymbols.Add(typeof(SampleDeclaration), Id);
 
 		if (string.IsNullOrWhiteSpace(Id))
 		{
@@ -36,14 +36,14 @@ public class SampleDeclaration(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
 		Sample sample = new()
 		{
 			FilePath = this.FilePath,
 			ReferencePitch = new(this.ReferencePitch)
 		};
-		GlobalVariables.Add(sample, Id);
+		localVariables.Upsert(sample, Id);
 	}
 }
 

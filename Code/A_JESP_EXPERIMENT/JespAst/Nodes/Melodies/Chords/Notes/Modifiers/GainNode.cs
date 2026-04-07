@@ -1,5 +1,5 @@
 using System.Globalization;
-using JespRuntime;
+using JespAst.Tables;
 using JespRuntime.Nodes;
 using LexicalAnalysis.Tokens;
 
@@ -14,7 +14,7 @@ public class GainNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
 		if (Volume < 0.0f)
 		{
@@ -22,7 +22,7 @@ public class GainNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
 		Note note = localSymbolTable.Get<Note>();
 		note.Volume = Volume;

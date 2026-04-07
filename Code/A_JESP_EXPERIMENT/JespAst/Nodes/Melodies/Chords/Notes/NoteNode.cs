@@ -1,4 +1,4 @@
-using JespRuntime;
+using JespAst.Tables;
 using JespRuntime.Nodes;
 using JespAst.Nodes.Melodies.Chords.Notes.Modifiers;
 using LexicalAnalysis.Tokens;
@@ -19,10 +19,10 @@ public class NoteNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
-		Melody melody = localSymbolTable.Get<Melody>();
-		ChordNode chordNode = localSymbolTable.Get<ChordNode>();
+		Melody melody = localVariables.Get<Melody>(localNodes.Get<MelodyDeclarationNode>().Id);
+		ChordNode chordNode = localNodes.Get<ChordNode>();
 
 		Note note = new()
 		{
@@ -30,7 +30,6 @@ public class NoteNode(Node parent) : Node(parent)
 			EndBeat = chordNode.EndBeat,
 			Pitch0 = new(this.Pitch)
 		};
-		localSymbolTable.Add(note);
 		melody.Notes.Add(note);
 	}
 }

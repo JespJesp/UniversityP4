@@ -1,5 +1,5 @@
 using System.Globalization;
-using JespRuntime;
+using JespAst.Tables;
 using JespRuntime.Nodes;
 using LexicalAnalysis.Tokens;
 
@@ -14,7 +14,7 @@ public class PanNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Annotate(HashSet<(Type, string)> localSymbolTable)
+	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
 	{
 		if (Pan < -1.0f || Pan > 1.0f)
 		{
@@ -22,7 +22,7 @@ public class PanNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(LocalVariables localSymbolTable)
+	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
 	{
 		Note note = localSymbolTable.Get<Note>();
 		note.Pan = Pan;
