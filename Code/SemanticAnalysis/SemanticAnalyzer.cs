@@ -1,5 +1,5 @@
 using SemanticAnalysis.Validators;
-using AbstractSyntax;
+using Runtime;
 
 namespace SemanticAnalysis;
 

@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using AbstractSyntax;
+using Runtime;
 
 namespace SemanticAnalysis.Validators;
 

@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AbstractSyntax;
+using Runtime;
 
 namespace SyntaxAnalysis.Parsers;
 
@@ -33,7 +33,7 @@ public static class SamplesParser
 				sample.ReferencePitch = new Pitch(a.CursorToken().Value);
 			});
 
-			RuntimeEnvironment.Samples.Add(sample.Id, sample);
+			Runtime.Environment.Samples.Add(sample.Id, sample);
 		}
 	}
 }

@@ -1,6 +1,6 @@
-namespace AbstractSyntax;
+namespace Runtime;
 
-public static class RuntimeEnvironment
+public static class Environment
 {
 	public static int SampleRate = 48000; // TODO: Implement user-defined sample rate
 	public static int BeatsPerMinute = 120; // TODO: Implement user-defined BPM

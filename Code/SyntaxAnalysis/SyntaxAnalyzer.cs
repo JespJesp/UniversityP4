@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AbstractSyntax;
+using Runtime;
 using SyntaxAnalysis.Parsers;
 
 namespace SyntaxAnalysis;
@@ -48,20 +48,7 @@ public class SyntaxAnalyzer
 
 	public bool HasConsumedAllTokens() => _cursor.Position >= _tokens.Count;
 
-	/// <summary>
-	/// Useful for allowing type conversion, for example letting an integer be used as a float.
-	/// </summary>
-	public bool IsCompatibleTokenType(TokenType candidate, TokenType target)
-	{
-		if (target == TokenType.Float && candidate == TokenType.Integer)
-		{
-			return true;
-		}
-		else
-		{
-			return candidate == target;
-		}
-	}
+	
 
 	/// <summary>
 	/// Moves cursor to next token, if current token is a specific type (and throws an exception if it is not). 

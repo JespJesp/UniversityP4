@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AbstractSyntax;
+using Runtime;
 using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
@@ -22,7 +22,7 @@ public static class PatternParser
 			pattern.Id = pattern.LengthInBeats + a.CursorToken().Value;
 		});
 
-		RuntimeEnvironment.Patterns.Add(pattern.Id, pattern);
+		Runtime.Environment.Patterns.Add(pattern.Id, pattern);
 
 		ParseBranches(a, pattern);
 	}

@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AbstractSyntax;
+using Runtime;
 
 namespace SyntaxAnalysis.Parsers;
 

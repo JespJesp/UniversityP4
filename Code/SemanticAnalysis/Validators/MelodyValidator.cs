@@ -1,4 +1,4 @@
-using AbstractSyntax;
+using Runtime;
 
 namespace SemanticAnalysis.Validators;
 
@@ -15,7 +15,7 @@ public static class MelodyValidator
 		// Samples
 		foreach (string sampleId in melody.SampleIds)
 		{
-			if (!RuntimeEnvironment.Samples.ContainsKey(sampleId))
+			if (!Runtime.Environment.Samples.ContainsKey(sampleId))
 			{
 				analyzer.AddError($"The sample '{sampleId}' reference in melody '{melody.Id}' is undefined.");
 			}

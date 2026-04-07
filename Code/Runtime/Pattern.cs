@@ -1,4 +1,4 @@
-namespace AbstractSyntax;
+namespace Runtime;
 
 public class Pattern
 {

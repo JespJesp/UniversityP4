@@ -1,5 +1,5 @@
 using LexicalAnalysis;
-using AbstractSyntax;
+using Runtime;
 using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
@@ -22,7 +22,7 @@ public static class MelodyParser
 			melody.Id = melody.LengthInBeats + a.CursorToken().Value;
 		});
 
-		RuntimeEnvironment.Melodies.Add(melody.Id, melody);
+		Runtime.Environment.Melodies.Add(melody.Id, melody);
 
 		ParseBranches(a, melody);
 	}

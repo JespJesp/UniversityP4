@@ -1,6 +1,6 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using AbstractSyntax;
+using Runtime;
 
 namespace Evaluation;
 
@@ -19,12 +19,12 @@ public static class AudioRenderer
 	{
 		List<ISampleProvider> sounds = new();
 
-		foreach (Loop loop in RuntimeEnvironment.TheTimeline.Loops)
+		foreach (Loop loop in Runtime.Environment.TheTimeline.Loops)
 		{
 			Melody melody = loop.TheMelody;
 			foreach (string sampleId in melody.SampleIds)
 			{
-				Sample sample = RuntimeEnvironment.Samples[sampleId];
+				Sample sample = Runtime.Environment.Samples[sampleId];
 				foreach (Note note in melody.Notes)
 				{
 					float loops = loop.LengthInBeats / loop.TheMelody.LengthInBeats;
@@ -73,7 +73,7 @@ public static class AudioRenderer
 		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
 
 		// Resample the sound to ensure it uses the output's sample rate
-		var resampler = new WdlResamplingSampleProvider(reader, RuntimeEnvironment.SampleRate);
+		var resampler = new WdlResamplingSampleProvider(reader, Runtime.Environment.SampleRate);
 
 		var volumeProvider = new VolumeSampleProvider(resampler)
 		{
@@ -98,7 +98,7 @@ public static class AudioRenderer
 
 	private static float ConvertBeatsToSeconds(float beats)
 	{
-		return beats / RuntimeEnvironment.BeatNoteValue * 60f / RuntimeEnvironment.BeatsPerMinute;
+		return beats / Runtime.Environment.BeatNoteValue * 60f / Runtime.Environment.BeatsPerMinute;
 	}
 
 	private static float GetPitchFactor(Pitch samplePitch, Pitch notePitch)

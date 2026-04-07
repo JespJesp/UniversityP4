@@ -22,7 +22,7 @@ public class LexicalAnalyzerCursor
 		Column++;
 	}
 
-	public void MoveoToNewLine()
+	public void MoveToNewLine()
 	{
 		Position++;
 		Line++;

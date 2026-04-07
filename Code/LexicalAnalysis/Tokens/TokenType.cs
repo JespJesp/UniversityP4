@@ -1,4 +1,4 @@
-namespace LexicalAnalysis;
+namespace LexicalAnalysis.Tokens;
 
 public enum TokenType
 {
@@ -21,7 +21,8 @@ public enum TokenType
 	LeftParentheses,
 	RightParentheses,
 	Comma,
-	NewLine,
-	Tab,
-	EndOfFile,
+	Newline,
+	Indent,
+	EndOfFile
 }
+

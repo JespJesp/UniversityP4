@@ -1,4 +1,4 @@
-using AbstractSyntax;
+using Runtime;
 
 namespace SemanticAnalysis.Validators;
 
@@ -15,7 +15,7 @@ public static class PatternValidator
 		// Children
 		foreach (string patternOrMelodyId in pattern.PatternAndMelodyIds)
 		{
-			if (!RuntimeEnvironment.Patterns.ContainsKey(patternOrMelodyId) && !RuntimeEnvironment.Melodies.ContainsKey(patternOrMelodyId))
+			if (!Runtime.Environment.Patterns.ContainsKey(patternOrMelodyId) && !Runtime.Environment.Melodies.ContainsKey(patternOrMelodyId))
 			{
 				analyzer.AddError($"The reference '{patternOrMelodyId}' in pattern '{pattern.Id}' is undefined.");
 			}

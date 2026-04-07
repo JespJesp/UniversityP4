@@ -1,4 +1,4 @@
-namespace AbstractSyntax;
+namespace Runtime;
 
 /// <summary>
 /// This is just the default "Dictionary" class extended with some additional functionalities.

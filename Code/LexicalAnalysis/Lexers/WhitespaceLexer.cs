@@ -1,3 +1,5 @@
+using LexicalAnalysis.Tokens;
+
 namespace LexicalAnalysis.Lexers;
 
 public static class WhitespaceLexer
@@ -6,15 +8,22 @@ public static class WhitespaceLexer
 	{
 		if (a.CursorChar() == '\n')
 		{
-			a.Tokens.Add(new Token(TokenType.NewLine, "\\n", a.Cursor.Line, a.Cursor.Column));
-			a.Cursor.MoveoToNewLine();
+			a.Tokens.Add(new Token(TokenType.Newline, "\n", a.Cursor.Line, a.Cursor.Column));
+			a.Cursor.MoveToNewLine();
+
+			int indentSize = 0;
+			while (a.CursorChar() == '\t')
+			{
+				indentSize++;
+				a.Cursor.MoveToNextColumn();
+			}
+
+			if (indentSize != 0)
+			{
+				a.Tokens.Add(new Token(TokenType.Indent, indentSize.ToString(), a.Cursor.Line, a.Cursor.Column));
+			}
 		}
-		else if (a.CursorChar() == '\t')
-		{
-			a.Tokens.Add(new Token(TokenType.Tab, "\\t", a.Cursor.Line, a.Cursor.Column));
-			a.Cursor.MoveToNextColumn();
-		}
-		else // Ignore whitespace if not a tab or a new line
+		else // Ignore whitespace if not a newline
 		{
 			a.Cursor.MoveToNextColumn();
 		}

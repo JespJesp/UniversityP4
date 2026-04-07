@@ -1,4 +1,4 @@
-namespace LexicalAnalysis;
+namespace LexicalAnalysis.Tokens;
 
 public class Token
 {
@@ -7,7 +7,7 @@ public class Token
 	public int Line { get; }
 	public int Column { get; }
 
-	public Token(TokenType type, string value, int line, int column)
+	public Token(TokenType type, string value = "", int line = -1, int column = -1)
 	{
 		Type = type;
 		Value = value;

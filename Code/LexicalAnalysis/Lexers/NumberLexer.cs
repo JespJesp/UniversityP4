@@ -1,3 +1,5 @@
+using LexicalAnalysis.Tokens;
+
 namespace LexicalAnalysis.Lexers;
 
 public static class NumberLexer

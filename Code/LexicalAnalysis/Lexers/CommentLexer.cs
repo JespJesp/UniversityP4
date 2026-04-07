@@ -12,7 +12,7 @@ public static class CommentLexer
 		{
 			if (a.CursorChar() == '\n')
 			{
-				a.Cursor.MoveoToNewLine();
+				a.Cursor.MoveToNewLine();
 			}
 			else
 			{
