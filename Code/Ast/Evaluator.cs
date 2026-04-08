@@ -11,7 +11,7 @@ public static class Evaluator
 	{
 		try
 		{
-			VariableTable globalVariables = new();
+			RuntimeVariableTable globalVariables = new();
 			programNode.CascadeEvaluate(new(), globalVariables);
 			AudioRenderer.Render(globalVariables);
 
@@ -24,7 +24,7 @@ public static class Evaluator
 	}
 
 	// TODO: Remove after debugging. It's just an example.
-	private static void PrintToConsole(VariableTable globalVariables)
+	private static void PrintToConsole(RuntimeVariableTable globalVariables)
 	{
 		foreach (Loop loop in Timeline.Loops)
 		{

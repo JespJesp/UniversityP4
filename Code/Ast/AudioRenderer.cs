@@ -10,14 +10,14 @@ public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void Render(VariableTable globalVariables)
+	public static void Render(RuntimeVariableTable globalVariables)
 	{
 		List<ISampleProvider> sounds = CreateSounds(globalVariables);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 	}
 
-	public static List<ISampleProvider> CreateSounds(VariableTable globalVariables)
+	public static List<ISampleProvider> CreateSounds(RuntimeVariableTable globalVariables)
 	{
 		List<ISampleProvider> sounds = new();
 

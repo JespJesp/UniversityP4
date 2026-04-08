@@ -10,7 +10,6 @@ public class SampleReferencesNode(Node parent, bool createsNestedScope = false) 
 
 		while (Parser.TryConsumeIndent(2))
 		{
-			Console.WriteLine("\nReference!"); // TODO: REMOVE; FOR DEBUGGING
 			new SampleReferenceNode(this);
 		}
 	}

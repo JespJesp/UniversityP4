@@ -14,6 +14,7 @@ public class ProgramNode(Node parent = null, bool createsNestedScope = false) : 
 	{
 		while (Parser.CurrentToken.Type != TokenType.EndOfFile)
 		{
+			//TODO: Implement that only one timeline keyword can be present (you can't define multiple timelines)
 			switch (Parser.CurrentToken.Type)
 			{
 				case TokenType.TimelineKeyword: new TimelineNode(this); break;

@@ -27,11 +27,8 @@ internal class Program
 	private static void InterpretText(string text)
 	{
 		var tokens = Lexer.Lex(text);
-		Console.WriteLine("Parsing..."); // TODO: REMOVE; FOR DEBUGGING
 		ProgramNode astRoot = Parser.ParseTree(tokens);
-		Console.WriteLine("Annotating..."); // TODO: REMOVE; FOR DEBUGGING
 		Annotator.AnnotateTree(astRoot);
-		Console.WriteLine("Evaluating"); // TODO: REMOVE; FOR DEBUGGING
 		Evaluator.EvaluateTree(astRoot);
 	}
 }

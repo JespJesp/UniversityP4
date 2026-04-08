@@ -20,7 +20,7 @@ public class NoteNode(Node parent, bool createsNestedScope = false) : Node(paren
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		Melody melody = ancestors.Get<MelodyNode>().Melody0;
 		ChordNode chordNode = ancestors.Get<ChordNode>();

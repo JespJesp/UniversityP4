@@ -6,15 +6,35 @@ namespace Ast.Nodes;
 public abstract class Node
 {
 	protected List<Node> _children = new();
-	bool _createsNestedScope;
+	public int Scope { get; }
+	private bool _createsNestedScope;
 
 	public Node(Node parent, bool createsNestedScope = false)
 	{
-		parent?._children.Add(this);
+		// TODO: Parent is only null if it is the program node (so the root node)
+		// so, I should rewrite this to require a parent and then have ProgramNode
+		// have its own separate logic.
+		if (parent is not null)
+		{
+			parent._children.Add(this);
+			if (parent._createsNestedScope)
+			{
+				this.Scope = parent.Scope + 1;
+			}
+			else
+			{
+				this.Scope = parent.Scope;
+			}
+		}
+		else
+		{
+			this.Scope = 0;
+		}
+
 		this._createsNestedScope = createsNestedScope;
+
 		try
 		{
-			Console.WriteLine("Parsing node: " + this.GetType()); // TODO: REMOVE; FOR DEBUGGING
 			Parse();
 		}
 		catch (Exception exception)
@@ -25,8 +45,8 @@ public abstract class Node
 
 	protected abstract void Parse();
 
-	protected virtual void Annotate(NodeTable ancestors, SymbolTable symbols) { }
-	public void CascadeAnnotate(NodeTable ancestors, SymbolTable symbols)
+	protected virtual void Annotate(NodeTable ancestors, SemanticSymbolTable symbols) { }
+	public void CascadeAnnotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		Annotate(ancestors, symbols);
 
@@ -49,8 +69,8 @@ public abstract class Node
 		}
 	}
 
-	protected virtual void Evaluate(NodeTable ancestors, VariableTable variables) { }
-	public void CascadeEvaluate(NodeTable ancestors, VariableTable variables)
+	protected virtual void Evaluate(NodeTable ancestors, RuntimeVariableTable variables) { }
+	public void CascadeEvaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		try
 		{

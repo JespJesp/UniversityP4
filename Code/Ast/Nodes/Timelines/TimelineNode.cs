@@ -13,12 +13,12 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Node(p
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		// TODO: Implement this
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		// TODO: Implement this
 

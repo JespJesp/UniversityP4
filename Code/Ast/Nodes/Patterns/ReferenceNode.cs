@@ -16,7 +16,7 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = length + value; });
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		if (!symbols.Contains(typeof(PatternNode), Id) && !symbols.Contains(typeof(MelodyNode), Id))
 		{
@@ -24,7 +24,7 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable localVariables)
 	{
 		Pattern pattern = localVariables.Get<Pattern>(ancestors.Get<PatternNode>().Id);
 

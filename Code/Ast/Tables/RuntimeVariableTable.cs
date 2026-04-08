@@ -2,11 +2,11 @@ using Runtime.Objects;
 
 namespace Ast.Tables;
 
-public class VariableTable
+public class RuntimeVariableTable
 {
 	private Dictionary<(Type, string), RuntimeObject> _variables = new();
 
-	public VariableTable Clone()
+	public RuntimeVariableTable Clone()
 	{
 		return new()
 		{

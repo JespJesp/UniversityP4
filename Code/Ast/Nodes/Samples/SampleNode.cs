@@ -19,9 +19,9 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Node(par
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		symbols.Add(typeof(SampleNode), Id);
+		symbols.Add(this, Id);
 
 		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
 		{
@@ -30,7 +30,7 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Node(par
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		this.Sample0 = new()
 		{

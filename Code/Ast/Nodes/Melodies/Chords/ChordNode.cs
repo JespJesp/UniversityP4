@@ -21,7 +21,7 @@ public class ChordNode(Node parent, bool createsNestedScope = false) : Node(pare
 		}
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
 

@@ -15,7 +15,7 @@ public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent
 		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
 		NoteNode noteNode = ancestors.Get<NoteNode>();
@@ -26,7 +26,7 @@ public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		Note note = ancestors.Get<NoteNode>().Note0;
 		note.Pan = Pan;

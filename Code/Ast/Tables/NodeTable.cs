@@ -4,8 +4,6 @@ namespace Ast.Tables;
 
 public class NodeTable
 {
-	// TOOD: Add exception messages and handling
-
 	private Dictionary<Type, Node> _nodes = new();
 
 	public NodeTable Clone()

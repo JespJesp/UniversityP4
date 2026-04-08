@@ -14,7 +14,7 @@ public class SampleReferenceNode(Node parent, bool createsNestedScope = false) :
 		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = value);
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
 
@@ -24,7 +24,7 @@ public class SampleReferenceNode(Node parent, bool createsNestedScope = false) :
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		Melody melody = variables.Get<Melody>(ancestors.Get<MelodyNode>().Id);
 		Sample sample = variables.Get<Sample>(Id);

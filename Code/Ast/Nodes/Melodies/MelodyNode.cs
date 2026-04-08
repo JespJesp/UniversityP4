@@ -35,15 +35,17 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Node(par
 		Parser.HandleUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
+		symbols.Add(this, Id);
+
 		if (LengthInBeats <= 0)
 		{
 			Annotator.AddSemanticError(this, $"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		this.Melody0 = new()
 		{

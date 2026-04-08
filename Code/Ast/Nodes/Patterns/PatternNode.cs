@@ -24,9 +24,9 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Node(pa
 		}
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		symbols.Add(typeof(PatternNode), Id);
+		symbols.Add(this, Id);
 
 		if (LengthInBeats <= 0)
 		{
@@ -34,7 +34,7 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Node(pa
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable localVariables)
 	{
 		this.Pattern0 = new()
 		{

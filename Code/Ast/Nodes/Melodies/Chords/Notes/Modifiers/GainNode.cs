@@ -15,7 +15,7 @@ public class GainNode(Node parent, bool createsNestedScope = false) : Node(paren
 		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
+	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
 		NoteNode noteNode = ancestors.Get<NoteNode>();
@@ -26,7 +26,7 @@ public class GainNode(Node parent, bool createsNestedScope = false) : Node(paren
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		Note note = ancestors.Get<NoteNode>().Note0;
 		note.Volume = Volume;
