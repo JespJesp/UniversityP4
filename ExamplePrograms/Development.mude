@@ -7,8 +7,9 @@ sample flute "/ExampleSamples/Instruments/flute E.wav" e5
 melody 8_guitar
 	samples
 		guitar
+		flute
 	notes
-		1 5 c4
+		1 5 c4(gain 20)
 		2 8 d5
 
 % 

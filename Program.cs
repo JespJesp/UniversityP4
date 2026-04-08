@@ -1,7 +1,6 @@
-﻿using LexicalAnalysis;
-using SyntaxAnalysis;
-using SemanticAnalysis;
-using Evaluation;
+﻿using Ast;
+using Ast.Nodes;
+using Lexing;
 
 internal class Program
 {
@@ -14,21 +13,25 @@ internal class Program
 
 		string filePath = args[0];
 		string fileText = File.ReadAllText(filePath);
-		InterpretText(fileText);
-	}
 
-	private static void InterpretText(string text)
-	{
 		try
 		{
-			var tokens = new LexicalAnalyzer().Lex(text);
-			new SyntaxAnalyzer().Parse(tokens);
-			new SemanticAnalyzer().Validate();
-			new Evaluator().Evaluate();
+			InterpretText(fileText);
 		}
 		catch (Exception exception)
 		{
 			Console.WriteLine($"Error interpreting file: {exception}");
 		}
+	}
+
+	private static void InterpretText(string text)
+	{
+		var tokens = Lexer.Lex(text);
+		Console.WriteLine("Parsing..."); // TODO: REMOVE; FOR DEBUGGING
+		ProgramNode astRoot = Parser.ParseTree(tokens);
+		Console.WriteLine("Annotating..."); // TODO: REMOVE; FOR DEBUGGING
+		Annotator.AnnotateTree(astRoot);
+		Console.WriteLine("Evaluating"); // TODO: REMOVE; FOR DEBUGGING
+		Evaluator.EvaluateTree(astRoot);
 	}
 }
