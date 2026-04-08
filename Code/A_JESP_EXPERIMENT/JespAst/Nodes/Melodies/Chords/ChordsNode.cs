@@ -2,7 +2,7 @@ using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Chords;
 
-public class ChordsNode(Node parent) : Node(parent)
+public class ChordsNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	protected override void Parse()
 	{

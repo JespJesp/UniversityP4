@@ -1,11 +1,11 @@
 using System.Globalization;
 using JespAst.Tables;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class PanNode(Node parent) : Node(parent)
+public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public float Pan = 0;
 
@@ -14,17 +14,20 @@ public class PanNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
+		MelodyNode melodyDeclarationNode = ancestors.Get<MelodyNode>();
+		NoteNode noteNode = ancestors.Get<NoteNode>();
+
 		if (Pan < -1.0f || Pan > 1.0f)
 		{
-			AddSemanticError($"Pan must be between -1 and 1, but was: {Pan}");
+			Annotator.AddSemanticError($"Melody: '{melodyDeclarationNode}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
 	{
-		Note note = localSymbolTable.Get<Note>();
+		Note note = ancestors.Get<NoteNode>().Note0;
 		note.Pan = Pan;
 	}
 }

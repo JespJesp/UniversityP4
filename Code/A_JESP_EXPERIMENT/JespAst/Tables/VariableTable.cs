@@ -1,10 +1,10 @@
+using JespRuntime.Objects;
+
 namespace JespAst.Tables;
 
 public class VariableTable
 {
-	// TOOD: Add exception messages and handling
-
-	private Dictionary<(Type, string), object> _variables = new();
+	private Dictionary<(Type, string), RuntimeObject> _variables = new();
 
 	public VariableTable Clone()
 	{
@@ -14,14 +14,21 @@ public class VariableTable
 		};
 	}
 
-	public T Get<T>(string id)
+	public T Get<T>(string id) where T : RuntimeObject
 	{
-		return (T)_variables[(typeof(T), id)];
+		T result = (T)_variables[(typeof(T), id)];
+
+		if (result == null)
+		{
+			throw new Exception($"Internal error: Cannot get variable of type '{typeof(T)}' and id '{id}' from variable table because the variable does not exist.");
+		}
+
+		return result;
 	}
 
-	public bool TryGet<T>(string id, out T value)
+	public bool TryGet<T>(string id, out T value) where T : RuntimeObject
 	{
-		if (_variables.TryGetValue((typeof(T), id), out object? output))
+		if (_variables.TryGetValue((typeof(T), id), out RuntimeObject? output))
 		{
 			value = (T)output;
 			return true;
@@ -33,7 +40,7 @@ public class VariableTable
 		}
 	}
 
-	public void Upsert(object value, string id)
+	public void Upsert(RuntimeObject value, string id)
 	{
 		_variables[(value.GetType(), id)] = value;
 	}

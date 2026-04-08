@@ -1,9 +1,8 @@
 
 % This is a comment %
 
-samples
-	guitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
-	flute "/ExampleSamples/Instruments/flute E.wav" e5
+sample guitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
+sample flute "/ExampleSamples/Instruments/flute E.wav" e5
 
 melody 8_guitar
 	samples
@@ -27,3 +26,4 @@ melody 16_flute
 		12 14 b5(gain 1)
 		14 16 b5(gain 1.4)
 
+timeline

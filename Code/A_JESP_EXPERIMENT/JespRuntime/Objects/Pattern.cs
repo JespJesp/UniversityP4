@@ -1,8 +1,8 @@
 using JespAst.Nodes.Patterns;
 
-namespace JespRuntime.Nodes;
+namespace JespRuntime.Objects;
 
-public class Pattern
+public class Pattern : RuntimeObject
 {
 	public float LengthInBeats;
 	public List<Pattern> Patterns = new();

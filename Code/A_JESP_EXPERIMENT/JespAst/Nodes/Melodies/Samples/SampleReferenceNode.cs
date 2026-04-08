@@ -1,11 +1,11 @@
 using JespAst.Tables;
 using JespAst.Nodes.Samples;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Samples;
 
-public class SampleReferenceNode(Node parent) : Node(parent)
+public class SampleReferenceNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public string Id = "";
 
@@ -14,18 +14,20 @@ public class SampleReferenceNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Identifier, (value) => value = Id);
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
-		if (!localSymbols.Contains(typeof(SampleDeclaration), Id))
+		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+
+		if (!symbols.Contains(typeof(SampleNode), Id))
 		{
-			AddSemanticError($"The sample reference '{Id}' is not declared");
+			Annotator.AddSemanticError($"Melody: '{melodyNode}'. The sample reference '{Id}' is not declared");
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
 	{
-		Melody melody = localVariables.Get<Melody>(localNodes.Get<MelodyDeclarationNode>().Id);
-		Sample sample = localVariables.Get<Sample>(Id);
+		Melody melody = variables.Get<Melody>(ancestors.Get<MelodyNode>().Id);
+		Sample sample = variables.Get<Sample>(Id);
 		melody.Samples.Add(sample);
 	}
 }

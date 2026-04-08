@@ -1,16 +1,17 @@
 using System.Globalization;
 using JespAst.Tables;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using JespAst.Nodes.Melodies.Chords;
 using JespAst.Nodes.Melodies.Samples;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies;
 
-public class MelodyDeclarationNode(Node parent) : Node(parent)
+public class MelodyNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public string Id = "";
 	public float LengthInBeats;
+	public Melody Melody0;
 
 	protected override void Parse()
 	{
@@ -20,7 +21,7 @@ public class MelodyDeclarationNode(Node parent) : Node(parent)
 		Dictionary<TokenType, Action> options = new()
 		{
 			{
-				TokenType.SamplesKeyword,
+				TokenType.SampleKeyword,
 				() => { new SampleReferencesNode(this); }
 			},
 			{
@@ -32,27 +33,21 @@ public class MelodyDeclarationNode(Node parent) : Node(parent)
 		Parser.TryConsumeUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
-		localSymbols.Add(typeof(MelodyDeclarationNode), Id);
-
-		if (string.IsNullOrWhiteSpace(Id))
-		{
-			AddSemanticError("ID cannot be empty");
-		}
 		if (LengthInBeats <= 0)
 		{
-			AddSemanticError("Length cannot be <= 0");
+			Annotator.AddSemanticError($"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
 	{
-		Melody melody = new()
+		this.Melody0 = new()
 		{
 			LengthInBeats = this.LengthInBeats
 		};
-		localVariables.Upsert(melody, Id);
+		variables.Upsert(this.Melody0, Id);
 	}
 }
 

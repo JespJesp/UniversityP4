@@ -1,6 +1,6 @@
-namespace JespRuntime.Nodes;
+namespace JespRuntime.Objects;
 
-public class Note
+public class Note : RuntimeObject
 {
 	public float StartBeat;
 	public float EndBeat;

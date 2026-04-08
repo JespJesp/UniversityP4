@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
 
-namespace JespRuntime;
+namespace JespRuntime.Objects;
 
-public class Pitch
+public class Pitch : RuntimeObject
 {
 	/// <summary>
 	/// Goes from C=0 to B=11.

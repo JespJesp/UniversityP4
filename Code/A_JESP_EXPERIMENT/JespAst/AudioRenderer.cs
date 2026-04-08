@@ -1,38 +1,39 @@
+using JespAst.Nodes.Timelines;
+using JespAst.Tables;
+using JespRuntime.Objects;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using Runtime;
 
-namespace Evaluation;
+namespace JespAst;
 
 public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void Render()
+	public static void Render(VariableTable globalVariables)
 	{
-		List<ISampleProvider> sounds = CreateSounds();
+		List<ISampleProvider> sounds = CreateSounds(globalVariables);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 	}
 
-	public static List<ISampleProvider> CreateSounds()
+	public static List<ISampleProvider> CreateSounds(VariableTable globalVariables)
 	{
 		List<ISampleProvider> sounds = new();
 
-		foreach (Loop loop in Runtime.Environment.TheTimeline.Loops)
+		foreach (Loop loop in Timeline.Loops)
 		{
-			Melody melody = loop.TheMelody;
-			foreach (string sampleId in melody.SampleIds)
+			Melody melody = loop.Melody0;
+			foreach (Sample sample in melody.Samples)
 			{
-				Sample sample = Runtime.Environment.Samples[sampleId];
 				foreach (Note note in melody.Notes)
 				{
-					float loops = loop.LengthInBeats / loop.TheMelody.LengthInBeats;
+					float loops = loop.LengthInBeats / melody.LengthInBeats;
 
 					int wholeLoops = (int)Math.Floor(loops);
 					for (int i = 0; i < wholeLoops; i++)
 					{
-						float melodyStartBeat = loop.StartBeat + i * loop.TheMelody.LengthInBeats;
+						float melodyStartBeat = loop.StartBeat + i * melody.LengthInBeats;
 
 						float globalStartBeat = melodyStartBeat + note.StartBeat;
 
@@ -45,7 +46,7 @@ public static class AudioRenderer
 					float loopsRemainder = loops - wholeLoops;
 					if (loopsRemainder != 0)
 					{
-						float melodyStartBeat = loop.StartBeat + wholeLoops * loop.TheMelody.LengthInBeats;
+						float melodyStartBeat = loop.StartBeat + wholeLoops * melody.LengthInBeats;
 						if (melodyStartBeat + note.StartBeat >= loop.LengthInBeats)
 						{
 							continue; // Skip "dead" notes that are played afte the loop has ended
@@ -53,7 +54,7 @@ public static class AudioRenderer
 
 						float globalStartBeat = melodyStartBeat + note.StartBeat;
 
-						float durationInBeatsMax = loop.LengthInBeats - wholeLoops * loop.TheMelody.LengthInBeats - note.StartBeat;
+						float durationInBeatsMax = loop.LengthInBeats - wholeLoops * melody.LengthInBeats - note.StartBeat;
 						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
 						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
@@ -84,7 +85,7 @@ public static class AudioRenderer
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
 		{
-			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.ThePitch)
+			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch0)
 		};
 
 		var offsetter = new OffsetSampleProvider(pitchShifter)

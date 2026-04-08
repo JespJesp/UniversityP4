@@ -1,15 +1,16 @@
 using JespAst.Tables;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using LexicalAnalysis.Tokens;
 using System.Globalization;
 
 namespace JespAst.Nodes.Patterns;
 
-public class PatternDeclarationNode(Node parent) : Node(parent)
+public class PatternNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public string Id = "";
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
+	public Pattern Pattern0;
 
 	protected override void Parse()
 	{
@@ -23,26 +24,22 @@ public class PatternDeclarationNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
-		localSymbols.Add(typeof(PatternDeclarationNode), Id);
+		symbols.Add(typeof(PatternNode), Id);
 
-		if (string.IsNullOrWhiteSpace(Id))
-		{
-			AddSemanticError("ID cannot be empty");
-		}
 		if (LengthInBeats <= 0)
 		{
-			AddSemanticError("Length cannot be <= 0");
+			Annotator.AddSemanticError($"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable localVariables)
 	{
-		Pattern pattern = new()
+		this.Pattern0 = new()
 		{
 			LengthInBeats = this.LengthInBeats
 		};
-		localVariables.Upsert(pattern, Id);
+		localVariables.Upsert(this.Pattern0, Id);
 	}
 }

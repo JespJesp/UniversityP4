@@ -5,7 +5,7 @@ using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Chords;
 
-public class ChordNode(Node parent) : Node(parent)
+public class ChordNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public float StartBeat;
 	public float EndBeat;
@@ -21,21 +21,21 @@ public class ChordNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
-		MelodyDeclarationNode melodyDeclarationNode = localNodes.Get<MelodyDeclarationNode>();
+		MelodyNode melodyDeclarationNode = ancestors.Get<MelodyNode>();
 
 		if (EndBeat > melodyDeclarationNode.LengthInBeats)
 		{
-			AddSemanticError($"Note end time {EndBeat} exceeds melody length {melodyDeclarationNode.LengthInBeats}");
+			Annotator.AddSemanticError($"Melody: {melodyDeclarationNode.Id}. Note end time {EndBeat} exceeds melody length {melodyDeclarationNode.LengthInBeats}");
 		}
 		if (StartBeat < 0 || EndBeat < 0)
 		{
-			AddSemanticError($"Start time and end time must be positive: {StartBeat}-{EndBeat}");
+			Annotator.AddSemanticError($"Melody: {melodyDeclarationNode.Id}. Start time and end time must be positive: {StartBeat}-{EndBeat}");
 		}
 		if (StartBeat >= EndBeat)
 		{
-			AddSemanticError($"Start time must be less than end time: {StartBeat}-{EndBeat}");
+			Annotator.AddSemanticError($"Melody: {melodyDeclarationNode.Id}. Start time must be less than end time: {StartBeat}-{EndBeat}");
 		}
 	}
 }

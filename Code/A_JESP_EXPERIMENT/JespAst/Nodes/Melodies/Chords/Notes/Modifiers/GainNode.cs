@@ -1,11 +1,11 @@
 using System.Globalization;
 using JespAst.Tables;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class GainNode(Node parent) : Node(parent)
+public class GainNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public float Volume = 1;
 
@@ -14,17 +14,20 @@ public class GainNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
+		MelodyNode melodyDeclarationNode = ancestors.Get<MelodyNode>();
+		NoteNode noteNode = ancestors.Get<NoteNode>();
+
 		if (Volume < 0.0f)
 		{
-			AddSemanticError($"Volume cannot be negative, but was: {Volume}");
+			Annotator.AddSemanticError($"Melody: '{melodyDeclarationNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
 	{
-		Note note = localSymbolTable.Get<Note>();
+		Note note = ancestors.Get<NoteNode>().Note0;
 		note.Volume = Volume;
 	}
 }

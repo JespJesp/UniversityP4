@@ -1,13 +1,14 @@
 using JespAst.Tables;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using JespAst.Nodes.Melodies.Chords.Notes.Modifiers;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Chords.Notes;
 
-public class NoteNode(Node parent) : Node(parent)
+public class NoteNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public string Pitch = "";
+	public Note Note0;
 
 	protected override void Parse()
 	{
@@ -19,18 +20,18 @@ public class NoteNode(Node parent) : Node(parent)
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable variables)
 	{
-		Melody melody = localVariables.Get<Melody>(localNodes.Get<MelodyDeclarationNode>().Id);
-		ChordNode chordNode = localNodes.Get<ChordNode>();
+		Melody melody = ancestors.Get<MelodyNode>().Melody0;
+		ChordNode chordNode = ancestors.Get<ChordNode>();
 
-		Note note = new()
+		this.Note0 = new()
 		{
 			StartBeat = chordNode.StartBeat,
 			EndBeat = chordNode.EndBeat,
 			Pitch0 = new(this.Pitch)
 		};
-		melody.Notes.Add(note);
+		melody.Notes.Add(Note0);
 	}
 }
 

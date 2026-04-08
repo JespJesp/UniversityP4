@@ -2,7 +2,7 @@ using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class ModifiersNode(Node parent) : Node(parent)
+public class ModifiersNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	protected override void Parse()
 	{

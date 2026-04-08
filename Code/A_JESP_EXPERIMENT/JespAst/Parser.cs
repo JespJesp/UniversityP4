@@ -1,21 +1,42 @@
+using JespAst.Nodes;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst;
 
 public static class Parser
 {
-	public static Token CurrentToken;
+	private static int _cursorPosition = 0;
+	private static List<Token> _tokens = new();
+	private static List<string> _syntaxErrors = new();
 
-	private static void AdvanceCursor()
+	public static Token CurrentToken => _tokens[_cursorPosition];
+	private static void AdvanceCursor() => _cursorPosition++;
+
+	public static ProgramNode ParseTree(List<Token> inputTokens)
 	{
-		// TODO: Implement
+		_tokens = inputTokens;
+		_cursorPosition = 0;
+
+		ProgramNode programNode = new ProgramNode();
+		programNode.CascadeParse();
+
+		if (_syntaxErrors.Any())
+		{
+			throw new Exception("Syntax errors:\n" + string.Join("\n- ", _syntaxErrors));
+		}
+
+		return programNode;
 	}
 
-	public static void AddError()
+	public static void AddSyntaxError(string errorMessage)
 	{
-		// TODO: Implement
+		_syntaxErrors.Add($"Line: {CurrentToken.Line}. Column: {CurrentToken.Column}. Token type: {CurrentToken.Type}. {errorMessage}");
 
-		// TODO: If there is an error on a line, skip that line (so consume every token until you reach a newline token)
+		// Skip everything on the line where the syntax error occurred
+		while (CurrentToken.Type != TokenType.Newline)
+		{
+			AdvanceCursor();
+		}
 	}
 
 	public static void ConsumeToken(TokenType required, Action<string>? useValue = null)

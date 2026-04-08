@@ -1,11 +1,11 @@
 using JespAst.Tables;
 using JespAst.Nodes.Melodies;
-using JespRuntime.Nodes;
+using JespRuntime.Objects;
 using LexicalAnalysis.Tokens;
 
 namespace JespAst.Nodes.Patterns;
 
-public class ReferenceNode(Node parent) : Node(parent)
+public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public string Id = "";
 
@@ -16,17 +16,17 @@ public class ReferenceNode(Node parent) : Node(parent)
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = length + value; });
 	}
 
-	protected override void Annotate(NodeTable localNodes, SymbolTable localSymbols)
+	protected override void Annotate(NodeTable ancestors, SymbolTable symbols)
 	{
-		if (!localSymbols.Contains(typeof(PatternDeclarationNode), Id) && !localSymbols.Contains(typeof(MelodyDeclarationNode), Id))
+		if (!symbols.Contains(typeof(PatternNode), Id) && !symbols.Contains(typeof(MelodyNode), Id))
 		{
-			AddSemanticError($"The pattern or melody reference '{Id}' is not declared");
+			Annotator.AddSemanticError($"Pattern: '{Id}'. The pattern or melody reference '{Id}' is not declared");
 		}
 	}
 
-	protected override void Evaluate(NodeTable localNodes, VariableTable localVariables)
+	protected override void Evaluate(NodeTable ancestors, VariableTable localVariables)
 	{
-		Pattern pattern = localVariables.Get<Pattern>(localNodes.Get<PatternDeclarationNode>().Id);
+		Pattern pattern = localVariables.Get<Pattern>(ancestors.Get<PatternNode>().Id);
 
 		if (localVariables.TryGet(this.Id, out Pattern childPattern))
 		{

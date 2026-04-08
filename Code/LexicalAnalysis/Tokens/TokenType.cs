@@ -5,7 +5,7 @@ public enum TokenType
 	// Identifier and keywords
 	Identifier,
 	TimelineKeyword,
-	SamplesKeyword,
+	SampleKeyword,
 	NotesKeyword,
 	MelodyKeyword,
 	PatternKeyword,

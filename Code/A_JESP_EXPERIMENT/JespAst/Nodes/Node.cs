@@ -6,68 +6,81 @@ namespace JespAst.Nodes;
 public abstract class Node
 {
 	protected List<Node> _children = new();
-	//TODO: Implement syntax errors
-	protected List<Exception> _semanticErrors = new();
+	bool _createsNestedScope;
 
-	public Node(Node parent)
+	public Node(Node parent, bool createsNestedScope = false)
 	{
 		parent._children.Add(this);
-	}
-
-	protected void AddSemanticError(string message)
-	{
-		_semanticErrors.Add(new Exception(message));
+		this._createsNestedScope = createsNestedScope;
 	}
 
 	protected abstract void Parse();
 	public void CascadeParse()
 	{
-		Parse();
-		foreach (Node child in _children)
+		try
 		{
-			child.Parse();
+			Parse();
+			foreach (Node child in _children)
+			{
+				child.CascadeParse();
+			}
+		}
+		catch (Exception exception)
+		{
+			Parser.AddSyntaxError($"Node type: {this.GetType()}. {exception.Message}");
 		}
 	}
 
-	protected virtual void Annotate(NodeTable localNodes, SymbolTable localSymbols) { }
-	public void CascadeAnnotateChildren(NodeTable localNodes, SymbolTable localSymbols)
+	protected virtual void Annotate(NodeTable ancestors, SymbolTable symbols) { }
+	public void CascadeAnnotate(NodeTable ancestors, SymbolTable symbols)
 	{
-		foreach (Node child in _children)
-		{
-			child.Annotate(localNodes, localSymbols);
-		}
-		
+		Annotate(ancestors, symbols);
+
 		// TODO: Rewrite this comment explanation to be better.
 		// Letting the children to work on and modify a clones
 		// ensures that they don't affect nodes outside of their scope.
 
-		var childrensLocalNodes = localNodes.Clone();
-		childrensLocalNodes.Upsert(this);
-		var childrensLocalSymbols = localSymbols.Clone();
-		
+		var childrensAncestors = ancestors.Clone();
+		childrensAncestors.Upsert(this);
+
+		var childrensSymbols = symbols;
+		if (_createsNestedScope)
+		{
+			childrensSymbols = symbols.Clone();
+		}
+
 		foreach (Node child in _children)
 		{
-			child.CascadeAnnotateChildren(childrensLocalNodes, childrensLocalSymbols);
+			child.CascadeAnnotate(childrensAncestors, childrensSymbols);
 		}
 	}
 
-	protected virtual void Evaluate(NodeTable localNodes, VariableTable localVariables) { }
-	public void CascadeEvaluateChildren(NodeTable localNodes, VariableTable localVariables)
+	protected virtual void Evaluate(NodeTable ancestors, VariableTable variables) { }
+	public void CascadeEvaluate(NodeTable ancestors, VariableTable variables)
 	{
-		foreach (Node child in _children)
+		try
 		{
-			child.Evaluate(localNodes, localVariables);
+			Evaluate(ancestors, variables);
+		}
+		catch (Exception exception)
+		{
+			throw new Exception($"Node: {this.GetType()}. {exception.Message}");
 		}
 
 		// TODO: Write comment explanation of why we use clone here
 
-		var childrensLocalNodes = localNodes.Clone();
-		childrensLocalNodes.Upsert(this);
-		var childrensLocalVariables = localVariables.Clone();
+		var childrensAncestors = ancestors.Clone();
+		childrensAncestors.Upsert(this);
+
+		var childrensVariables = variables;
+		if (_createsNestedScope)
+		{
+			childrensVariables = variables.Clone();
+		}
 
 		foreach (Node child in _children)
 		{
-			child.CascadeEvaluateChildren(childrensLocalNodes, childrensLocalVariables);
+			child.CascadeEvaluate(childrensAncestors, childrensVariables);
 		}
 	}
 }

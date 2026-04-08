@@ -18,7 +18,14 @@ public class NodeTable
 
 	public T Get<T>() where T : Node
 	{
-		return (T)_nodes[typeof(T)];
+		T result = (T)_nodes[typeof(T)];
+
+		if (result == null)
+		{
+			throw new Exception($"Internal error: Cannot get node of type '{typeof(T)}' from node table because the node does not exist.");
+		}
+
+		return result;
 	}
 
 	public void Upsert(Node node)
