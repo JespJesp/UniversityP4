@@ -7,9 +7,8 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies;
 
-public class MelodyNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class MelodyNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
 {
-	public string Id = "";
 	public float LengthInBeats;
 	public Melody Melody0;
 
@@ -27,7 +26,7 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Node(par
 				() => { new SampleReferencesNode(this); }
 			},
 			{
-				TokenType.NotesKeyword,
+				TokenType.ChordsKeyword,
 				() => { new ChordsNode(this); }
 			}
 		};
@@ -35,10 +34,8 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Node(par
 		Parser.HandleUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		symbols.Add(this, Id);
-
 		if (LengthInBeats <= 0)
 		{
 			Annotator.AddSemanticError(this, $"Melody: '{Id}'. Length cannot be <= 0");

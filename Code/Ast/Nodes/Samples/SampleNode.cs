@@ -4,9 +4,8 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Samples;
 
-public class SampleNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class SampleNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
 {
-	public string Id = "";
 	public string FilePath = "";
 	public string ReferencePitch = "";
 	Sample Sample0;
@@ -19,10 +18,8 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Node(par
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		symbols.Add(this, Id);
-
 		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
 		{
 			Annotator.AddSemanticError(this, $"Sample: '{Id}'. File path '{FilePath}' must be a .wav file");

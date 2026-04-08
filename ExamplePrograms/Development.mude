@@ -8,7 +8,7 @@ melody 8_guitar
 	samples
 		guitar
 		flute
-	notes
+	chords
 		1 5 c4(gain 20)
 		2 8 d5
 
@@ -20,8 +20,8 @@ comment that is quite long
 melody 16_flute
 	samples
 		flute
-	notes
-		0 8 a4(gain 0.2) c5(gain 0.2) e5(gain 0.2, pan -1)
+	chords
+		0 8 a4(gain 0.2) c5(gain 0.2) e5(pan -1, gain 0.2)
 		8 10 b5(gain 0.2)
 		10 12 b5(gain 0.6)
 		12 14 b5(gain 1)

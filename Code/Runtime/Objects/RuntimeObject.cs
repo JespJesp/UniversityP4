@@ -1,6 +1,6 @@
 namespace Runtime.Objects;
 
-public class RuntimeObject
+public abstract class RuntimeObject
 {
 
 }

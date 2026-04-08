@@ -6,7 +6,7 @@ public class ChordsNode(Node parent, bool createsNestedScope = false) : Node(par
 {
 	protected override void Parse()
 	{
-		Parser.ConsumeToken(TokenType.NotesKeyword);
+		Parser.ConsumeToken(TokenType.ChordsKeyword);
 
 		while (Parser.TryConsumeIndent(2))
 		{

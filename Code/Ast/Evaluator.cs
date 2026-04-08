@@ -37,13 +37,13 @@ public static class Evaluator
 			Console.WriteLine("Samples:");
 			foreach (Sample sample in melody.Samples)
 			{
-				Console.WriteLine($"  - '{sample.FilePath}', reference pitch = {sample.ReferencePitch.PitchClass}{sample.ReferencePitch.Octave}");
+				Console.WriteLine($"  - '{sample.FilePath}', reference pitch octave = {sample.ReferencePitch.Octave}");
 			}
 
 			Console.WriteLine("Notes:");
 			foreach (Note note in melody.Notes)
 			{
-				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Pitch: {note.Pitch0.PitchClass}{note.Pitch0.Octave}, Volume: {note.Volume}, Pan: {note.Pan}");
+				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Pitch octave: {note.Pitch0.Octave}, Volume: {note.Volume}, Pan: {note.Pan}");
 			}
 		}
 	}

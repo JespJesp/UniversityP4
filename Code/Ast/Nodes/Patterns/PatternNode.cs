@@ -5,9 +5,8 @@ using System.Globalization;
 
 namespace Ast.Nodes.Patterns;
 
-public class PatternNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class PatternNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
 {
-	public string Id = "";
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
 	public Pattern Pattern0;
@@ -24,10 +23,8 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Node(pa
 		}
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		symbols.Add(this, Id);
-
 		if (LengthInBeats <= 0)
 		{
 			Annotator.AddSemanticError(this, $"Pattern: '{Id}'. Length cannot be <= 0");

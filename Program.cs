@@ -8,7 +8,8 @@ internal class Program
 	{
 		if (args.Length != 1)
 		{
-			throw new Exception("Error in program argument: No file path provided to be interpreted.");
+			Console.WriteLine("Error in program argument: No file path provided to be interpreted.");
+			return;
 		}
 
 		string filePath = args[0];

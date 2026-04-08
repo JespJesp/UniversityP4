@@ -28,20 +28,15 @@ public class SemanticSymbolTable
 		// TODO: Throw semantic error if you try to overwrite a symbol inside of the same scope level
 		// (because then it isn't a shadow variable, but a double declaration - which is erroneous)
 
-		Console.WriteLine("---------"); // REMOVE THIS	
-		Console.WriteLine($"ID: {id}, Type: {node.GetType()}"); // REMOVE THIS	
-
 		if (_symbols.TryGetValue((node.GetType(), id), out int oldScope))
 		{
-			Console.WriteLine("Found"); // REMOVE THIS	
-			if (node.Scope <= oldScope)
+			if (node.ScopeDepth <= oldScope)
 			{
-				Console.WriteLine("=============== SCOPE IS THE SAME!"); // REMOVE THIS	
-				Annotator.AddSemanticError(node, $"ID: '{id}'. Scope depth: '{node.Scope}'. Double declaration within the same scope level.");
+				Annotator.AddSemanticError(node, $"ID: '{id}'. Scope depth: '{node.ScopeDepth}'. Double declaration within the same scope level.");
 			}
 		}
 
-		_symbols[(node.GetType(), id)] = node.Scope;
+		_symbols[(node.GetType(), id)] = node.ScopeDepth;
 	}
 
 }

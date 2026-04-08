@@ -6,7 +6,7 @@ namespace Ast.Nodes;
 public abstract class Node
 {
 	protected List<Node> _children = new();
-	public int Scope { get; }
+	public int ScopeDepth { get; }
 	private bool _createsNestedScope;
 
 	public Node(Node parent, bool createsNestedScope = false)
@@ -19,16 +19,16 @@ public abstract class Node
 			parent._children.Add(this);
 			if (parent._createsNestedScope)
 			{
-				this.Scope = parent.Scope + 1;
+				this.ScopeDepth = parent.ScopeDepth + 1;
 			}
 			else
 			{
-				this.Scope = parent.Scope;
+				this.ScopeDepth = parent.ScopeDepth;
 			}
 		}
 		else
 		{
-			this.Scope = 0;
+			this.ScopeDepth = 0;
 		}
 
 		this._createsNestedScope = createsNestedScope;

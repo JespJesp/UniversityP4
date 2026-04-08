@@ -7,7 +7,7 @@ public enum TokenType
 	TimelineKeyword,
 	SampleKeyword,
 	SamplesKeyword,
-	NotesKeyword,
+	ChordsKeyword,
 	MelodyKeyword,
 	PatternKeyword,
 	GainKeyword,

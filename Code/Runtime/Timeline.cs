@@ -18,6 +18,4 @@ public static class Timeline
 	public static int BeatNoteValue = 4; // TODO: Implement user-defined time signature
 
 	public static List<Loop> Loops = new();
-
-	// TODO: Not implemented yet
 }
