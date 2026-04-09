@@ -1,7 +1,6 @@
-﻿using LexicalAnalysis;
-using SyntaxAnalysis;
-using SemanticAnalysis;
-using Evaluation;
+﻿using Ast;
+using Ast.Nodes;
+using Lexing;
 
 internal class Program
 {
@@ -9,26 +8,28 @@ internal class Program
 	{
 		if (args.Length != 1)
 		{
-			throw new Exception("Error in program argument: No file path provided to be interpreted.");
+			Console.WriteLine("Error in program argument: No file path provided to be interpreted.");
+			return;
 		}
 
 		string filePath = args[0];
 		string fileText = File.ReadAllText(filePath);
-		InterpretText(fileText);
+
+		try
+		{
+			InterpretText(fileText);
+		}
+		catch (Exception exception)
+		{
+			Console.WriteLine($"Error interpreting file: {exception}");
+		}
 	}
 
 	private static void InterpretText(string text)
 	{
-		try
-		{
-			var tokens = new LexicalAnalyzer().Lex(text);
-			var song = new SyntaxAnalyzer().Parse(tokens);
-			new SemanticAnalyzer().Validate(song);
-			new Evaluator().Evaluate(song);
-		}
-		catch (Exception exception)
-		{
-			Console.WriteLine($"Error interpreting file: {exception.Message}");
-		}
+		var tokens = Lexer.Lex(text);
+		ProgramNode astRoot = Parser.ParseTree(tokens);
+		Annotator.AnnotateTree(astRoot);
+		Evaluator.EvaluateTree(astRoot);
 	}
 }
