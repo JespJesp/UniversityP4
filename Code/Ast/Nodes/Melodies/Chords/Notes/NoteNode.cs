@@ -8,7 +8,7 @@ namespace Ast.Nodes.Melodies.Chords.Notes;
 public class NoteNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	public string Pitch = "";
-	public Note Note0;
+	public Note Note0 = new();
 
 	protected override void Parse()
 	{
@@ -25,12 +25,10 @@ public class NoteNode(Node parent, bool createsNestedScope = false) : Node(paren
 		Melody melody = ancestors.Get<MelodyNode>().Melody0;
 		ChordNode chordNode = ancestors.Get<ChordNode>();
 
-		this.Note0 = new()
-		{
-			StartBeat = chordNode.StartBeat,
-			EndBeat = chordNode.EndBeat,
-			Pitch0 = new(this.Pitch)
-		};
+		this.Note0.StartBeat = chordNode.StartBeat;
+		this.Note0.EndBeat = chordNode.EndBeat;
+		this.Note0.Pitch0 = new(this.Pitch);
+
 		melody.Notes.Add(Note0);
 	}
 }

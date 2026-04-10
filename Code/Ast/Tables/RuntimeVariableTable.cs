@@ -1,3 +1,4 @@
+using Ast.Nodes;
 using Runtime.Objects;
 
 namespace Ast.Tables;
@@ -40,9 +41,9 @@ public class RuntimeVariableTable
 		}
 	}
 
-	public void Upsert(RuntimeObject value, string id)
+	public void Upsert(RuntimeObject value, VariableNode symbolNode)
 	{
-		_variables[(value.GetType(), id)] = value;
+		_variables[(value.GetType(), symbolNode.Id)] = value;
 	}
 
 }

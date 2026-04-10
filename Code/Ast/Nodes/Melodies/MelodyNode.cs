@@ -7,10 +7,10 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies;
 
-public class MelodyNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
+public class MelodyNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
 {
 	public float LengthInBeats;
-	public Melody Melody0;
+	public Melody Melody0 = new();
 
 	protected override void Parse()
 	{
@@ -42,13 +42,14 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : SymbolNo
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
 	{
-		this.Melody0 = new()
-		{
-			LengthInBeats = this.LengthInBeats
-		};
-		variables.Upsert(this.Melody0, Id);
+		this.Melody0.LengthInBeats = this.LengthInBeats;
+	}
+
+	protected override RuntimeObject GetRuntimeObject()
+	{
+		return this.Melody0;
 	}
 }
 

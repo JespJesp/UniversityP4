@@ -5,11 +5,11 @@ using System.Globalization;
 
 namespace Ast.Nodes.Patterns;
 
-public class PatternNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
+public class PatternNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
 {
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
-	public Pattern Pattern0;
+	public Pattern Pattern0 = new();
 
 	protected override void Parse()
 	{
@@ -31,12 +31,13 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : SymbolN
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable localVariables)
+	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable localVariables)
 	{
-		this.Pattern0 = new()
-		{
-			LengthInBeats = this.LengthInBeats
-		};
-		localVariables.Upsert(this.Pattern0, Id);
+		this.Pattern0.LengthInBeats = this.LengthInBeats;
+	}
+
+	protected override RuntimeObject GetRuntimeObject()
+	{
+		return this.Pattern0;
 	}
 }

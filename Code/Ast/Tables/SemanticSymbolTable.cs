@@ -23,20 +23,20 @@ public class SemanticSymbolTable
 		return _symbols.ContainsKey((type, id));
 	}
 
-	public void Add(Node node, string id)
+	public void Add(VariableNode symbolNode)
 	{
 		// TODO: Throw semantic error if you try to overwrite a symbol inside of the same scope level
 		// (because then it isn't a shadow variable, but a double declaration - which is erroneous)
 
-		if (_symbols.TryGetValue((node.GetType(), id), out int oldScope))
+		if (_symbols.TryGetValue((symbolNode.GetType(), symbolNode.Id), out int oldScope))
 		{
-			if (node.ScopeDepth <= oldScope)
+			if (symbolNode.ScopeDepth <= oldScope)
 			{
-				Annotator.AddSemanticError(node, $"ID: '{id}'. Scope depth: '{node.ScopeDepth}'. Double declaration within the same scope level.");
+				Annotator.AddSemanticError(symbolNode, $"ID: '{symbolNode.Id}'. Scope depth: '{symbolNode.ScopeDepth}'. Double declaration within the same scope level.");
 			}
 		}
 
-		_symbols[(node.GetType(), id)] = node.ScopeDepth;
+		_symbols[(symbolNode.GetType(), symbolNode.Id)] = symbolNode.ScopeDepth;
 	}
 
 }
