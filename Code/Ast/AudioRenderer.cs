@@ -67,7 +67,7 @@ public static class AudioRenderer
 
 		return sounds;
 	}
-
+ 
 	private static ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats)
 	{
 		// TODO: Don't use "Directory.GetCurrentDirectory()"
@@ -81,9 +81,9 @@ public static class AudioRenderer
 			Volume = note.Volume
 		};
 
-		// TODO: Implement panning
+		var panProvider = new StereoPanningSampleProvider(volumeProvider, note.Pan);
 
-		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
+		var pitchShifter = new SmbPitchShiftingSampleProvider(panProvider)
 		{
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch0)
 		};
