@@ -20,10 +20,12 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Variable
 
 	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+			&& !FilePath.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
+			&& !FilePath.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
+			&& !FilePath.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Annotator.AddSemanticError(this, $"Sample: '{Id}'. File path '{FilePath}' must be a .wav file");
-			// TODO: Also allow for .mp3, .flac, and such (all the audio files that NAudio supports)
+			Annotator.AddError(this, $"Sample: '{Id}'. File path '{FilePath}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 

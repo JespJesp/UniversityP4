@@ -38,7 +38,7 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddSemanticError(this, $"Melody: '{Id}'. Length cannot be <= 0");
+			Annotator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

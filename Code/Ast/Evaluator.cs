@@ -7,15 +7,15 @@ namespace Ast;
 
 public static class Evaluator
 {
-	public static void EvaluateTree(ProgramNode programNode)
+	public static void EvaluateTree(ProgramNode programNode, string inputFileFolderPath)
 	{
 		try
 		{
 			RuntimeVariableTable globalVariables = new();
 			programNode.CascadeEvaluate(new(), globalVariables);
-			AudioRenderer.Render(globalVariables);
+			AudioRenderer.Render(globalVariables, inputFileFolderPath);
 
-			PrintToConsole(globalVariables);
+			ExamplePrintToConsole();
 		}
 		catch (Exception exception)
 		{
@@ -24,7 +24,7 @@ public static class Evaluator
 	}
 
 	// TODO: Remove after debugging. It's just an example.
-	private static void PrintToConsole(RuntimeVariableTable globalVariables)
+	private static void ExamplePrintToConsole()
 	{
 		foreach (Loop loop in Timeline.Loops)
 		{

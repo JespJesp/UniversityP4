@@ -20,7 +20,7 @@ public class SampleReferenceNode(Node parent, bool createsNestedScope = false) :
 
 		if (!symbols.Contains(typeof(SampleNode), Id))
 		{
-			Annotator.AddSemanticError(this, $"Melody: '{melodyNode.Id}'. The sample reference '{Id}' is not declared");
+			Annotator.AddError(this, $"Melody: '{melodyNode.Id}'. The sample reference '{Id}' is not declared");
 		}
 	}
 

@@ -42,6 +42,15 @@ public static class Lexer
 
 		while (Cursor.Position < _inputText.Length)
 		{
+			// We use chained if-statements here instead of a switch,
+			// because we not only look at the value of "CursorChar", 
+			// but also need to use methods (such as "char.IsWhiteSpace()").
+			// Switches can support methods using the "where" keyword, 
+			// but this prevents the switch from acting as a jump table,
+			// because the method cannot be treated as a constant,
+			// so we'd gain no performance benefit from using the switch instead of if-statements.
+			// Furthermore, the switch would be less readable because of the added syntax
+			// needed to use the "where" keyword, so if-statements are more readable here.
 			if (char.IsWhiteSpace(CursorChar))
 			{
 				WhitespaceLexer.Lex();

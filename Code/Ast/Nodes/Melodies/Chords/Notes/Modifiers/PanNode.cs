@@ -22,7 +22,7 @@ public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent
 
 		if (Pan < -1.0f || Pan > 1.0f)
 		{
-			Annotator.AddSemanticError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
+			Annotator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
 		}
 	}
 

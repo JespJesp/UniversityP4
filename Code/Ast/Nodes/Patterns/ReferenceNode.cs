@@ -7,20 +7,20 @@ namespace Ast.Nodes.Patterns;
 
 public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
-	public string Id = "";
+	public string ReferenceId = "";
 
 	protected override void Parse()
 	{
 		string length = "";
 		Parser.ConsumeToken(TokenType.Float, (value) => { length = value; });
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = length + value; });
+		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
 	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		if (!symbols.Contains(typeof(PatternNode), Id) && !symbols.Contains(typeof(MelodyNode), Id))
+		if (!symbols.Contains(typeof(PatternNode), ReferenceId) && !symbols.Contains(typeof(MelodyNode), ReferenceId))
 		{
-			Annotator.AddSemanticError(this, $"Pattern: '{Id}'. The pattern or melody reference '{Id}' is not declared");
+			Annotator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 
@@ -28,17 +28,17 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 	{
 		Pattern pattern = localVariables.Get<Pattern>(ancestors.Get<PatternNode>().Id);
 
-		if (localVariables.TryGet(this.Id, out Pattern childPattern))
+		if (localVariables.TryGet(this.ReferenceId, out Pattern childPattern))
 		{
 			pattern.Patterns.Add(childPattern);
 		}
-		else if (localVariables.TryGet(this.Id, out Melody childMelody))
+		else if (localVariables.TryGet(this.ReferenceId, out Melody childMelody))
 		{
 			pattern.Melodies.Add(childMelody);
 		}
 		else
 		{
-			throw new Exception($"Pattern references undefined ID '{this.Id}'");
+			throw new Exception($"Pattern references undefined ID '{this.ReferenceId}'");
 		}
 	}
 }

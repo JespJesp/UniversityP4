@@ -9,12 +9,19 @@ public abstract class Node
 	public int ScopeDepth { get; }
 	private bool _createsNestedScope;
 
-	public Node(Node parent, bool createsNestedScope = false)
+	/// <summary>
+	/// This constructor automatically sets up parent-child relations and parses the node.
+	/// </summary>
+	public Node(Node? parent, bool createsNestedScope = false)
 	{
-		// TODO: Parent is only null if it is the program node (so the root node)
-		// so, I should rewrite this to require a parent and then have ProgramNode
-		// have its own separate logic.
-		if (parent is not null)
+		this._createsNestedScope = createsNestedScope;
+
+		// If parent is null, then this node is the root node of the tree
+		if (parent is null)
+		{
+			this.ScopeDepth = 0;
+		}
+		else
 		{
 			parent._children.Add(this);
 			if (parent._createsNestedScope)
@@ -26,12 +33,6 @@ public abstract class Node
 				this.ScopeDepth = parent.ScopeDepth;
 			}
 		}
-		else
-		{
-			this.ScopeDepth = 0;
-		}
-
-		this._createsNestedScope = createsNestedScope;
 
 		try
 		{
@@ -39,7 +40,7 @@ public abstract class Node
 		}
 		catch (Exception exception)
 		{
-			Parser.AddSyntaxError($"Node type: {this.GetType()}. {exception.Message}");
+			Parser.AddError($"Node type: {this.GetType()}. {exception.Message}");
 		}
 	}
 
@@ -50,18 +51,11 @@ public abstract class Node
 	{
 		Annotate(ancestors, symbols);
 
-		// TODO: Rewrite this comment explanation to be better.
-		// Letting the children to work on and modify a clones
-		// ensures that they don't affect nodes outside of their scope.
-
+		// We clone the inherited tables and let the children work with the clone in cases
+		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
+		var childrensSymbols = _createsNestedScope ? symbols.Clone() : symbols;
 		var childrensAncestors = ancestors.Clone();
 		childrensAncestors.Upsert(this);
-
-		var childrensSymbols = symbols;
-		if (_createsNestedScope)
-		{
-			childrensSymbols = symbols.Clone();
-		}
 
 		foreach (Node child in _children)
 		{
@@ -81,16 +75,11 @@ public abstract class Node
 			throw new Exception($"Node: {this.GetType()}. {exception.Message}");
 		}
 
-		// TODO: Write comment explanation of why we use clone here
-
+		// We clone the inherited tables and let the children work with the clone in cases
+		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
+		var childrensVariables = _createsNestedScope ? variables.Clone() : variables;
 		var childrensAncestors = ancestors.Clone();
 		childrensAncestors.Upsert(this);
-
-		var childrensVariables = variables;
-		if (_createsNestedScope)
-		{
-			childrensVariables = variables.Clone();
-		}
 
 		foreach (Node child in _children)
 		{

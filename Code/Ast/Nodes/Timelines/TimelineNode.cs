@@ -23,8 +23,20 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Node(p
 		// TODO: Implement this
 
 		// TODO: Remove this; it's for testing
-		Timeline.Loops.Add(new(variables.Get<Melody>("8_guitar"), 0, 8));
-		Timeline.Loops.Add(new(variables.Get<Melody>("16_flute"), 12, 64));
+		Loop exampleLoop1 = new()
+		{
+			Melody0 = variables.Get<Melody>("8_guitar"),
+			StartBeat = 0,
+			EndBeat = 8
+		};
+		Loop exampleLoop2 = new()
+		{
+			Melody0 = variables.Get<Melody>("16_flute"),
+			StartBeat = 12,
+			EndBeat = 64
+		};
+		Timeline.Loops.Add(exampleLoop1);
+		Timeline.Loops.Add(exampleLoop2);
 	}
 }
 

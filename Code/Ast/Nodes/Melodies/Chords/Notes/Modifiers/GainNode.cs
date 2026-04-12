@@ -22,7 +22,7 @@ public class GainNode(Node parent, bool createsNestedScope = false) : Node(paren
 
 		if (Volume < 0.0f)
 		{
-			Annotator.AddSemanticError(this, $"Melody: '{melodyNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
+			Annotator.AddError(this, $"Melody: '{melodyNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
 		}
 	}
 

@@ -16,7 +16,7 @@ public static class Annotator
 		}
 	}
 
-	public static void AddSemanticError(Node node, string errorMessage)
+	public static void AddError(Node node, string errorMessage)
 	{
 		_semanticErrors.Add($"Node: '{node.GetType()}'. {errorMessage}");
 	}

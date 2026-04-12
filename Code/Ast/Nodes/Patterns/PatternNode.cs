@@ -27,7 +27,7 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddSemanticError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
+			Annotator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
