@@ -64,6 +64,10 @@ public class LexicalAnalyzer
 				Tokens.Add(new Token(TokenType.Comma, ",", Cursor.Line, Cursor.Column));
 				Cursor.MoveToNextColumn();
 			}
+			else if (CursorChar() == '/')
+			{
+				ForwardSlashLexer.Lex(this);
+			}
 			else if (CursorChar() == '-' || char.IsDigit(CursorChar()))
 			{
 				NumberLexer.Lex(this);

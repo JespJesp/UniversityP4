@@ -1,87 +1,54 @@
 using LexicalAnalysis;
-using AST;
+using AbstractSyntax;
+using System.Globalization;
 
 namespace SyntaxAnalysis.Parsers;
 
 public static class TimelineParser
 {
-	public static void Parse(SyntaxAnalyzer a)
+	public static void Parse(SyntaxAnalyzer analyzer)
 	{
-		a.ConsumeToken(TokenType.TimelineKeyword);
+		analyzer.ConsumeToken(TokenType.TimelineKeyword);
+		RuntimeEnvironment.TheTimeline.Reset();
 
-		ParseTimelineContent(a, a.OutputSong.TheTimeline);
-	}
-
-	private static void ParseTimelineContent(SyntaxAnalyzer a, Timeline timeline)
-	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(1))
+		while (analyzer.TryConsumeIndents(1))
 		{
-			string firstIdentifier = a.CursorToken().Value.ToLower();
-			
-			if (firstIdentifier == "settings")
+			string firstIdentifier = analyzer.CursorToken().Value;
+			if (string.Equals(firstIdentifier, "settings", StringComparison.OrdinalIgnoreCase))
 			{
-				ParseSettings(a, timeline.Settings);
+				analyzer.ConsumeToken(TokenType.Identifier);
+				ParseSettings(analyzer, RuntimeEnvironment.TheTimeline.Settings);
+				continue;
 			}
-			else if (firstIdentifier == "start" || firstIdentifier == "stop")
-			{
-				// Command without identifier
-				string commandType = firstIdentifier;
-				a.ConsumeToken(TokenType.Identifier);
-				
-				switch (commandType)
-				{
-					case "start": ParseStartCommandWithId(a, timeline, ""); break;
-					case "stop": ParseStopCommandWithId(a, timeline, ""); break;
-				}
-			}
-			else
-			{
-				// Identifier followed by command type
-				string commandId = firstIdentifier;
-				a.ConsumeToken(TokenType.Identifier);
-				
-				string commandType = a.CursorToken().Value.ToLower();
-				switch (commandType)
-				{
-					case "start": ParseStartCommandWithId(a, timeline, commandId); break;
-					case "stop": ParseStopCommandWithId(a, timeline, commandId); break;
-					default: throw new Exception($"Unexpected timeline command type: {commandType}");
-				}
-			}
+
+			ParseCommand(analyzer, RuntimeEnvironment.TheTimeline, firstIdentifier);
 		}
 	}
 
-	private static void ParseSettings(SyntaxAnalyzer a, TimelineSettings settings)
+	private static void ParseSettings(SyntaxAnalyzer analyzer, TimelineSettings settings)
 	{
-		a.ConsumeToken(TokenType.Identifier);
-
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
+		while (analyzer.TryConsumeIndents(2))
 		{
-			string settingName = a.CursorToken().Value.ToLower();
-			a.ConsumeToken(TokenType.Identifier);
+			string settingName = analyzer.CursorToken().Value.ToLowerInvariant();
+			analyzer.ConsumeToken(TokenType.Identifier);
 
 			switch (settingName)
 			{
 				case "timesignature":
-					string numerator = "";
-					string denominator = "";
-
-					a.ConsumeToken(TokenType.Integer, () =>
+					analyzer.ConsumeToken(TokenType.Integer, () =>
 					{
-						numerator = a.CursorToken().Value;
+						settings.TimeSignatureNumerator = int.Parse(analyzer.CursorToken().Value, CultureInfo.InvariantCulture);
 					});
-					a.ConsumeToken(TokenType.ForwardSlash);
-					a.ConsumeToken(TokenType.Integer, () =>
+					analyzer.ConsumeToken(TokenType.ForwardSlash);
+					analyzer.ConsumeToken(TokenType.Integer, () =>
 					{
-						denominator = a.CursorToken().Value;
+						settings.TimeSignatureDenominator = int.Parse(analyzer.CursorToken().Value, CultureInfo.InvariantCulture);
 					});
-
-					settings.TimeSignature = $"{numerator}/{denominator}";
 					break;
 				case "bpm":
-					a.ConsumeToken(TokenType.Integer, () =>
+					analyzer.ConsumeToken(TokenType.Integer, () =>
 					{
-						settings.Bpm = int.Parse(a.CursorToken().Value);
+						settings.Bpm = int.Parse(analyzer.CursorToken().Value, CultureInfo.InvariantCulture);
 					});
 					break;
 				default:
@@ -90,56 +57,105 @@ public static class TimelineParser
 		}
 	}
 
-	private static void ParseStartCommandWithId(SyntaxAnalyzer a, Timeline timeline, string commandId)
+	private static void ParseCommand(SyntaxAnalyzer analyzer, Timeline timeline, string firstIdentifier)
 	{
-		a.ConsumeToken(TokenType.Identifier);
-		
-		var command = new TimelineCommand { Type = TimelineCommandType.Start, Id = commandId };
-		
-		if (a.CursorToken().Type == TokenType.Integer)
+		string commandId = "";
+		string commandType = firstIdentifier.ToLowerInvariant();
+
+		if (commandType != "start" && commandType != "stop")
 		{
-			a.ConsumeToken(TokenType.Integer, () =>
-			{
-				command.Beat = int.Parse(a.CursorToken().Value);
-			});
+			commandId = firstIdentifier;
+			analyzer.ConsumeToken(TokenType.Identifier);
+			commandType = analyzer.CursorToken().Value.ToLowerInvariant();
 		}
 
-		ParsePatternList(a, command);
+		analyzer.ConsumeToken(TokenType.Identifier);
+
+		TimelineCommand command = commandType switch
+		{
+			"start" => new TimelineCommand { Id = commandId, Type = TimelineCommandType.Start },
+			"stop" => new TimelineCommand { Id = commandId, Type = TimelineCommandType.Stop },
+			_ => throw new Exception($"Unexpected timeline command type: {commandType}")
+		};
+
+		ParseOptionalCommandBeat(analyzer, command);
+		ParseOptionalCommandModifiers(analyzer, command);
+		ParseCommandTargets(analyzer, command);
 		timeline.Commands.Add(command);
 	}
 
-	private static void ParseStopCommandWithId(SyntaxAnalyzer a, Timeline timeline, string commandId)
+	private static void ParseOptionalCommandBeat(SyntaxAnalyzer analyzer, TimelineCommand command)
 	{
-		a.ConsumeToken(TokenType.Identifier);
-		
-		var command = new TimelineCommand { Type = TimelineCommandType.Stop, Id = commandId };
-		
-		a.ConsumeToken(TokenType.Integer, () =>
+		if (analyzer.CursorToken().Type != TokenType.Integer && analyzer.CursorToken().Type != TokenType.Float)
 		{
-			command.Beat = int.Parse(a.CursorToken().Value);
+			return;
+		}
+
+		analyzer.ConsumeToken(TokenType.Float, () =>
+		{
+			command.Beat = float.Parse(analyzer.CursorToken().Value, CultureInfo.InvariantCulture);
 		});
-
-		ParsePatternList(a, command);
-		timeline.Commands.Add(command);
 	}
 
-	private static void ParsePatternList(SyntaxAnalyzer a, TimelineCommand command)
+	private static void ParseOptionalCommandModifiers(SyntaxAnalyzer analyzer, TimelineCommand command)
 	{
-		while (!a.HasConsumedAllTokens() && a.TryConsumeNewLineAndTabs(2))
+		if (!analyzer.TryConsumeToken(TokenType.LeftParentheses))
 		{
-			if (a.CursorToken().Type == TokenType.Integer)
+			return;
+		}
+
+		while (true)
+		{
+			if (analyzer.TryConsumeToken(TokenType.GainKeyword))
 			{
-				a.ConsumeToken(TokenType.Integer);
-				a.ConsumeToken(TokenType.Identifier, () =>
+				analyzer.ConsumeToken(TokenType.Float, () =>
 				{
-					command.PatternNames.Add(a.CursorToken().Value);
+					command.GainMultiplier = float.Parse(analyzer.CursorToken().Value, CultureInfo.InvariantCulture);
+				});
+			}
+			else if (analyzer.CursorToken().Type == TokenType.Identifier && string.Equals(analyzer.CursorToken().Value, "pitch", StringComparison.OrdinalIgnoreCase))
+			{
+				analyzer.ConsumeToken(TokenType.Identifier);
+				analyzer.ConsumeToken(TokenType.Float, () =>
+				{
+					command.PitchShiftHalfsteps = float.Parse(analyzer.CursorToken().Value, CultureInfo.InvariantCulture);
+				});
+			}
+			else
+			{
+				throw new Exception("Expected timeline modifier 'gain' or 'pitch'");
+			}
+
+			if (!analyzer.TryConsumeToken(TokenType.Comma))
+			{
+				break;
+			}
+		}
+
+		analyzer.ConsumeToken(TokenType.RightParentheses);
+	}
+
+	private static void ParseCommandTargets(SyntaxAnalyzer analyzer, TimelineCommand command)
+	{
+		while (analyzer.TryConsumeIndents(2))
+		{
+			if (analyzer.CursorToken().Type == TokenType.Integer)
+			{
+				string lengthPart = "";
+				analyzer.ConsumeToken(TokenType.Integer, () =>
+				{
+					lengthPart = analyzer.CursorToken().Value;
+				});
+				analyzer.ConsumeToken(TokenType.Identifier, () =>
+				{
+					command.TargetIds.Add(lengthPart + analyzer.CursorToken().Value);
 				});
 				continue;
 			}
 
-			a.ConsumeToken(TokenType.Identifier, () =>
+			analyzer.ConsumeToken(TokenType.Identifier, () =>
 			{
-				command.PatternNames.Add(a.CursorToken().Value);
+				command.TargetIds.Add(analyzer.CursorToken().Value);
 			});
 		}
 	}

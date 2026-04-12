@@ -98,7 +98,9 @@ public static class AudioRenderer
 
 	private static float ConvertBeatsToSeconds(float beats)
 	{
-		return beats / RuntimeEnvironment.BeatNoteValue * 60f / RuntimeEnvironment.BeatsPerMinute;
+		// Tempo is treated as quarter-notes per minute.
+		// One timeline beat is a 1/BeatNoteValue note, so scale by 4/BeatNoteValue.
+		return beats * 60f / RuntimeEnvironment.BeatsPerMinute * 4f / RuntimeEnvironment.BeatNoteValue;
 	}
 
 	private static float GetPitchFactor(Pitch samplePitch, Pitch notePitch)

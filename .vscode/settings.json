@@ -1,6 +1,26 @@
 {
-	// Indent styling
-	"editor.tabSize": 3,
-	"editor.insertSpaces": false,
-	"editor.detectIndentation": false,
+  // Indent styling
+  "editor.tabSize": 3,
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": false,
+
+  // Requires extension: emeraldwalk.runonsave
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        // macOS/Linux path style: no backslashes in absolute path
+        "match": "\\.mude$",
+        "notMatch": "\\\\",
+        "isAsync": true,
+        "cmd": "out_dir=\"${workspaceFolder}/GeneratedOutput\"; mkdir -p \"$out_dir\"; dotnet run --project \"${workspaceFolder}/UniversityP4.csproj\" -- \"${file}\" && stamp=$(date +%Y%m%d-%H%M%S)-$RANDOM && out_file=\"$out_dir/ProgramOutput-$stamp.wav\" && cp \"${workspaceFolder}/ProgramOutput.wav\" \"$out_file\" && (killall afplay >/dev/null 2>&1 || true) && afplay \"$out_file\""
+      },
+      {
+        // Windows path style: backslashes in absolute path
+        "match": "\\.mude$",
+        "notMatch": "/",
+        "isAsync": true,
+        "cmd": "dotnet run --project \"${workspaceFolder}\\\\UniversityP4.csproj\" -- \"${file}\" && powershell -NoProfile -Command \"$outDir='${workspaceFolder}\\\\GeneratedOutput'; New-Item -ItemType Directory -Force -Path $outDir | Out-Null; $stamp=Get-Date -Format 'yyyyMMdd-HHmmss'; $outFile=Join-Path $outDir ('ProgramOutput-' + $stamp + '-' + (Get-Random) + '.wav'); Copy-Item '${workspaceFolder}\\\\ProgramOutput.wav' $outFile -Force; $player = New-Object System.Media.SoundPlayer $outFile; $player.PlaySync()\""
+      }
+    ]
+  }
 }
