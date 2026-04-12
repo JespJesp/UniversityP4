@@ -34,11 +34,11 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 		Parser.HandleUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
+			Validator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

@@ -14,13 +14,13 @@ public class SampleReferenceNode(Node parent, bool createsNestedScope = false) :
 		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = value);
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
 
 		if (!symbols.Contains(typeof(SampleNode), Id))
 		{
-			Annotator.AddError(this, $"Melody: '{melodyNode.Id}'. The sample reference '{Id}' is not declared");
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. The sample reference '{Id}' is not declared");
 		}
 	}
 

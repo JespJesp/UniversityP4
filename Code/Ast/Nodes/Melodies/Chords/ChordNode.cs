@@ -21,21 +21,21 @@ public class ChordNode(Node parent, bool createsNestedScope = false) : Node(pare
 		}
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
 
 		if (EndBeat > melodyNode.LengthInBeats)
 		{
-			Annotator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat} exceeds melody length {melodyNode.LengthInBeats}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat} exceeds melody length {melodyNode.LengthInBeats}");
 		}
 		if (StartBeat < 0 || EndBeat < 0)
 		{
-			Annotator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat}-{EndBeat}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat}-{EndBeat}");
 		}
 		if (StartBeat >= EndBeat)
 		{
-			Annotator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat}-{EndBeat}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat}-{EndBeat}");
 		}
 	}
 }

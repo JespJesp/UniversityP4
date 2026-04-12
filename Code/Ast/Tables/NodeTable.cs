@@ -26,6 +26,11 @@ public class NodeTable
 		return result;
 	}
 
+	/// <summary>
+	/// "Upsert" means "update or insert", so this either
+	/// 1) adds a new entry, if no entry with the inputted key exists, or
+	/// 2) overwrites an old entry, if an entry with the inputted key already exists.
+	/// </summary>
 	public void Upsert(Node node)
 	{
 		_nodes[node.GetType()] = node;

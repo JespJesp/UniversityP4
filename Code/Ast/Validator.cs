@@ -2,13 +2,13 @@ using Ast.Nodes;
 
 namespace Ast;
 
-public static class Annotator
+public static class Validator
 {
 	private static List<string> _semanticErrors = new();
 
-	public static void AnnotateTree(ProgramNode programNode)
+	public static void ValidateTree(ProgramNode programNode)
 	{
-		programNode.CascadeAnnotate(new(), new());
+		programNode.CascadeValidate(new(), new());
 
 		if (_semanticErrors.Any())
 		{

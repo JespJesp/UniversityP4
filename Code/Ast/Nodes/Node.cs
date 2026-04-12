@@ -44,12 +44,9 @@ public abstract class Node
 		}
 	}
 
-	protected abstract void Parse();
-
-	protected virtual void Annotate(NodeTable ancestors, SemanticSymbolTable symbols) { }
-	public void CascadeAnnotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public void CascadeValidate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		Annotate(ancestors, symbols);
+		Validate(ancestors, symbols);
 
 		// We clone the inherited tables and let the children work with the clone in cases
 		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
@@ -59,11 +56,10 @@ public abstract class Node
 
 		foreach (Node child in _children)
 		{
-			child.CascadeAnnotate(childrensAncestors, childrensSymbols);
+			child.CascadeValidate(childrensAncestors, childrensSymbols);
 		}
 	}
 
-	protected virtual void Evaluate(NodeTable ancestors, RuntimeVariableTable variables) { }
 	public void CascadeEvaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
 		try
@@ -86,5 +82,9 @@ public abstract class Node
 			child.CascadeEvaluate(childrensAncestors, childrensVariables);
 		}
 	}
+
+	protected abstract void Parse();
+	protected virtual void Validate(NodeTable ancestors, SemanticSymbolTable symbols) { }
+	protected virtual void Evaluate(NodeTable ancestors, RuntimeVariableTable variables) { }
 }
 
