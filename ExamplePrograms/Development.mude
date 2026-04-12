@@ -27,4 +27,11 @@ melody 16_flute
 		12 14 b5(gain 1)
 		14 16 b5(gain 1.4)
 
+melody 8_newSyntaxExample
+	chords
+		0 2 guitar c4
+		2 4 flute d5
+		4 6 guitar e4
+		6 8 flute c5
+
 timeline
