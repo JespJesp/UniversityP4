@@ -1,7 +1,7 @@
 # Summary
 A programming language for sketching music demo songs.
 
-# About the Example Samples
+# About the samples provided in the ExamplePrograms folder
 All example samples have been recorded by our team.
 
 # Dependencies
