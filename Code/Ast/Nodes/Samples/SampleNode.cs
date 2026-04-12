@@ -4,11 +4,11 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Samples;
 
-public class SampleNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
+public class SampleNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
 {
 	public string FilePath = "";
 	public string ReferencePitch = "";
-	Sample Sample0;
+	Sample Sample0 = new();
 
 	protected override void Parse()
 	{
@@ -20,21 +20,24 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : SymbolNo
 
 	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+			&& !FilePath.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
+			&& !FilePath.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
+			&& !FilePath.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Annotator.AddSemanticError(this, $"Sample: '{Id}'. File path '{FilePath}' must be a .wav file");
-			// TODO: Also allow for .mp3, .flac, and such (all the audio files that NAudio supports)
+			Annotator.AddError(this, $"Sample: '{Id}'. File path '{FilePath}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
 	{
-		this.Sample0 = new()
-		{
-			FilePath = this.FilePath,
-			ReferencePitch = new(this.ReferencePitch)
-		};
-		variables.Upsert(this.Sample0, Id);
+		this.Sample0.FilePath = this.FilePath;
+		this.Sample0.ReferencePitch = new(this.ReferencePitch);
+	}
+
+	protected override RuntimeObject GetRuntimeObject()
+	{
+		return this.Sample0;
 	}
 }
 

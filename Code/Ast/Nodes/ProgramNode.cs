@@ -1,23 +1,32 @@
-using System.Runtime.CompilerServices;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Timelines;
-using Ast.Tables;
 using Lexing.Tokens;
 
 namespace Ast.Nodes;
 
-public class ProgramNode(Node parent = null, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ProgramNode(Node? parent = null, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
 	protected override void Parse()
 	{
+		bool hasConsumedTimelineKeyword = false;
+
 		while (Parser.CurrentToken.Type != TokenType.EndOfFile)
 		{
-			//TODO: Implement that only one timeline keyword can be present (you can't define multiple timelines)
 			switch (Parser.CurrentToken.Type)
 			{
-				case TokenType.TimelineKeyword: new TimelineNode(this); break;
+				case TokenType.TimelineKeyword:
+					if (hasConsumedTimelineKeyword)
+					{
+						Parser.AddError($"Node type: {this.GetType()}. 'timeline' keyword appears multiple times.");
+					}
+					else
+					{
+						hasConsumedTimelineKeyword = true;
+						new TimelineNode(this);
+					}
+					break;
 				case TokenType.PatternKeyword: new PatternNode(this); break;
 				case TokenType.MelodyKeyword: new MelodyNode(this); break;
 				case TokenType.SampleKeyword: new SampleNode(this); break;

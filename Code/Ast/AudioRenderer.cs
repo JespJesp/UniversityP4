@@ -10,14 +10,14 @@ public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void Render(RuntimeVariableTable globalVariables)
+	public static void RenderToFile(RuntimeVariableTable globalVariables, string inputFileFolderPath)
 	{
-		List<ISampleProvider> sounds = CreateSounds(globalVariables);
+		List<ISampleProvider> sounds = CreateSounds(globalVariables, inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 	}
 
-	public static List<ISampleProvider> CreateSounds(RuntimeVariableTable globalVariables)
+	public static List<ISampleProvider> CreateSounds(RuntimeVariableTable globalVariables, string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
 
@@ -39,7 +39,7 @@ public static class AudioRenderer
 
 						float durationInBeats = note.EndBeat - note.StartBeat;
 
-						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats);
+						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
 						sounds.Add(sound);
 					}
 
@@ -58,7 +58,7 @@ public static class AudioRenderer
 						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
 						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
-						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats);
+						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
 						sounds.Add(sound);
 					}
 				}
@@ -68,10 +68,9 @@ public static class AudioRenderer
 		return sounds;
 	}
 
-	private static ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats)
+	private static ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
 	{
-		// TODO: Don't use "Directory.GetCurrentDirectory()"
-		var reader = new AudioFileReader(Directory.GetCurrentDirectory() + sample.FilePath);
+		var reader = new AudioFileReader(inputFileFolderPath + sample.FilePath);
 
 		// Resample the sound to ensure it uses the output's sample rate
 		var resampler = new WdlResamplingSampleProvider(reader, Timeline.SampleRate);
