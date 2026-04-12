@@ -18,14 +18,14 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Variable
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
 			&& !FilePath.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
 			&& !FilePath.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
 			&& !FilePath.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Annotator.AddError(this, $"Sample: '{Id}'. File path '{FilePath}' must be file of type .wav, .mp3, .aif, or .aiff");
+			Validator.AddError(this, $"Sample: '{Id}'. File path '{FilePath}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 

@@ -13,7 +13,7 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Node(p
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		// TODO: Implement this
 	}

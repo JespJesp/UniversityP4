@@ -23,11 +23,11 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 		}
 	}
 
-	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
+			Validator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

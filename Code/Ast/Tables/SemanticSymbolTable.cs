@@ -29,7 +29,7 @@ public class SemanticSymbolTable
 		{
 			if (symbolNode.ScopeDepth <= oldScope)
 			{
-				Annotator.AddError(symbolNode, $"ID: '{symbolNode.Id}'. Scope depth: '{symbolNode.ScopeDepth}'. Double declaration within the same scope level.");
+				Validator.AddError(symbolNode, $"ID: '{symbolNode.Id}'. Scope depth: '{symbolNode.ScopeDepth}'. Double declaration within the same scope level.");
 			}
 		}
 
