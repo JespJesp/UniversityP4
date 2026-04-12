@@ -13,7 +13,7 @@ public static class Evaluator
 		{
 			RuntimeVariableTable globalVariables = new();
 			programNode.CascadeEvaluate(new(), globalVariables);
-			AudioRenderer.Render(globalVariables, inputFileFolderPath);
+			AudioRenderer.RenderToFile(globalVariables, inputFileFolderPath);
 
 			ExamplePrintToConsole();
 		}

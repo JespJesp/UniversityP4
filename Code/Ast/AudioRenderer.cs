@@ -10,7 +10,7 @@ public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void Render(RuntimeVariableTable globalVariables, string inputFileFolderPath)
+	public static void RenderToFile(RuntimeVariableTable globalVariables, string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = CreateSounds(globalVariables, inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);

@@ -21,7 +21,7 @@ public abstract class VariableNode(Node parent, bool createsNestedScope = false)
 	}
 
 	/// <summary>
-	/// For example, if it is a PatternNode which has a field "ThePattern" for its Pattern runtime object, 
+	/// For example, if it is a PatternNode that has a field "ThePattern" for its Pattern runtime object, 
 	/// this method should just be "return this.ThePattern;"
 	/// </summary>
 	protected abstract RuntimeObject GetRuntimeObject();

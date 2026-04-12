@@ -30,7 +30,8 @@ public static class Parser
 	{
 		_syntaxErrors.Add($"Line: '{CurrentToken.Line}'. Column: '{CurrentToken.Column}'. Token type: '{CurrentToken.Type}'. Token value: '{CurrentToken.Value}'. {errorMessage}");
 
-		// Skip everything on the line where the syntax error occurred
+		// Skip everything on the line where the syntax error occurred,
+		// since the error will likely impact the whole line
 		while (CurrentToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
@@ -98,6 +99,15 @@ public static class Parser
 		return TryConsumeTokens(newlineAndIndent);
 	}
 
+	/// <summary>
+	/// Tries to consume TokenTypes and execute Actions
+	/// as specified in each "(TokenType, Action)" option pair.
+	/// Each option is separated by a separator (e.g. a comma Token).
+	/// Each option's token type: 
+	/// 1) is not required to appear, thereby making it "optional",
+	/// 2) may only appear once, thereby making it "unique",
+	/// 3) may appear in a random order.
+	/// </summary>
 	public static void HandleUniqueOptions(Dictionary<TokenType, Action> options, Token[] separator)
 	{
 		List<TokenType> usedTokenTypes = new();
