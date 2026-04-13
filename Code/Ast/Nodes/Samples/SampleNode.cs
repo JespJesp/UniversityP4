@@ -7,12 +7,10 @@ namespace Ast.Nodes.Samples;
 
 public class SampleNode : SymbolNode
 {
-	// TODO: public StringExpressionNode FilePath;
-	public string FilePath;
+	public StringExpressionNode FilePath;
 	public string ReferencePitch = "";
 
-	Sample Sample = new();
-	protected override RuntimeObject GetRuntimeObject() => this.Sample;
+	public Sample Sample = new();
 
 	public SampleNode(Node parent) : base(parent)
 	{
@@ -22,26 +20,25 @@ public class SampleNode : SymbolNode
 	{
 		Parser.ConsumeToken(TokenType.SampleKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		// TODO: FilePath = new StringExpressionNode(this);
-		Parser.ConsumeToken(TokenType.String, (value) => { FilePath = value; });
+		FilePath = new StringExpressionNode(this);
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void AdditionalAnnotation()
+	protected override void Validate()
 	{
-		string filePathValue = FilePath; // TODO: FilePath.Value()
+		string filePathValue = FilePath.GetValue();
 		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Annotator.AddError(this, $"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
+			Validator.AddError(this, $"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 
 	protected override void Evaluate()
 	{
-		this.Sample.FilePath = this.FilePath; // TODO: this.FilePath.GetValue();
+		this.Sample.FilePath = this.FilePath.GetValue();
 		this.Sample.ReferencePitch = new(this.ReferencePitch);
 	}
 }

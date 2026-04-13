@@ -5,20 +5,8 @@ namespace Ast;
 
 public static class Annotator
 {
-	private static List<string> _semanticErrors = new();
-
-	public static void ValidateTree(ProgramNode programNode)
+	public static void Annotate(ProgramNode programNode)
 	{
-		programNode.CascadeAnnotate(new());
-
-		if (_semanticErrors.Any())
-		{
-			throw new Exception("Semantic errors:\n- " + string.Join("\n- ", _semanticErrors));
-		}
-	}
-
-	public static void AddError(Node node, string errorMessage)
-	{
-		_semanticErrors.Add($"Node: '{node.GetType()}'. {errorMessage}");
+		programNode.AnnotateTree();
 	}
 }

@@ -6,11 +6,11 @@ namespace Ast;
 
 public static class Evaluator
 {
-	public static void EvaluateTree(ProgramNode programNode, string inputFileFolderPath)
+	public static void Evaluate(ProgramNode programNode, string inputFileFolderPath)
 	{
 		try
 		{
-			programNode.CascadeEvaluate();
+			programNode.EvaluateTree();
 			AudioRenderer.RenderToFile(inputFileFolderPath);
 			ExamplePrintToConsole();
 		}

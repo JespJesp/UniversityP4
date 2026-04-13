@@ -22,26 +22,26 @@ public class ReferenceNode : BranchNode
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
-	protected override void Annotate()
+	protected override void Validate()
 	{
-		if (!_symbolTable.Contains<Pattern>(ReferenceId) 
-			&& !_symbolTable.Contains<Melody>(ReferenceId))
+		if (!_symbolTable.Contains<PatternNode>(ReferenceId) 
+			&& !_symbolTable.Contains<MelodyNode>(ReferenceId))
 		{
-			Annotator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
+			Validator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 
 	protected override void Evaluate()
 	{
-		Pattern pattern = _symbolTable.Get<Pattern>(PatternNode.Id);
+		Pattern pattern = _symbolTable.Get<PatternNode>(PatternNode.Id).Pattern;
 
-		if (_symbolTable.TryGet(this.ReferenceId, out Pattern childPattern))
+		if (_symbolTable.TryGet(this.ReferenceId, out PatternNode childPatternNode))
 		{
-			pattern.Patterns.Add(childPattern);
+			pattern.Patterns.Add(childPatternNode.Pattern);
 		}
-		else if (_symbolTable.TryGet(this.ReferenceId, out Melody childMelody))
+		else if (_symbolTable.TryGet(this.ReferenceId, out MelodyNode childMelodyNode))
 		{
-			pattern.Melodies.Add(childMelody);
+			pattern.Melodies.Add(childMelodyNode.Melody);
 		}
 		else
 		{

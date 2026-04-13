@@ -6,8 +6,7 @@ namespace Ast.Nodes.Primitives;
 
 public class StringDeclarationNode : SymbolNode
 {
-	public StringVariable StringVariable = new();
-	protected override RuntimeObject GetRuntimeObject() => StringVariable;
+	public StringExpressionNode StringExpression;
 
 	public StringDeclarationNode(Node parent) : base(parent)
 	{
@@ -17,7 +16,7 @@ public class StringDeclarationNode : SymbolNode
 	{
 		Parser.ConsumeToken(TokenType.StringKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => this.Id = value);
-		new StringExpressionNode(this);
+		StringExpression = new StringExpressionNode(this);
 	}
 }
 

@@ -1,6 +1,5 @@
 using Ast.NodeArchetypes;
 using Lexing.Tokens;
-using Runtime.Objects;
 
 namespace Ast.Nodes.Primitives;
 
@@ -28,23 +27,29 @@ public class StringExpressionNode : BranchNode
 
 	protected override void Annotate()
 	{
-		// I need to assign the GetValue func here
-
-		if (_isIdentifier && !_symbolTable.Contains<StringVariable>(this._value))
-		{
-			Annotator.AddError(this, $"String variable with ID '{this._value}' is not declared.");
-		}
-	}
-
-	protected override void Evaluate()
-	{
 		if (_isIdentifier)
 		{
-			GetValue = () => _symbolTable.Get<StringVariable>(this._value).Value;
+			GetValue = () => _symbolTable.Get<StringDeclarationNode>(this._value).StringExpression.GetValue();
 		}
 		else
 		{
 			GetValue = () => _value;
+		}
+	}
+
+	protected override void Validate()
+	{
+		try
+		{
+			if (_isIdentifier && !_symbolTable.Contains<StringDeclarationNode>(this._value))
+			{
+				throw new Exception($"String variable with ID '{this._value}' is not declared.");
+			}
+		}
+		catch (Exception exception)
+		{
+			Validator.AddError(this, exception.Message);
+			GetValue = () => "";
 		}
 	}
 }

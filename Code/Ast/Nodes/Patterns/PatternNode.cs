@@ -9,9 +9,7 @@ public class PatternNode : SymbolNode
 {
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
-
 	public Pattern Pattern = new();
-	protected override RuntimeObject GetRuntimeObject() => this.Pattern;
 
 	public PatternNode(Node parent) : base(parent)
 	{
@@ -29,11 +27,11 @@ public class PatternNode : SymbolNode
 		}
 	}
 
-	protected override void AdditionalAnnotation()
+	protected override void Validate()
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
+			Validator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

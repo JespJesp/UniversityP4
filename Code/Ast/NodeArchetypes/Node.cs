@@ -43,22 +43,30 @@ public abstract class Node
 		}
 	}
 
-	public void CascadeAnnotate(SymbolTable symbols)
+	protected void CascadeAnnotate(SymbolTable symbols)
 	{
 		this._symbolTable = symbols;
-		Annotate();
-
 		// We clone the inherited table and let the children work with the clone in cases
 		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
 		var childrensSymbols = _createsNestedScope ? symbols.Clone() : symbols;
 
+		Annotate();
 		foreach (Node child in _children)
 		{
 			child.CascadeAnnotate(childrensSymbols);
 		}
 	}
 
-	public void CascadeEvaluate()
+	protected void CascadeValidate()
+	{
+		Validate();
+		foreach (Node child in _children)
+		{
+			child.CascadeValidate();
+		}
+	}
+
+	protected void CascadeEvaluate()
 	{
 		try
 		{
@@ -77,6 +85,7 @@ public abstract class Node
 
 	protected abstract void Parse();
 	protected virtual void Annotate() { }
+	protected virtual void Validate() { }
 	protected virtual void Evaluate() { }
 }
 

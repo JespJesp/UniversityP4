@@ -10,9 +10,7 @@ namespace Ast.Nodes.Melodies;
 public class MelodyNode : SymbolNode
 {
 	public float LengthInBeats;
-
 	public Melody Melody = new();
-	protected override RuntimeObject GetRuntimeObject() => this.Melody;
 
 	public MelodyNode(Node parent) : base(parent)
 	{
@@ -40,11 +38,11 @@ public class MelodyNode : SymbolNode
 		Parser.HandleUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void AdditionalAnnotation()
+	protected override void Validate()
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
+			Validator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

@@ -1,14 +1,9 @@
 
 % This is a comment %
 
-%
 string electricGuitarSample "/Samples/Instruments/electric guitar E4.wav"
 
 sample guitar electricGuitarSample e4
-sample flute "/Samples/Instruments/flute E.wav" e5
-%
-
-sample guitar "/Samples/Instruments/electric guitar E4.wav" e4
 sample flute "/Samples/Instruments/flute E.wav" e5
 
 melody 8_guitar

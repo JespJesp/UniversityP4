@@ -1,4 +1,5 @@
 using Ast.NodeArchetypes;
+using Ast.Nodes.Melodies;
 using Lexing.Tokens;
 using Runtime;
 using Runtime.Objects;
@@ -17,7 +18,7 @@ public class TimelineNode : BranchNode
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 	}
 
-	protected override void Annotate()
+	protected override void Validate()
 	{
 		// TODO: Implement this
 	}
@@ -29,13 +30,13 @@ public class TimelineNode : BranchNode
 		// TODO: Remove this; it's for testing
 		Loop exampleLoop1 = new()
 		{
-			Melody = _symbolTable.Get<Melody>("8_guitar"),
+			Melody = _symbolTable.Get<MelodyNode>("8_guitar").Melody,
 			StartBeat = 0,
 			EndBeat = 8
 		};
 		Loop exampleLoop2 = new()
 		{
-			Melody = _symbolTable.Get<Melody>("16_flute"),
+			Melody = _symbolTable.Get<MelodyNode>("16_flute").Melody,
 			StartBeat = 12,
 			EndBeat = 64
 		};

@@ -36,7 +36,8 @@ internal class Program
 	{
 		var tokens = Lexer.Lex(fileText);
 		ProgramNode astRoot = Parser.ParseTree(tokens);
-		Annotator.ValidateTree(astRoot);
-		Evaluator.EvaluateTree(astRoot, fileFolderPath);
+		Annotator.Annotate(astRoot);
+		Validator.Validate(astRoot);
+		Evaluator.Evaluate(astRoot, fileFolderPath);
 	}
 }
