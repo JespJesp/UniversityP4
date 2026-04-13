@@ -23,6 +23,7 @@ public enum TokenType
 	LeftParentheses,
 	RightParentheses,
 	Comma,
+	Plus,
 	Newline,
 	Indent,
 	EndOfFile

@@ -1,22 +1,21 @@
 using Ast.NodeArchetypes;
 using Lexing.Tokens;
 
-namespace Ast.Nodes.Primitives;
+namespace Ast.Nodes.Strings;
 
-public class StringExpressionNode : BranchNode
+internal class StringValueNode : BranchNode
 {
 	private string _value = "";
 	private bool _isIdentifier = false;
 	public Func<string> GetValue = () => throw new NotImplementedException("Internal error!");
 
-	public StringExpressionNode(Node parent) : base(parent)
+	public StringValueNode(StringExpressionNode parent) : base(parent)
 	{
+		parent.StringValueNodes.Add(this);
 	}
 
 	protected override void Parse()
 	{
-		// TODO: Add concatenation via "+" symbol.
-
 		_isIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => this._value = value);
 
 		if (!_isIdentifier)

@@ -74,6 +74,11 @@ public static class Lexer
 				Tokens.Add(new Token(TokenType.Comma, "", Cursor.Line, Cursor.Column));
 				Cursor.MoveToNextColumn();
 			}
+			else if (CursorChar == '+')
+			{
+				Tokens.Add(new Token(TokenType.Plus, "", Cursor.Line, Cursor.Column));
+				Cursor.MoveToNextColumn();
+			}
 			else if (CursorChar == '-' || char.IsDigit(CursorChar))
 			{
 				NumberLexer.Lex();

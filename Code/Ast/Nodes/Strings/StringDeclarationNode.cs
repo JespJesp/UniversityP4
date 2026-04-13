@@ -1,12 +1,11 @@
 using Ast.NodeArchetypes;
-using Runtime.Objects;
 using Lexing.Tokens;
 
-namespace Ast.Nodes.Primitives;
+namespace Ast.Nodes.Strings;
 
 public class StringDeclarationNode : SymbolNode
 {
-	public StringExpressionNode StringExpression;
+	internal StringExpressionNode StringExpression;
 
 	public StringDeclarationNode(Node parent) : base(parent)
 	{

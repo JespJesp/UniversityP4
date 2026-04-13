@@ -1,10 +1,11 @@
 
 % This is a comment %
 
-string electricGuitarSample "/Samples/Instruments/electric guitar E4.wav"
+string instrumentsFolder "/Samples/Instruments"
+string electricGuitarSample "/electric guitar E4.wav"
 
-sample guitar electricGuitarSample e4
-sample flute "/Samples/Instruments/flute E.wav" e5
+sample guitar instrumentsFolder + electricGuitarSample e4
+sample flute instrumentsFolder + "/flute E.wav" e5
 
 melody 8_guitar
 	samples
@@ -15,8 +16,8 @@ melody 8_guitar
 		2 8 d5
 
 % 
-This is a multi-line
-comment that is quite long 
+This is a 
+multi-line comment
 %
 
 melody 16_flute

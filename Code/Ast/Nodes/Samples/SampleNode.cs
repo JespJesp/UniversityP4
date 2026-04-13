@@ -1,7 +1,7 @@
 using Ast.NodeArchetypes;
 using Runtime.Objects;
 using Lexing.Tokens;
-using Ast.Nodes.Primitives;
+using Ast.Nodes.Strings;
 
 namespace Ast.Nodes.Samples;
 

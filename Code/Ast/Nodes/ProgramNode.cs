@@ -2,7 +2,7 @@ using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
-using Ast.Nodes.Primitives;
+using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
 using Lexing.Tokens;
 
