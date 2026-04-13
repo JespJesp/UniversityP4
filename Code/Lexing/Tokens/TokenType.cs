@@ -12,6 +12,7 @@ public enum TokenType
 	PatternKeyword,
 	GainKeyword,
 	PanKeyword,
+	StringKeyword,
 
 	// Values
 	Integer,

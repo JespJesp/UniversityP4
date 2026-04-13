@@ -2,15 +2,22 @@ using System.Globalization;
 using Ast.Tables;
 using Runtime.Objects;
 using Ast.Nodes.Melodies.Chords;
+using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies.Samples;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies;
 
-public class MelodyNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
+public class MelodyNode : VariableNode
 {
 	public float LengthInBeats;
-	public Melody Melody0 = new();
+
+	public Melody Melody = new();
+	protected override RuntimeObject GetRuntimeObject() => this.Melody;
+
+	public MelodyNode(Node parent) : base(parent)
+	{
+	}
 
 	protected override void Parse()
 	{
@@ -23,18 +30,18 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 		{
 			{
 				TokenType.SamplesKeyword,
-				() => { new SampleReferencesNode(this); }
+				() => { new SampleReferencesNode(this, this); }
 			},
 			{
 				TokenType.ChordsKeyword,
-				() => { new ChordsNode(this); }
+				() => { new ChordsNode(this, this); }
 			}
 		};
 		Token[] optionSeparator = { new(TokenType.Newline), new(TokenType.Indent, "1") };
 		Parser.HandleUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalValidation(SemanticSymbolTable symbols)
 	{
 		if (LengthInBeats <= 0)
 		{
@@ -42,14 +49,9 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 		}
 	}
 
-	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void AdditionalEvaluation(RuntimeVariableTable variables)
 	{
-		this.Melody0.LengthInBeats = this.LengthInBeats;
-	}
-
-	protected override RuntimeObject GetRuntimeObject()
-	{
-		return this.Melody0;
+		this.Melody.LengthInBeats = this.LengthInBeats;
 	}
 }
 

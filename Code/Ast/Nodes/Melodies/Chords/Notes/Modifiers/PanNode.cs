@@ -1,13 +1,20 @@
 using System.Globalization;
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class PanNode : BranchNode
 {
+	public ModifiersNode ModifiersNode;
 	public float Pan = 0;
+
+	public PanNode(Node parent, ModifiersNode modifiersNode) : base(parent)
+	{
+		this.ModifiersNode = modifiersNode;
+	}
 
 	protected override void Parse()
 	{
@@ -15,10 +22,10 @@ public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent
 		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(SemanticSymbolTable symbols)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
-		NoteNode noteNode = ancestors.Get<NoteNode>();
+		NoteNode noteNode = ModifiersNode.NoteNode;
+		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
 		if (Pan < -1.0f || Pan > 1.0f)
 		{
@@ -26,9 +33,9 @@ public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void Evaluate(RuntimeVariableTable variables)
 	{
-		Note note = ancestors.Get<NoteNode>().Note0;
+		Note note = ModifiersNode.NoteNode.Note;
 		note.Pan = Pan;
 	}
 }

@@ -1,20 +1,22 @@
+using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
+using Ast.Nodes.Primitives;
 using Ast.Nodes.Timelines;
 using Lexing.Tokens;
 
 namespace Ast.Nodes;
 
-public class ProgramNode(Node? parent = null, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ProgramNode : RootNode
 {
 	protected override void Parse()
 	{
 		bool hasConsumedTimelineKeyword = false;
 
-		while (Parser.CurrentToken.Type != TokenType.EndOfFile)
+		while (Parser.CursorToken.Type != TokenType.EndOfFile)
 		{
-			switch (Parser.CurrentToken.Type)
+			switch (Parser.CursorToken.Type)
 			{
 				case TokenType.TimelineKeyword:
 					if (hasConsumedTimelineKeyword)
@@ -30,6 +32,7 @@ public class ProgramNode(Node? parent = null, bool createsNestedScope = false) :
 				case TokenType.PatternKeyword: new PatternNode(this); break;
 				case TokenType.MelodyKeyword: new MelodyNode(this); break;
 				case TokenType.SampleKeyword: new SampleNode(this); break;
+				case TokenType.StringKeyword: new StringDeclarationNode(this); break;
 				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
 				default: throw new ArgumentOutOfRangeException($"Unexpected token");
 			}

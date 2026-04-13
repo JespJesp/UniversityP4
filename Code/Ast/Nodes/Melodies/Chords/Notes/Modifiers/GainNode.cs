@@ -1,13 +1,20 @@
 using System.Globalization;
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class GainNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class GainNode : BranchNode
 {
+	public ModifiersNode ModifiersNode;
 	public float Volume = 1;
+
+	public GainNode(Node parent, ModifiersNode modifiersNode) : base(parent)
+	{
+		this.ModifiersNode = modifiersNode;
+	}
 
 	protected override void Parse()
 	{
@@ -15,10 +22,10 @@ public class GainNode(Node parent, bool createsNestedScope = false) : Node(paren
 		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(SemanticSymbolTable symbols)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
-		NoteNode noteNode = ancestors.Get<NoteNode>();
+		NoteNode noteNode = ModifiersNode.NoteNode;
+		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
 		if (Volume < 0.0f)
 		{
@@ -26,9 +33,9 @@ public class GainNode(Node parent, bool createsNestedScope = false) : Node(paren
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void Evaluate(RuntimeVariableTable variables)
 	{
-		Note note = ancestors.Get<NoteNode>().Note0;
+		Note note = ModifiersNode.NoteNode.Note;
 		note.Volume = Volume;
 	}
 }

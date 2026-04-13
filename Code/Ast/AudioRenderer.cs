@@ -23,7 +23,7 @@ public static class AudioRenderer
 
 		foreach (Loop loop in Timeline.Loops)
 		{
-			Melody melody = loop.Melody0;
+			Melody melody = loop.Melody;
 			foreach (Sample sample in melody.Samples)
 			{
 				foreach (Note note in melody.Notes)
@@ -84,7 +84,7 @@ public static class AudioRenderer
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
 		{
-			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch0)
+			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
 		var offsetter = new OffsetSampleProvider(pitchShifter)

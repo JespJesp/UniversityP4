@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Nodes;
 
 namespace Ast;
@@ -8,7 +9,7 @@ public static class Validator
 
 	public static void ValidateTree(ProgramNode programNode)
 	{
-		programNode.CascadeValidate(new(), new());
+		programNode.CascadeValidate(new());
 
 		if (_semanticErrors.Any())
 		{

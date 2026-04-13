@@ -1,7 +1,6 @@
 using Ast.Tables;
-using Runtime;
 
-namespace Ast.Nodes;
+namespace Ast.NodeArchetypes;
 
 public abstract class Node
 {
@@ -10,9 +9,9 @@ public abstract class Node
 	private bool _createsNestedScope;
 
 	/// <summary>
-	/// This constructor automatically sets up parent-child relations and parses the node.
+	/// This constructor automatically parses the node.
 	/// </summary>
-	public Node(Node? parent, bool createsNestedScope = false)
+	public Node(Node? parent, bool createsNestedScope)
 	{
 		this._createsNestedScope = createsNestedScope;
 
@@ -34,6 +33,7 @@ public abstract class Node
 			}
 		}
 
+		// Parse the node
 		try
 		{
 			Parse();
@@ -44,47 +44,43 @@ public abstract class Node
 		}
 	}
 
-	public void CascadeValidate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public void CascadeValidate(SemanticSymbolTable symbols)
 	{
-		Validate(ancestors, symbols);
+		Validate(symbols);
 
-		// We clone the inherited tables and let the children work with the clone in cases
+		// We clone the inherited table and let the children work with the clone in cases
 		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
 		var childrensSymbols = _createsNestedScope ? symbols.Clone() : symbols;
-		var childrensAncestors = ancestors.Clone();
-		childrensAncestors.Upsert(this);
 
 		foreach (Node child in _children)
 		{
-			child.CascadeValidate(childrensAncestors, childrensSymbols);
+			child.CascadeValidate(childrensSymbols);
 		}
 	}
 
-	public void CascadeEvaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	public void CascadeEvaluate(RuntimeVariableTable variables)
 	{
 		try
 		{
-			Evaluate(ancestors, variables);
+			Evaluate(variables);
 		}
 		catch (Exception exception)
 		{
 			throw new Exception($"Node: {this.GetType()}. {exception.Message}");
 		}
 
-		// We clone the inherited tables and let the children work with the clone in cases
+		// We clone the inherited table and let the children work with the clone in cases
 		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
 		var childrensVariables = _createsNestedScope ? variables.Clone() : variables;
-		var childrensAncestors = ancestors.Clone();
-		childrensAncestors.Upsert(this);
 
 		foreach (Node child in _children)
 		{
-			child.CascadeEvaluate(childrensAncestors, childrensVariables);
+			child.CascadeEvaluate(childrensVariables);
 		}
 	}
 
 	protected abstract void Parse();
-	protected virtual void Validate(NodeTable ancestors, SemanticSymbolTable symbols) { }
-	protected virtual void Evaluate(NodeTable ancestors, RuntimeVariableTable variables) { }
+	protected virtual void Validate(SemanticSymbolTable symbols) { }
+	protected virtual void Evaluate(RuntimeVariableTable variables) { }
 }
 

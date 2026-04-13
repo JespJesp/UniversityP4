@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Lexing.Tokens;
 using Runtime;
@@ -5,33 +6,37 @@ using Runtime.Objects;
 
 namespace Ast.Nodes.Timelines;
 
-public class TimelineNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class TimelineNode : BranchNode
 {
+	public TimelineNode(Node parent) : base(parent)
+	{
+	}
+
 	protected override void Parse()
 	{
 		// TODO: Implement this
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(SemanticSymbolTable symbols)
 	{
 		// TODO: Implement this
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void Evaluate(RuntimeVariableTable variables)
 	{
 		// TODO: Implement this
 
 		// TODO: Remove this; it's for testing
 		Loop exampleLoop1 = new()
 		{
-			Melody0 = variables.Get<Melody>("8_guitar"),
+			Melody = variables.Get<Melody>("8_guitar"),
 			StartBeat = 0,
 			EndBeat = 8
 		};
 		Loop exampleLoop2 = new()
 		{
-			Melody0 = variables.Get<Melody>("16_flute"),
+			Melody = variables.Get<Melody>("16_flute"),
 			StartBeat = 12,
 			EndBeat = 64
 		};

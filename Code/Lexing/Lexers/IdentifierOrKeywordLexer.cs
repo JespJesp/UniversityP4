@@ -25,6 +25,7 @@ public static class IdentifierOrKeywordLexer
 			"chords" => TokenType.ChordsKeyword,
 			"gain" => TokenType.GainKeyword,
 			"pan" => TokenType.PanKeyword,
+			"string" => TokenType.StringKeyword,
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 

@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Ast.Nodes.Melodies;
 using Runtime.Objects;
@@ -5,9 +6,15 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Patterns;
 
-public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ReferenceNode : BranchNode
 {
+	public PatternNode PatternNode;
 	public string ReferenceId = "";
+
+	public ReferenceNode(Node parent, PatternNode patterNode) : base(parent)
+	{
+		this.PatternNode = patterNode;
+	}
 
 	protected override void Parse()
 	{
@@ -16,7 +23,7 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(SemanticSymbolTable symbols)
 	{
 		if (!symbols.Contains(typeof(PatternNode), ReferenceId) && !symbols.Contains(typeof(MelodyNode), ReferenceId))
 		{
@@ -24,9 +31,9 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable localVariables)
+	protected override void Evaluate(RuntimeVariableTable localVariables)
 	{
-		Pattern pattern = localVariables.Get<Pattern>(ancestors.Get<PatternNode>().Id);
+		Pattern pattern = localVariables.Get<Pattern>(PatternNode.Id);
 
 		if (localVariables.TryGet(this.ReferenceId, out Pattern childPattern))
 		{

@@ -1,29 +1,36 @@
 using System.Globalization;
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Ast.Nodes.Melodies.Chords.Notes;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
 
-public class ChordNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ChordNode : BranchNode
 {
+	public ChordsNode ChordsNode;
 	public float StartBeat;
 	public float EndBeat;
+
+	public ChordNode(Node parent, ChordsNode chordsNode) : base(parent)
+	{
+		this.ChordsNode = chordsNode;
+	}
 
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.Float, (value) => StartBeat = float.Parse(value, CultureInfo.InvariantCulture));
 		Parser.ConsumeToken(TokenType.Float, (value) => EndBeat = float.Parse(value, CultureInfo.InvariantCulture));
 
-		while (Parser.CurrentToken.Type == TokenType.Identifier)
+		while (Parser.CursorToken.Type == TokenType.Identifier)
 		{
-			new NoteNode(this);
+			new NoteNode(this, this);
 		}
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void Validate(SemanticSymbolTable symbols)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+		MelodyNode melodyNode = ChordsNode.MelodyNode;
 
 		if (EndBeat > melodyNode.LengthInBeats)
 		{

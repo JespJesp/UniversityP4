@@ -1,9 +1,17 @@
+using Ast.NodeArchetypes;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class ModifiersNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ModifiersNode : BranchNode
 {
+	public NoteNode NoteNode;
+
+	public ModifiersNode(Node parent, NoteNode noteNode) : base(parent)
+	{
+		this.NoteNode = noteNode;
+	}
+
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.LeftParentheses);
@@ -12,11 +20,11 @@ public class ModifiersNode(Node parent, bool createsNestedScope = false) : Node(
 		{
 			{
 				TokenType.GainKeyword,
-				() => { new GainNode(this); }
+				() => { new GainNode(this, this); }
 			},
 			{
 				TokenType.PanKeyword,
-				() => { new PanNode(this); }
+				() => { new PanNode(this, this); }
 			}
 		};
 		Token[] optionSeparator = { new(TokenType.Comma) };

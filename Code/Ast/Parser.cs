@@ -9,7 +9,7 @@ public static class Parser
 	private static List<Token> _tokens = new();
 	private static List<string> _syntaxErrors = new();
 
-	public static Token CurrentToken => _tokens[_cursorPosition];
+	public static Token CursorToken => _tokens[_cursorPosition];
 
 	public static ProgramNode ParseTree(List<Token> inputTokens)
 	{
@@ -28,11 +28,11 @@ public static class Parser
 
 	public static void AddError(string errorMessage)
 	{
-		_syntaxErrors.Add($"Line: '{CurrentToken.Line}'. Column: '{CurrentToken.Column}'. Token type: '{CurrentToken.Type}'. Token value: '{CurrentToken.Value}'. {errorMessage}");
+		_syntaxErrors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. {errorMessage}");
 
 		// Skip everything on the line where the syntax error occurred,
 		// since the error will likely impact the whole line
-		while (CurrentToken.Type != TokenType.Newline)
+		while (CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}
@@ -48,14 +48,14 @@ public static class Parser
 
 	public static bool TryConsumeToken(TokenType required, Action<string>? useValue = null)
 	{
-		if (!CurrentToken.Type.IsSubtypeOf(required))
+		if (!CursorToken.Type.IsSubtypeOf(required))
 		{
 			return false;
 		}
 
 		if (useValue is not null)
 		{
-			useValue(CurrentToken.Value);
+			useValue(CursorToken.Value);
 		}
 
 		_cursorPosition++;
@@ -113,14 +113,14 @@ public static class Parser
 		List<TokenType> usedTokenTypes = new();
 		do
 		{
-			if (options.TryGetValue(CurrentToken.Type, out Action? action))
+			if (options.TryGetValue(CursorToken.Type, out Action? action))
 			{
-				if (usedTokenTypes.Contains(CurrentToken.Type))
+				if (usedTokenTypes.Contains(CursorToken.Type))
 				{
-					throw new Exception($"Duplicate optional token '{CurrentToken.Type}'");
+					throw new Exception($"Duplicate optional token '{CursorToken.Type}'");
 				}
 
-				usedTokenTypes.Add(CurrentToken.Type);
+				usedTokenTypes.Add(CursorToken.Type);
 				action();
 			}
 		} while (TryConsumeTokens(separator));

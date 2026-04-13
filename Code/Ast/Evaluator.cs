@@ -12,7 +12,7 @@ public static class Evaluator
 		try
 		{
 			RuntimeVariableTable globalVariables = new();
-			programNode.CascadeEvaluate(new(), globalVariables);
+			programNode.CascadeEvaluate(globalVariables);
 			AudioRenderer.RenderToFile(globalVariables, inputFileFolderPath);
 
 			ExamplePrintToConsole();
@@ -28,7 +28,7 @@ public static class Evaluator
 	{
 		foreach (Loop loop in Timeline.Loops)
 		{
-			Melody melody = loop.Melody0;
+			Melody melody = loop.Melody;
 
 			Console.WriteLine($"\n=== Loop ====");
 			Console.WriteLine($"Loop length: {loop.LengthInBeats}");
@@ -43,7 +43,7 @@ public static class Evaluator
 			Console.WriteLine("Notes:");
 			foreach (Note note in melody.Notes)
 			{
-				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Pitch octave: {note.Pitch0.Octave}, Volume: {note.Volume}, Pan: {note.Pan}");
+				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Pitch octave: {note.Pitch.Octave}, Volume: {note.Volume}, Pan: {note.Pan}");
 			}
 		}
 	}

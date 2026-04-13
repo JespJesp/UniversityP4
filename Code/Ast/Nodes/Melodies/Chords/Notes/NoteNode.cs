@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Runtime.Objects;
 using Ast.Nodes.Melodies.Chords.Notes.Modifiers;
@@ -5,31 +6,35 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes;
 
-public class NoteNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class NoteNode : BranchNode
 {
+	public ChordNode ChordNode;
 	public string Pitch = "";
-	public Note Note0 = new();
+	public Note Note = new();
+
+	public NoteNode(Node parent, ChordNode chordsNode) : base(parent)
+	{
+		this.ChordNode = chordsNode;
+	}
 
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.Identifier, (value) => Pitch = value);
 
-		if (Parser.CurrentToken.Type == TokenType.LeftParentheses)
+		if (Parser.CursorToken.Type == TokenType.LeftParentheses)
 		{
-			new ModifiersNode(this);
+			new ModifiersNode(this, this);
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void Evaluate(RuntimeVariableTable variables)
 	{
-		Melody melody = ancestors.Get<MelodyNode>().Melody0;
-		ChordNode chordNode = ancestors.Get<ChordNode>();
+		this.Note.StartBeat = ChordNode.StartBeat;
+		this.Note.EndBeat = ChordNode.EndBeat;
+		this.Note.Pitch = new(this.Pitch);
 
-		this.Note0.StartBeat = chordNode.StartBeat;
-		this.Note0.EndBeat = chordNode.EndBeat;
-		this.Note0.Pitch0 = new(this.Pitch);
-
-		melody.Notes.Add(Note0);
+		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;
+		melody.Notes.Add(Note);
 	}
 }
 

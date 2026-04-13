@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
@@ -5,11 +6,17 @@ using System.Globalization;
 
 namespace Ast.Nodes.Patterns;
 
-public class PatternNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
+public class PatternNode : VariableNode
 {
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
-	public Pattern Pattern0 = new();
+
+	public Pattern Pattern = new();
+	protected override RuntimeObject GetRuntimeObject() => this.Pattern;
+
+	public PatternNode(Node parent) : base(parent)
+	{
+	}
 
 	protected override void Parse()
 	{
@@ -19,11 +26,11 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 
 		while (Parser.TryConsumeIndent(1))
 		{
-			new ReferenceNode(this);
+			new ReferenceNode(this, this);
 		}
 	}
 
-	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
+	protected override void AdditionalValidation(SemanticSymbolTable symbols)
 	{
 		if (LengthInBeats <= 0)
 		{
@@ -31,13 +38,8 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 		}
 	}
 
-	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable localVariables)
+	protected override void AdditionalEvaluation(RuntimeVariableTable localVariables)
 	{
-		this.Pattern0.LengthInBeats = this.LengthInBeats;
-	}
-
-	protected override RuntimeObject GetRuntimeObject()
-	{
-		return this.Pattern0;
+		this.Pattern.LengthInBeats = this.LengthInBeats;
 	}
 }
