@@ -1,5 +1,4 @@
 using System.Globalization;
-using Ast.Tables;
 using Runtime.Objects;
 using Ast.Nodes.Melodies.Chords;
 using Ast.NodeArchetypes;
@@ -8,7 +7,7 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies;
 
-public class MelodyNode : VariableNode
+public class MelodyNode : SymbolNode
 {
 	public float LengthInBeats;
 
@@ -41,15 +40,15 @@ public class MelodyNode : VariableNode
 		Parser.HandleUniqueOptions(options, optionSeparator);
 	}
 
-	protected override void AdditionalValidation(SemanticSymbolTable symbols)
+	protected override void AdditionalAnnotation()
 	{
 		if (LengthInBeats <= 0)
 		{
-			Validator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
+			Annotator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	protected override void AdditionalEvaluation(RuntimeVariableTable variables)
+	protected override void Evaluate()
 	{
 		this.Melody.LengthInBeats = this.LengthInBeats;
 	}

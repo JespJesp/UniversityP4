@@ -6,7 +6,7 @@ namespace Lexing;
 public static class Lexer
 {
 	private static string _inputText = "";
-	private static List<LexicalError> _errors = new();
+	private static List<LexicalError> _lexicalErrors = new();
 
 	public static List<Token> Tokens = new();
 	public static LexicalAnalyzerCursor Cursor = new();
@@ -23,10 +23,10 @@ public static class Lexer
 
 		LexText();
 
-		if (_errors.Any())
+		if (_lexicalErrors.Any())
 		{
 			string errorMessage = "Lexical errors:";
-			foreach (LexicalError error in _errors)
+			foreach (LexicalError error in _lexicalErrors)
 			{
 				errorMessage += $"\n- Line: {error.Line}, Column: {error.Column}, Message: {error.Message}";
 			}
@@ -88,7 +88,7 @@ public static class Lexer
 			}
 			else
 			{
-				_errors.Add(new LexicalError(Cursor.Column, Cursor.Line, $"Unknown token type: Character: '{CursorChar}'"));
+				_lexicalErrors.Add(new LexicalError(Cursor.Column, Cursor.Line, $"Unknown token type: Character: '{CursorChar}'"));
 				Cursor.MoveToNextColumn();
 			}
 		}
@@ -98,6 +98,6 @@ public static class Lexer
 
 	public static void AddError(LexicalError error)
 	{
-		_errors.Add(error);
+		_lexicalErrors.Add(error);
 	}
 }

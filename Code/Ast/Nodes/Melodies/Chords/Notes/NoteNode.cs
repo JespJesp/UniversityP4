@@ -1,5 +1,4 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Runtime.Objects;
 using Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 using Lexing.Tokens;
@@ -27,7 +26,7 @@ public class NoteNode : BranchNode
 		}
 	}
 
-	protected override void Evaluate(RuntimeVariableTable variables)
+	protected override void Evaluate()
 	{
 		this.Note.StartBeat = ChordNode.StartBeat;
 		this.Note.EndBeat = ChordNode.EndBeat;

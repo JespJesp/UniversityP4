@@ -1,5 +1,4 @@
 using Ast.Nodes;
-using Ast.Tables;
 using Runtime;
 using Runtime.Objects;
 
@@ -11,10 +10,8 @@ public static class Evaluator
 	{
 		try
 		{
-			RuntimeVariableTable globalVariables = new();
-			programNode.CascadeEvaluate(globalVariables);
-			AudioRenderer.RenderToFile(globalVariables, inputFileFolderPath);
-
+			programNode.CascadeEvaluate();
+			AudioRenderer.RenderToFile(inputFileFolderPath);
 			ExamplePrintToConsole();
 		}
 		catch (Exception exception)

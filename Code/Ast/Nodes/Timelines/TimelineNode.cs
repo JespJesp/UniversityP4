@@ -1,5 +1,4 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Lexing.Tokens;
 using Runtime;
 using Runtime.Objects;
@@ -18,25 +17,25 @@ public class TimelineNode : BranchNode
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 	}
 
-	protected override void Validate(SemanticSymbolTable symbols)
+	protected override void Annotate()
 	{
 		// TODO: Implement this
 	}
 
-	protected override void Evaluate(RuntimeVariableTable variables)
+	protected override void Evaluate()
 	{
 		// TODO: Implement this
 
 		// TODO: Remove this; it's for testing
 		Loop exampleLoop1 = new()
 		{
-			Melody = variables.Get<Melody>("8_guitar"),
+			Melody = _symbolTable.Get<Melody>("8_guitar"),
 			StartBeat = 0,
 			EndBeat = 8
 		};
 		Loop exampleLoop2 = new()
 		{
-			Melody = variables.Get<Melody>("16_flute"),
+			Melody = _symbolTable.Get<Melody>("16_flute"),
 			StartBeat = 12,
 			EndBeat = 64
 		};

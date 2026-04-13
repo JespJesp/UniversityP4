@@ -1,6 +1,5 @@
 using System.Globalization;
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 
@@ -22,18 +21,18 @@ public class GainNode : BranchNode
 		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Validate(SemanticSymbolTable symbols)
+	protected override void Annotate()
 	{
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
 		if (Volume < 0.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
+			Annotator.AddError(this, $"Melody: '{melodyNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
 		}
 	}
 
-	protected override void Evaluate(RuntimeVariableTable variables)
+	protected override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
 		note.Volume = Volume;

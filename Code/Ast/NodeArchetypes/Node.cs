@@ -1,12 +1,11 @@
-using Ast.Tables;
-
 namespace Ast.NodeArchetypes;
 
 public abstract class Node
 {
 	protected List<Node> _children = new();
-	public int ScopeDepth { get; }
+	protected SymbolTable _symbolTable;
 	private bool _createsNestedScope;
+	public int ScopeDepth { get; }
 
 	/// <summary>
 	/// This constructor automatically parses the node.
@@ -44,9 +43,10 @@ public abstract class Node
 		}
 	}
 
-	public void CascadeValidate(SemanticSymbolTable symbols)
+	public void CascadeAnnotate(SymbolTable symbols)
 	{
-		Validate(symbols);
+		this._symbolTable = symbols;
+		Annotate();
 
 		// We clone the inherited table and let the children work with the clone in cases
 		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
@@ -54,33 +54,29 @@ public abstract class Node
 
 		foreach (Node child in _children)
 		{
-			child.CascadeValidate(childrensSymbols);
+			child.CascadeAnnotate(childrensSymbols);
 		}
 	}
 
-	public void CascadeEvaluate(RuntimeVariableTable variables)
+	public void CascadeEvaluate()
 	{
 		try
 		{
-			Evaluate(variables);
+			Evaluate();
 		}
 		catch (Exception exception)
 		{
 			throw new Exception($"Node: {this.GetType()}. {exception.Message}");
 		}
 
-		// We clone the inherited table and let the children work with the clone in cases
-		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
-		var childrensVariables = _createsNestedScope ? variables.Clone() : variables;
-
 		foreach (Node child in _children)
 		{
-			child.CascadeEvaluate(childrensVariables);
+			child.CascadeEvaluate();
 		}
 	}
 
 	protected abstract void Parse();
-	protected virtual void Validate(SemanticSymbolTable symbols) { }
-	protected virtual void Evaluate(RuntimeVariableTable variables) { }
+	protected virtual void Annotate() { }
+	protected virtual void Evaluate() { }
 }
 

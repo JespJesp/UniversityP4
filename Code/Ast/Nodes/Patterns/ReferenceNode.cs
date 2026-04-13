@@ -1,5 +1,4 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Ast.Nodes.Melodies;
 using Runtime.Objects;
 using Lexing.Tokens;
@@ -23,23 +22,24 @@ public class ReferenceNode : BranchNode
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
-	protected override void Validate(SemanticSymbolTable symbols)
+	protected override void Annotate()
 	{
-		if (!symbols.Contains(typeof(PatternNode), ReferenceId) && !symbols.Contains(typeof(MelodyNode), ReferenceId))
+		if (!_symbolTable.Contains<Pattern>(ReferenceId) 
+			&& !_symbolTable.Contains<Melody>(ReferenceId))
 		{
-			Validator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
+			Annotator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 
-	protected override void Evaluate(RuntimeVariableTable localVariables)
+	protected override void Evaluate()
 	{
-		Pattern pattern = localVariables.Get<Pattern>(PatternNode.Id);
+		Pattern pattern = _symbolTable.Get<Pattern>(PatternNode.Id);
 
-		if (localVariables.TryGet(this.ReferenceId, out Pattern childPattern))
+		if (_symbolTable.TryGet(this.ReferenceId, out Pattern childPattern))
 		{
 			pattern.Patterns.Add(childPattern);
 		}
-		else if (localVariables.TryGet(this.ReferenceId, out Melody childMelody))
+		else if (_symbolTable.TryGet(this.ReferenceId, out Melody childMelody))
 		{
 			pattern.Melodies.Add(childMelody);
 		}

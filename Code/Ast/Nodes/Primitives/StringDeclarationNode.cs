@@ -1,11 +1,10 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Primitives;
 
-public class StringDeclarationNode : VariableNode
+public class StringDeclarationNode : SymbolNode
 {
 	public StringVariable StringVariable = new();
 	protected override RuntimeObject GetRuntimeObject() => StringVariable;

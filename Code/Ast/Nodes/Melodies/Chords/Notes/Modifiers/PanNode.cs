@@ -1,6 +1,5 @@
 using System.Globalization;
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 
@@ -22,18 +21,18 @@ public class PanNode : BranchNode
 		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	protected override void Validate(SemanticSymbolTable symbols)
+	protected override void Annotate()
 	{
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
 		if (Pan < -1.0f || Pan > 1.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
+			Annotator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
 		}
 	}
 
-	protected override void Evaluate(RuntimeVariableTable variables)
+	protected override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
 		note.Pan = Pan;

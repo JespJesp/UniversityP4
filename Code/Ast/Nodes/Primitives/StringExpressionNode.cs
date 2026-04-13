@@ -1,5 +1,4 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Lexing.Tokens;
 using Runtime.Objects;
 
@@ -9,7 +8,7 @@ public class StringExpressionNode : BranchNode
 {
 	private string _value = "";
 	private bool _isIdentifier = false;
-	public Func<string> GetValue;
+	public Func<string> GetValue = () => throw new NotImplementedException("Internal error!");
 
 	public StringExpressionNode(Node parent) : base(parent)
 	{
@@ -27,21 +26,21 @@ public class StringExpressionNode : BranchNode
 		}
 	}
 
-	protected override void Validate(SemanticSymbolTable symbols)
+	protected override void Annotate()
 	{
 		// I need to assign the GetValue func here
 
-		if (_isIdentifier && !symbols.Contains(typeof(StringVariable), this._value))
+		if (_isIdentifier && !_symbolTable.Contains<StringVariable>(this._value))
 		{
-			Validator.AddError(this, $"String variable with ID '{this._value}' is not declared.");
+			Annotator.AddError(this, $"String variable with ID '{this._value}' is not declared.");
 		}
 	}
 
-	protected override void Evaluate(RuntimeVariableTable localVariables)
+	protected override void Evaluate()
 	{
 		if (_isIdentifier)
 		{
-			GetValue = () => localVariables.Get<StringVariable>(this._value).Value;
+			GetValue = () => _symbolTable.Get<StringVariable>(this._value).Value;
 		}
 		else
 		{

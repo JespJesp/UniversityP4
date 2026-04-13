@@ -1,12 +1,11 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 using System.Globalization;
 
 namespace Ast.Nodes.Patterns;
 
-public class PatternNode : VariableNode
+public class PatternNode : SymbolNode
 {
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
@@ -30,15 +29,15 @@ public class PatternNode : VariableNode
 		}
 	}
 
-	protected override void AdditionalValidation(SemanticSymbolTable symbols)
+	protected override void AdditionalAnnotation()
 	{
 		if (LengthInBeats <= 0)
 		{
-			Validator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
+			Annotator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	protected override void AdditionalEvaluation(RuntimeVariableTable localVariables)
+	protected override void Evaluate()
 	{
 		this.Pattern.LengthInBeats = this.LengthInBeats;
 	}

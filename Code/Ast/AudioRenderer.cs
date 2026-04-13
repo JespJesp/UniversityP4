@@ -1,4 +1,3 @@
-using Ast.Tables;
 using Runtime.Objects;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -10,14 +9,14 @@ public static class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void RenderToFile(RuntimeVariableTable globalVariables, string inputFileFolderPath)
+	public static void RenderToFile(string inputFileFolderPath)
 	{
-		List<ISampleProvider> sounds = CreateSounds(globalVariables, inputFileFolderPath);
+		List<ISampleProvider> sounds = CreateSounds(inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 	}
 
-	public static List<ISampleProvider> CreateSounds(RuntimeVariableTable globalVariables, string inputFileFolderPath)
+	public static List<ISampleProvider> CreateSounds(string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
 

@@ -1,14 +1,14 @@
 using Ast.NodeArchetypes;
-using Ast.Tables;
 using Runtime.Objects;
 using Lexing.Tokens;
 using Ast.Nodes.Primitives;
 
 namespace Ast.Nodes.Samples;
 
-public class SampleNode : VariableNode
+public class SampleNode : SymbolNode
 {
-	public StringExpressionNode FilePath;
+	// TODO: public StringExpressionNode FilePath;
+	public string FilePath;
 	public string ReferencePitch = "";
 
 	Sample Sample = new();
@@ -22,25 +22,26 @@ public class SampleNode : VariableNode
 	{
 		Parser.ConsumeToken(TokenType.SampleKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		FilePath = new StringExpressionNode(this);
+		// TODO: FilePath = new StringExpressionNode(this);
+		Parser.ConsumeToken(TokenType.String, (value) => { FilePath = value; });
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void AdditionalValidation(SemanticSymbolTable symbols)
+	protected override void AdditionalAnnotation()
 	{
-		string filePathValue = FilePath.GetValue();
+		string filePathValue = FilePath; // TODO: FilePath.Value()
 		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Validator.AddError(this, $"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
+			Annotator.AddError(this, $"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 
-	protected override void AdditionalEvaluation(RuntimeVariableTable variables)
+	protected override void Evaluate()
 	{
-		this.Sample.FilePath = this.FilePath.GetValue();
+		this.Sample.FilePath = this.FilePath; // TODO: this.FilePath.GetValue();
 		this.Sample.ReferencePitch = new(this.ReferencePitch);
 	}
 }
