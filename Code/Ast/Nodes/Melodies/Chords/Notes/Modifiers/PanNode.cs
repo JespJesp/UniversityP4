@@ -1,14 +1,14 @@
-using System.Globalization;
 using Ast.NodeArchetypes;
 using Runtime.Objects;
 using Lexing.Tokens;
+using Ast.Nodes.Floats;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
 public class PanNode : BranchNode
 {
 	public ModifiersNode ModifiersNode;
-	public float Pan = 0;
+	public FloatExpressionNode Pan;
 
 	public PanNode(Node parent, ModifiersNode modifiersNode) : base(parent)
 	{
@@ -18,7 +18,7 @@ public class PanNode : BranchNode
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.PanKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
+		Pan = new FloatExpressionNode(this);
 	}
 
 	protected override void Validate()
@@ -26,16 +26,16 @@ public class PanNode : BranchNode
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
-		if (Pan < -1.0f || Pan > 1.0f)
+		if (Pan.GetValue() < -1.0f || Pan.GetValue() > 1.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan.GetValue()}");
 		}
 	}
 
 	protected override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
-		note.Pan = Pan;
+		note.Pan = Pan.GetValue();
 	}
 }
 

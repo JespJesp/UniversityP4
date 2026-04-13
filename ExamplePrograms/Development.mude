@@ -7,13 +7,15 @@ string electricGuitarSample "/electric guitar E4.wav"
 sample guitar instrumentsFolder + electricGuitarSample e4
 sample flute instrumentsFolder + "/flute E.wav" e5
 
+float exampleNumber 1
+
 melody 8_guitar
 	samples
 		guitar
 		flute
 	chords
-		1 5 c4(gain 20)
-		2 8 d5
+		1 6 c4(gain 0.1+2)
+		4 8 d5(gain exampleNumber+1)
 
 % 
 This is a 

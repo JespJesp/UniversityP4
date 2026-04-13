@@ -1,4 +1,5 @@
 using Ast.NodeArchetypes;
+using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
@@ -33,6 +34,7 @@ public class ProgramNode : RootNode
 				case TokenType.MelodyKeyword: new MelodyNode(this); break;
 				case TokenType.SampleKeyword: new SampleNode(this); break;
 				case TokenType.StringKeyword: new StringDeclarationNode(this); break;
+				case TokenType.FloatKeyword: new FloatDeclarationNode(this); break;
 				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
 				default: throw new ArgumentOutOfRangeException($"Unexpected token");
 			}

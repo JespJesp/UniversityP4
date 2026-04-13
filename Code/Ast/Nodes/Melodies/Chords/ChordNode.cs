@@ -1,5 +1,5 @@
-using System.Globalization;
 using Ast.NodeArchetypes;
+using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies.Chords.Notes;
 using Lexing.Tokens;
 
@@ -8,8 +8,8 @@ namespace Ast.Nodes.Melodies.Chords;
 public class ChordNode : BranchNode
 {
 	public ChordsNode ChordsNode;
-	public float StartBeat;
-	public float EndBeat;
+	public FloatExpressionNode StartBeat;
+	public FloatExpressionNode EndBeat;
 
 	public ChordNode(Node parent, ChordsNode chordsNode) : base(parent)
 	{
@@ -18,8 +18,8 @@ public class ChordNode : BranchNode
 
 	protected override void Parse()
 	{
-		Parser.ConsumeToken(TokenType.Float, (value) => StartBeat = float.Parse(value, CultureInfo.InvariantCulture));
-		Parser.ConsumeToken(TokenType.Float, (value) => EndBeat = float.Parse(value, CultureInfo.InvariantCulture));
+		StartBeat = new FloatExpressionNode(this);
+		EndBeat = new FloatExpressionNode(this);
 
 		while (Parser.CursorToken.Type == TokenType.Identifier)
 		{
@@ -31,17 +31,17 @@ public class ChordNode : BranchNode
 	{
 		MelodyNode melodyNode = ChordsNode.MelodyNode;
 
-		if (EndBeat > melodyNode.LengthInBeats)
+		if (EndBeat.GetValue() > melodyNode.LengthInBeats)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat} exceeds melody length {melodyNode.LengthInBeats}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat.GetValue()} exceeds melody length {melodyNode.LengthInBeats}");
 		}
-		if (StartBeat < 0 || EndBeat < 0)
+		if (StartBeat.GetValue() < 0 || EndBeat.GetValue() < 0)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat}-{EndBeat}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat.GetValue()}-{EndBeat.GetValue()}");
 		}
-		if (StartBeat >= EndBeat)
+		if (StartBeat.GetValue() >= EndBeat.GetValue())
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat}-{EndBeat}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat.GetValue()}-{EndBeat.GetValue()}");
 		}
 	}
 }

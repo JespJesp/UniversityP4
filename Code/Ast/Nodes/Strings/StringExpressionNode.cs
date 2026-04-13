@@ -6,7 +6,6 @@ namespace Ast.Nodes.Strings;
 public class StringExpressionNode : BranchNode
 {
 	internal List<StringValueNode> StringValueNodes = new();
-	public Func<string> GetValue = () => throw new NotImplementedException("Internal error!");
 
 	public StringExpressionNode(Node parent) : base(parent)
 	{
@@ -16,20 +15,17 @@ public class StringExpressionNode : BranchNode
 	{
 		do
 		{
-			new StringValueNode(this);
+			StringValueNodes.Add(new StringValueNode(this));
 		} while (Parser.TryConsumeToken(TokenType.Plus));
 	}
 
-	protected override void Annotate()
+	public string GetValue()
 	{
-		GetValue = () =>
+		string finalValue = "";
+		foreach (StringValueNode stringValueNode in StringValueNodes)
 		{
-			string finalValue = "";
-			foreach (StringValueNode stringValueNode in StringValueNodes)
-			{
-				finalValue += stringValueNode.GetValue();
-			}
-			return finalValue;
-		};
+			finalValue += stringValueNode.GetValue();
+		}
+		return finalValue;
 	}
 }

@@ -1,9 +1,10 @@
-using System.Globalization;
 using Runtime.Objects;
 using Ast.Nodes.Melodies.Chords;
 using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies.Samples;
 using Lexing.Tokens;
+using Ast.Nodes.Floats;
+using System.Globalization;
 
 namespace Ast.Nodes.Melodies;
 

@@ -26,6 +26,7 @@ public static class IdentifierOrKeywordLexer
 			"gain" => TokenType.GainKeyword,
 			"pan" => TokenType.PanKeyword,
 			"string" => TokenType.StringKeyword,
+			"float" => TokenType.FloatKeyword,
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 

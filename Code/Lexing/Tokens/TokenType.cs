@@ -13,6 +13,7 @@ public enum TokenType
 	GainKeyword,
 	PanKeyword,
 	StringKeyword,
+	FloatKeyword,
 
 	// Values
 	Integer,

@@ -9,9 +9,8 @@ internal class StringValueNode : BranchNode
 	private bool _isIdentifier = false;
 	public Func<string> GetValue = () => throw new NotImplementedException("Internal error!");
 
-	public StringValueNode(StringExpressionNode parent) : base(parent)
+	public StringValueNode(Node parent) : base(parent)
 	{
-		parent.StringValueNodes.Add(this);
 	}
 
 	protected override void Parse()

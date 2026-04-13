@@ -1,6 +1,7 @@
 using Ast.NodeArchetypes;
 using Runtime.Objects;
 using Lexing.Tokens;
+using Ast.Nodes.Floats;
 using System.Globalization;
 
 namespace Ast.Nodes.Patterns;
@@ -18,7 +19,7 @@ public class PatternNode : SymbolNode
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.PatternKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => { LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture); });
+		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
 
 		while (Parser.TryConsumeIndent(1))

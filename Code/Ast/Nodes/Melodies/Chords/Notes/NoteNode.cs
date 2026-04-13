@@ -28,8 +28,8 @@ public class NoteNode : BranchNode
 
 	protected override void Evaluate()
 	{
-		this.Note.StartBeat = ChordNode.StartBeat;
-		this.Note.EndBeat = ChordNode.EndBeat;
+		this.Note.StartBeat = ChordNode.StartBeat.GetValue();
+		this.Note.EndBeat = ChordNode.EndBeat.GetValue();
 		this.Note.Pitch = new(this.Pitch);
 
 		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;

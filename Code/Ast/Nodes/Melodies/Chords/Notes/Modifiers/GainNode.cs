@@ -1,14 +1,14 @@
-using System.Globalization;
 using Ast.NodeArchetypes;
 using Runtime.Objects;
 using Lexing.Tokens;
+using Ast.Nodes.Floats;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
 public class GainNode : BranchNode
 {
 	public ModifiersNode ModifiersNode;
-	public float Volume = 1;
+	public FloatExpressionNode Volume;
 
 	public GainNode(Node parent, ModifiersNode modifiersNode) : base(parent)
 	{
@@ -18,7 +18,7 @@ public class GainNode : BranchNode
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.GainKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
+		Volume = new FloatExpressionNode(this);
 	}
 
 	protected override void Validate()
@@ -26,16 +26,16 @@ public class GainNode : BranchNode
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
-		if (Volume < 0.0f)
+		if (Volume.GetValue() < 0.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume.GetValue()}");
 		}
 	}
 
 	protected override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
-		note.Volume = Volume;
+		note.Volume = Volume.GetValue();
 	}
 }
 
