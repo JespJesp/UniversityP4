@@ -11,19 +11,19 @@ public class ChordNode : BranchNode
 	public FloatExpressionNode StartBeat;
 	public FloatExpressionNode EndBeat;
 
-	public ChordNode(Node parent, ChordsNode chordsNode) : base(parent)
+	public ChordNode(ChordsNode chordsNode)
 	{
 		this.ChordsNode = chordsNode;
 	}
 
 	protected override void Parse()
 	{
-		StartBeat = new FloatExpressionNode(this);
-		EndBeat = new FloatExpressionNode(this);
+		StartBeat = ParseChild(new FloatExpressionNode());
+		EndBeat = ParseChild(new FloatExpressionNode());
 
 		while (Parser.CursorToken.Type == TokenType.Identifier)
 		{
-			new NoteNode(this, this);
+			ParseChild(new NoteNode(this));
 		}
 	}
 

@@ -17,6 +17,7 @@ public static class Parser
 		_cursorPosition = 0;
 
 		ProgramNode programNode = new ProgramNode();
+		programNode.ParseTree();
 
 		if (_syntaxErrors.Any())
 		{

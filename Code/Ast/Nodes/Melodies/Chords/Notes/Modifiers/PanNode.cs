@@ -10,7 +10,7 @@ public class PanNode : BranchNode
 	public ModifiersNode ModifiersNode;
 	public FloatExpressionNode Pan;
 
-	public PanNode(Node parent, ModifiersNode modifiersNode) : base(parent)
+	public PanNode(ModifiersNode modifiersNode)
 	{
 		this.ModifiersNode = modifiersNode;
 	}
@@ -18,7 +18,7 @@ public class PanNode : BranchNode
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.PanKeyword);
-		Pan = new FloatExpressionNode(this);
+		Pan = ParseChild(new FloatExpressionNode());
 	}
 
 	protected override void Validate()

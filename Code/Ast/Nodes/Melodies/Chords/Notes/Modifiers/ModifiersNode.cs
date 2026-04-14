@@ -7,7 +7,7 @@ public class ModifiersNode : BranchNode
 {
 	public NoteNode NoteNode;
 
-	public ModifiersNode(Node parent, NoteNode noteNode) : base(parent)
+	public ModifiersNode(NoteNode noteNode)
 	{
 		this.NoteNode = noteNode;
 	}
@@ -20,11 +20,11 @@ public class ModifiersNode : BranchNode
 		{
 			{
 				TokenType.GainKeyword,
-				() => { new GainNode(this, this); }
+				() => { ParseChild(new GainNode(this)); }
 			},
 			{
 				TokenType.PanKeyword,
-				() => { new PanNode(this, this); }
+				() => { ParseChild(new PanNode(this)); }
 			}
 		};
 		Token[] optionSeparator = { new(TokenType.Comma) };

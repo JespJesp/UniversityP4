@@ -7,15 +7,11 @@ public class FloatDeclarationNode : SymbolNode
 {
 	internal FloatExpressionNode FloatExpression;
 
-	public FloatDeclarationNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.FloatKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => this.Id = value);
-		FloatExpression = new FloatExpressionNode(this);
+		FloatExpression = ParseChild(new FloatExpressionNode());
 	}
 }
 

@@ -8,10 +8,6 @@ namespace Ast.Nodes.Timelines;
 
 public class TimelineNode : BranchNode
 {
-	public TimelineNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		// TODO: Implement this

@@ -10,7 +10,7 @@ public class GainNode : BranchNode
 	public ModifiersNode ModifiersNode;
 	public FloatExpressionNode Volume;
 
-	public GainNode(Node parent, ModifiersNode modifiersNode) : base(parent)
+	public GainNode(ModifiersNode modifiersNode)
 	{
 		this.ModifiersNode = modifiersNode;
 	}
@@ -18,7 +18,7 @@ public class GainNode : BranchNode
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.GainKeyword);
-		Volume = new FloatExpressionNode(this);
+		Volume = ParseChild(new FloatExpressionNode());
 	}
 
 	protected override void Validate()

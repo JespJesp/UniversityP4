@@ -11,7 +11,7 @@ public class NoteNode : BranchNode
 	public string Pitch = "";
 	public Note Note = new();
 
-	public NoteNode(Node parent, ChordNode chordsNode) : base(parent)
+	public NoteNode(ChordNode chordsNode)
 	{
 		this.ChordNode = chordsNode;
 	}
@@ -22,7 +22,7 @@ public class NoteNode : BranchNode
 
 		if (Parser.CursorToken.Type == TokenType.LeftParentheses)
 		{
-			new ModifiersNode(this, this);
+			ParseChild(new ModifiersNode(this));
 		}
 	}
 

@@ -10,10 +10,6 @@ internal class FloatValueNode : BranchNode
 	private bool _isIdentifier = false;
 	public Func<float> GetValue = () => throw new NotImplementedException("Internal error!");
 
-	public FloatValueNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		_isIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => this._value = value);

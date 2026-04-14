@@ -9,10 +9,6 @@ internal class StringValueNode : BranchNode
 	private bool _isIdentifier = false;
 	public Func<string> GetValue = () => throw new NotImplementedException("Internal error!");
 
-	public StringValueNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		_isIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => this._value = value);

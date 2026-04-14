@@ -7,7 +7,7 @@ public class SampleReferencesNode : BranchNode
 {
 	public MelodyNode MelodyNode;
 
-	public SampleReferencesNode(Node parent, MelodyNode melodyNode) : base(parent)
+	public SampleReferencesNode(MelodyNode melodyNode)
 	{
 		this.MelodyNode = melodyNode;
 	}
@@ -18,7 +18,7 @@ public class SampleReferencesNode : BranchNode
 
 		while (Parser.TryConsumeIndent(2))
 		{
-			new SampleReferenceNode(this, this);
+			ParseChild(new SampleReferenceNode(this));
 		}
 	}
 }

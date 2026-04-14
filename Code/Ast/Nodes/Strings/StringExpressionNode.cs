@@ -7,15 +7,11 @@ public class StringExpressionNode : BranchNode
 {
 	internal List<StringValueNode> StringValueNodes = new();
 
-	public StringExpressionNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		do
 		{
-			StringValueNodes.Add(new StringValueNode(this));
+			StringValueNodes.Add(ParseChild(new StringValueNode()));
 		} while (Parser.TryConsumeToken(TokenType.Plus));
 	}
 

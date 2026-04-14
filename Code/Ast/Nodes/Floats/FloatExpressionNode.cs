@@ -7,17 +7,13 @@ public class FloatExpressionNode : BranchNode
 {
 	internal List<FloatValueNode> FloatValueNodes = new();
 
-	public FloatExpressionNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		// TODO: Implement minus, multiplication, and division
 
 		do
 		{
-			FloatValueNodes.Add(new FloatValueNode(this));
+			FloatValueNodes.Add(ParseChild(new FloatValueNode()));
 		} while (Parser.TryConsumeToken(TokenType.Plus));
 	}
 

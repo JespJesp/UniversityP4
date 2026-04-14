@@ -10,7 +10,7 @@ public class SampleReferenceNode : BranchNode
 	public SampleReferencesNode SampleReferencesNode;
 	public string ReferenceId = "";
 
-	public SampleReferenceNode(Node parent, SampleReferencesNode sampleReferencesNode) : base(parent)
+	public SampleReferenceNode(SampleReferencesNode sampleReferencesNode)
 	{
 		this.SampleReferencesNode = sampleReferencesNode;
 	}

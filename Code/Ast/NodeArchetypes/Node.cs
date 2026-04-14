@@ -5,42 +5,32 @@ public abstract class Node
 	protected List<Node> _children = new();
 	protected SymbolTable _symbolTable;
 	private bool _createsNestedScope;
-	public int ScopeDepth { get; }
+	public int ScopeDepth { get; private set; }
 
-	/// <summary>
-	/// This constructor automatically parses the node.
-	/// </summary>
-	public Node(Node? parent, bool createsNestedScope)
+	protected T ParseChild<T>(T child, bool createsNestedScope = false) where T : Node
 	{
-		this._createsNestedScope = createsNestedScope;
+		_children.Add(child);
+		child._createsNestedScope = createsNestedScope;
 
-		// If parent is null, then this node is the root node of the tree
-		if (parent is null)
+		if (this._createsNestedScope)
 		{
-			this.ScopeDepth = 0;
+			child.ScopeDepth = this.ScopeDepth + 1;
 		}
 		else
 		{
-			parent._children.Add(this);
-			if (parent._createsNestedScope)
-			{
-				this.ScopeDepth = parent.ScopeDepth + 1;
-			}
-			else
-			{
-				this.ScopeDepth = parent.ScopeDepth;
-			}
+			child.ScopeDepth = this.ScopeDepth;
 		}
 
-		// Parse the node
 		try
 		{
-			Parse();
+			child.Parse();
 		}
 		catch (Exception exception)
 		{
-			Parser.AddError($"Node type: {this.GetType()}. {exception.Message}");
+			Parser.AddError($"Node type: {child.GetType()}. {exception.Message}");
 		}
+
+		return child;
 	}
 
 	protected void CascadeAnnotate(SymbolTable symbols)

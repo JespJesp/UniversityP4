@@ -10,7 +10,7 @@ public class ReferenceNode : BranchNode
 	public PatternNode PatternNode;
 	public string ReferenceId = "";
 
-	public ReferenceNode(Node parent, PatternNode patterNode) : base(parent)
+	public ReferenceNode(PatternNode patterNode)
 	{
 		this.PatternNode = patterNode;
 	}

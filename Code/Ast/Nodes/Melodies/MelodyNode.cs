@@ -13,30 +13,32 @@ public class MelodyNode : SymbolNode
 	public float LengthInBeats;
 	public Melody Melody = new();
 
-	public MelodyNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.MelodyKeyword);
 		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
 		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
 
-		Parser.TryConsumeIndent(1);
-		Dictionary<TokenType, Action> options = new()
+		if (Parser.TryConsumeIndent(1))
 		{
+			Dictionary<TokenType, Action> options = new()
 			{
-				TokenType.SamplesKeyword,
-				() => { new SampleReferencesNode(this, this); }
-			},
+				{
+					TokenType.SamplesKeyword,
+					() => { ParseChild(new SampleReferencesNode(this)); }
+				},
+				{
+					TokenType.ChordsKeyword,
+					() => { ParseChild(new ChordsNode(this)); }
+				}
+			};
+			Token[] optionSeparator =
 			{
-				TokenType.ChordsKeyword,
-				() => { new ChordsNode(this, this); }
-			}
-		};
-		Token[] optionSeparator = { new(TokenType.Newline), new(TokenType.Indent, "1") };
-		Parser.HandleUniqueOptions(options, optionSeparator);
+				new(TokenType.Newline),
+				new(TokenType.Indent, "1")
+			};
+			Parser.HandleUniqueOptions(options, optionSeparator);
+		}
 	}
 
 	protected override void Validate()

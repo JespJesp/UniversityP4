@@ -12,15 +12,11 @@ public class SampleNode : SymbolNode
 
 	public Sample Sample = new();
 
-	public SampleNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.SampleKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		FilePath = new StringExpressionNode(this);
+		FilePath = ParseChild(new StringExpressionNode());
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 

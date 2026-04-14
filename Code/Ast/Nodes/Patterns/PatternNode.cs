@@ -12,10 +12,6 @@ public class PatternNode : SymbolNode
 	public List<string> PatternAndMelodyIds = new();
 	public Pattern Pattern = new();
 
-	public PatternNode(Node parent) : base(parent)
-	{
-	}
-
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.PatternKeyword);
@@ -24,7 +20,7 @@ public class PatternNode : SymbolNode
 
 		while (Parser.TryConsumeIndent(1))
 		{
-			new ReferenceNode(this, this);
+			ParseChild(new ReferenceNode(this));
 		}
 	}
 

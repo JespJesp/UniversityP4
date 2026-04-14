@@ -7,7 +7,7 @@ public class ChordsNode : BranchNode
 {
 	public MelodyNode MelodyNode;
 
-	public ChordsNode(Node parent, MelodyNode melodyNode) : base(parent)
+	public ChordsNode(MelodyNode melodyNode)
 	{
 		this.MelodyNode = melodyNode;
 	}
@@ -18,7 +18,7 @@ public class ChordsNode : BranchNode
 
 		while (Parser.TryConsumeIndent(2))
 		{
-			new ChordNode(this, this);
+			ParseChild(new ChordNode(this));
 		}
 	}
 }

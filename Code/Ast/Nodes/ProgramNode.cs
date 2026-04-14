@@ -27,14 +27,14 @@ public class ProgramNode : RootNode
 					else
 					{
 						hasConsumedTimelineKeyword = true;
-						new TimelineNode(this);
+						ParseChild(new TimelineNode()) ;
 					}
 					break;
-				case TokenType.PatternKeyword: new PatternNode(this); break;
-				case TokenType.MelodyKeyword: new MelodyNode(this); break;
-				case TokenType.SampleKeyword: new SampleNode(this); break;
-				case TokenType.StringKeyword: new StringDeclarationNode(this); break;
-				case TokenType.FloatKeyword: new FloatDeclarationNode(this); break;
+				case TokenType.PatternKeyword: ParseChild(new PatternNode()); break;
+				case TokenType.MelodyKeyword: ParseChild(new MelodyNode()); break;
+				case TokenType.SampleKeyword: ParseChild(new SampleNode()); break;
+				case TokenType.StringKeyword: ParseChild(new StringDeclarationNode()); break;
+				case TokenType.FloatKeyword: ParseChild(new FloatDeclarationNode()); break;
 				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
 				default: throw new ArgumentOutOfRangeException($"Unexpected token");
 			}
