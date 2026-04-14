@@ -37,17 +37,16 @@ public abstract class Node
 		return child;
 	}
 
-	protected void CascadeAnnotate(SymbolTable symbols)
+	protected void CascadeAnnotate(SymbolTable availableSymbols)
 	{
-		this._symbolTable = symbols;
-		// We clone the inherited table and let the children work with the clone in cases
-		// where we don't want sibling nodes to affect their ancestors, cousins, and uncles/aunts.
-		var childrensSymbols = _createsNestedScope ? symbols.Clone() : symbols;
-
+		this._symbolTable = availableSymbols.Clone();
 		Annotate();
+
+		SymbolTable childrensSymbols = this._symbolTable;
 		foreach (Node child in _children)
 		{
 			child.CascadeAnnotate(childrensSymbols);
+			childrensSymbols = child._symbolTable; // Inherit symbols from older sibling
 		}
 	}
 
