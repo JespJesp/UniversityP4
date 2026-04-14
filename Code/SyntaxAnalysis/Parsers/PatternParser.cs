@@ -11,10 +11,7 @@ public static class PatternParser
 		Pattern pattern = new();
 		a.OutputSong.Patterns.Add(pattern);
 
-		a.ConsumeToken(TokenType.Integer, () =>
-		{
-			pattern.Length = int.Parse(a.CurrentToken().Value);
-		});
+		pattern.Length = ParseLengthExpression(a);
 
 		a.ConsumeToken(TokenType.Identifier, () =>
 		{
@@ -37,5 +34,41 @@ public static class PatternParser
 		}
 	}
 
+	private static int ParseLengthExpression(SyntaxAnalyzer a)
+	{
+		int value = ParsePrimary(a);
 
+		while (a.CurrentToken().Type == TokenType.Multiply)
+		{
+			a.ConsumeToken(TokenType.Multiply);
+
+			int right = ParsePrimary(a);
+
+			value *= right;
+		}
+
+		return value;
+	}
+
+	private static int ParsePrimary(SyntaxAnalyzer a)
+	{
+		int number = 0;
+
+		a.ConsumeToken(TokenType.Integer, () =>
+		{
+			number = int.Parse(a.CurrentToken().Value);
+		});
+
+		// Check for 'm'
+		if (a.CurrentToken().Type == TokenType.MeasureSuffix)
+		{
+			a.ConsumeToken(TokenType.MeasureSuffix);
+
+			number *= BeatsPerMeasure;
+		}
+
+		return number;
+	}
+
+	private const int BeatsPerMeasure = 4;
 }

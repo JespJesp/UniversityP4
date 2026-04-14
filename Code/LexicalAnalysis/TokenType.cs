@@ -15,8 +15,6 @@ public enum TokenType
 	// Values
 	Integer,
 	String,
-
-	// Formatting
 	Hyphen,
 	Comma,
 	NewLine,
