@@ -32,17 +32,17 @@ public class ChordNode : BranchNode
 	{
 		MelodyNode melodyNode = ChordsNode.MelodyNode;
 
-		if (EndBeat.GetValue() > melodyNode.LengthInBeats)
+		if (EndBeat.Value > melodyNode.LengthInBeats)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat.GetValue()} exceeds melody length {melodyNode.LengthInBeats}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat.Value} exceeds melody length {melodyNode.LengthInBeats}");
 		}
-		if (StartBeat.GetValue() < 0 || EndBeat.GetValue() < 0)
+		if (StartBeat.Value < 0 || EndBeat.Value < 0)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat.GetValue()}-{EndBeat.GetValue()}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat.Value}-{EndBeat.Value}");
 		}
-		if (StartBeat.GetValue() >= EndBeat.GetValue())
+		if (StartBeat.Value >= EndBeat.Value)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat.GetValue()}-{EndBeat.GetValue()}");
+			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat.Value}-{EndBeat.Value}");
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ast.NodeArchetypes;
 using Lexing.Tokens;
 
@@ -11,19 +12,33 @@ public class FloatExpressionNode : BranchNode
 		Multiplication,
 		Division
 	}
-	private record Term
-	(
-		FloatValueNode ValueNode,
-		Operation Operation
-	);
+	private class Term
+	{
+		public float Value;
+		public string StringValue = "";
+		public bool IsIdentifier;
+		public Operation Operation;
+	};
 	private List<Term> _terms = new();
+	public float Value = 0;
 
 	protected override void Parse()
 	{
 		Operation? newTermOperation = Operation.None;
 		while (newTermOperation is not null)
 		{
-			_terms.Add(new(ParseChild(new FloatValueNode()), newTermOperation.Value));
+			Term newTerm = new()
+			{
+				Operation = newTermOperation.Value
+			};
+			
+			newTerm.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.StringValue = value);
+			if (!newTerm.IsIdentifier)
+			{
+				Parser.ConsumeToken(TokenType.Float, (value) => newTerm.StringValue = value);
+			}
+
+			_terms.Add(newTerm);
 
 			newTermOperation = null;
 			if (Parser.TryConsumeToken(TokenType.Plus)
@@ -42,32 +57,43 @@ public class FloatExpressionNode : BranchNode
 		}
 	}
 
-	public float GetValue()
+	protected override void Annotate()
 	{
-		float finalValue = 0;
-		foreach (Term segment in _terms)
+		foreach (Term term in _terms)
 		{
-			switch (segment.Operation)
+			if (term.IsIdentifier)
+			{
+				if (!_symbolTable.Contains<FloatDeclarationNode>(term.StringValue))
+				{
+					Validator.AddError(this, $"Float variable with ID '{term.StringValue}' is not declared.");
+					return;
+				}
+
+				term.Value = _symbolTable.Get<FloatDeclarationNode>(term.StringValue).FloatExpression.Value;
+			}
+			else
+			{
+				term.Value = float.Parse(term.StringValue, CultureInfo.InvariantCulture);
+			}
+
+			switch (term.Operation)
 			{
 				case Operation.None:
-					finalValue += segment.ValueNode.GetValue();
+					this.Value += term.Value;
 					break;
 				case Operation.Multiplication:
-					finalValue += segment.ValueNode.GetValue();
+					this.Value *= term.Value;
 					break;
 				case Operation.Division:
-					// TODO: Rewrite this error message, because right now 
-					// it's thrown at runtime and doesn't give a proper error 
-					// message indicating where the problem occurs in your file
-					float divisor = segment.ValueNode.GetValue();
+					float divisor = term.Value;
 					if (divisor == 0)
 					{
-						throw new Exception("Illegal operation: Cannot divide with 0");
+						Annotator.AddError(this, "Illegal operation: Cannot divide with 0");
+						return;
 					}
-					finalValue /= segment.ValueNode.GetValue();
+					this.Value /= divisor;
 					break;
 			}
 		}
-		return finalValue;
 	}
 }

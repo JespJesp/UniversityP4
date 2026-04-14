@@ -22,12 +22,12 @@ public class ReferenceNode : BranchNode
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
-	protected override void Validate()
+	protected override void Annotate()
 	{
 		if (!_symbolTable.Contains<PatternNode>(ReferenceId) 
 			&& !_symbolTable.Contains<MelodyNode>(ReferenceId))
 		{
-			Validator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
+			Annotator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 

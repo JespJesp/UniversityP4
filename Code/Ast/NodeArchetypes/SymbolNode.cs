@@ -17,7 +17,7 @@ public abstract class SymbolNode : BranchNode
 		{
 			if (this.ScopeDepth <= oldEntry.ScopeDepth)
 			{
-				Annotator.AddError(this, $"ID: '{this.Id}'. Scope depth: '{this.ScopeDepth}'. Double declaration within the same scope level.");
+				Annotator.AddError(this, $"ID: '{this.Id}'. Scope depth: '{this.ScopeDepth}'. Double declaration within the same scope depth level.");
 			}
 		}
 

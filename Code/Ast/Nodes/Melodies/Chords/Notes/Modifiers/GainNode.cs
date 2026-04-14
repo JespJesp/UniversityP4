@@ -26,16 +26,16 @@ public class GainNode : BranchNode
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
-		if (Volume.GetValue() < 0.0f)
+		if (Volume.Value < 0.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume.GetValue()}");
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume.Value}");
 		}
 	}
 
 	protected override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
-		note.Volume = Volume.GetValue();
+		note.Volume = Volume.Value;
 	}
 }
 

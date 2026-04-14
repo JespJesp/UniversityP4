@@ -26,16 +26,16 @@ public class PanNode : BranchNode
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
 
-		if (Pan.GetValue() < -1.0f || Pan.GetValue() > 1.0f)
+		if (Pan.Value < -1.0f || Pan.Value > 1.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan.GetValue()}");
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan.Value}");
 		}
 	}
 
 	protected override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
-		note.Pan = Pan.GetValue();
+		note.Pan = Pan.Value;
 	}
 }
 

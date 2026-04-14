@@ -2,7 +2,6 @@ namespace Ast.NodeArchetypes;
 
 public abstract class RootNode : Node
 {
-
 	public void ParseTree()
 	{
 		this.Parse();

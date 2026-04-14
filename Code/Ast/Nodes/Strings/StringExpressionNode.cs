@@ -5,23 +5,50 @@ namespace Ast.Nodes.Strings;
 
 public class StringExpressionNode : BranchNode
 {
-	internal List<StringValueNode> StringValueNodes = new();
+	internal class Segment
+	{
+		public string Value = "";
+		public string StringOrIdentifierValue = "";
+		public bool IsIdentifier;
+	};
+	internal List<Segment> _segments = new();
+	public string Value = "";
 
 	protected override void Parse()
 	{
 		do
 		{
-			StringValueNodes.Add(ParseChild(new StringValueNode()));
+			Segment newSegment = new();
+
+			newSegment.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newSegment.StringOrIdentifierValue = value);
+			if (!newSegment.IsIdentifier)
+			{
+				Parser.ConsumeToken(TokenType.String, (value) => newSegment.StringOrIdentifierValue = value);
+			}
+
+			_segments.Add(newSegment);
 		} while (Parser.TryConsumeToken(TokenType.Plus));
 	}
 
-	public string GetValue()
+	protected override void Annotate()
 	{
-		string finalValue = "";
-		foreach (StringValueNode stringValueNode in StringValueNodes)
+		foreach (Segment segment in _segments)
 		{
-			finalValue += stringValueNode.GetValue();
+			if (segment.IsIdentifier)
+			{
+				if (!_symbolTable.Contains<StringDeclarationNode>(segment.StringOrIdentifierValue))
+				{
+					Annotator.AddError(this, $"String variable with ID '{segment.StringOrIdentifierValue}' is not declared.");
+				}
+
+				segment.Value = _symbolTable.Get<StringDeclarationNode>(segment.StringOrIdentifierValue).StringExpression.Value;
+			}
+			else
+			{
+				segment.Value = segment.StringOrIdentifierValue;
+			}
+
+			this.Value += segment.Value;
 		}
-		return finalValue;
 	}
 }

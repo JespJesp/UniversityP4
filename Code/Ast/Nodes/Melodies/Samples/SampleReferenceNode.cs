@@ -20,11 +20,11 @@ public class SampleReferenceNode : BranchNode
 		Parser.ConsumeToken(TokenType.Identifier, (value) => ReferenceId = value);
 	}
 
-	protected override void Validate()
+	protected override void Annotate()
 	{
 		if (!_symbolTable.Contains<SampleNode>(ReferenceId))
 		{
-			Validator.AddError(this, $"Melody: '{SampleReferencesNode.MelodyNode.Id}'. The sample reference '{ReferenceId}' is not declared");
+			Annotator.AddError(this, $"Melody: '{SampleReferencesNode.MelodyNode.Id}'. The sample reference '{ReferenceId}' is not declared");
 		}
 	}
 

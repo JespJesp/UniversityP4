@@ -22,7 +22,7 @@ public class SampleNode : SymbolNode
 
 	protected override void Validate()
 	{
-		string filePathValue = FilePath.GetValue();
+		string filePathValue = FilePath.Value;
 		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
@@ -34,7 +34,7 @@ public class SampleNode : SymbolNode
 
 	protected override void Evaluate()
 	{
-		this.Sample.FilePath = this.FilePath.GetValue();
+		this.Sample.FilePath = this.FilePath.Value;
 		this.Sample.ReferencePitch = new(this.ReferencePitch);
 	}
 }
