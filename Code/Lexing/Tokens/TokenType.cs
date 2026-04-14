@@ -21,6 +21,7 @@ public enum TokenType
 	// Formatting
 	LeftParentheses,
 	RightParentheses,
+	ForwardSlash,
 	Comma,
 	Newline,
 	Indent,

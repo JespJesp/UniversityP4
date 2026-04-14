@@ -1,31 +1,33 @@
-namespace AbstractSyntax;
+using Ast.Tables;
 
-public class Timeline
+namespace Runtime.Objects;
+
+public class Timeline : RuntimeObject
 {
-	public TimelineSettings Settings = new();
+	public int SampleRate = 48000;
+	public int BeatsPerMinute = 120;
+	public int BeatsPerBar = 4;
+	public int BeatNoteValue = 4;
+
 	public List<TimelineCommand> Commands = new();
 	public List<Loop> Loops = new();
 
-	public void BuildLoopsFromCommands()
+	public void BuildLoopsFromCommands(RuntimeVariableTable variables)
 	{
 		Loops.Clear();
 
-		RuntimeEnvironment.BeatsPerMinute = Settings.Bpm;
-		RuntimeEnvironment.BeatsPerBar = Settings.TimeSignatureNumerator;
-		RuntimeEnvironment.BeatNoteValue = Settings.TimeSignatureDenominator;
-
-		var activeMelodies = new Dictionary<string, List<ActiveLoopState>>();
-		var commandTargets = new Dictionary<string, List<string>>();
+		var activeMelodies = new Dictionary<Melody, List<ActiveLoopState>>();
+		var commandTargets = new Dictionary<string, List<Melody>>();
 
 		foreach (TimelineCommand command in Commands)
 		{
 			switch (command.Type)
 			{
 				case TimelineCommandType.Start:
-					ExecuteStartCommand(command, activeMelodies, commandTargets);
+					ExecuteStartCommand(command, activeMelodies, commandTargets, variables);
 					break;
 				case TimelineCommandType.Stop:
-					ExecuteStopCommand(command, activeMelodies, commandTargets);
+					ExecuteStopCommand(command, activeMelodies, commandTargets, variables);
 					break;
 				default:
 					throw new Exception($"Unexpected timeline command type: {command.Type}");
@@ -37,18 +39,19 @@ public class Timeline
 
 	private void ExecuteStartCommand(
 		TimelineCommand command,
-		Dictionary<string, List<ActiveLoopState>> activeMelodies,
-		Dictionary<string, List<string>> commandTargets)
+		Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
+		Dictionary<string, List<Melody>> commandTargets,
+		RuntimeVariableTable variables)
 	{
 		float startBeat = command.Beat ?? 0;
-		HashSet<string> melodyIds = ExpandTargetsToMelodies(command.TargetIds);
+		HashSet<Melody> melodies = ExpandTargetsToMelodies(command.TargetIds, variables);
 
-		foreach (string melodyId in melodyIds)
+		foreach (Melody melody in melodies)
 		{
-			if (!activeMelodies.TryGetValue(melodyId, out List<ActiveLoopState>? starts))
+			if (!activeMelodies.TryGetValue(melody, out List<ActiveLoopState>? starts))
 			{
 				starts = new List<ActiveLoopState>();
-				activeMelodies.Add(melodyId, starts);
+				activeMelodies.Add(melody, starts);
 			}
 
 			starts.Add(new ActiveLoopState(startBeat, command.GainMultiplier, command.PitchShiftHalfsteps));
@@ -56,14 +59,15 @@ public class Timeline
 
 		if (!string.IsNullOrWhiteSpace(command.Id))
 		{
-			commandTargets[command.Id] = melodyIds.ToList();
+			commandTargets[command.Id] = melodies.ToList();
 		}
 	}
 
 	private void ExecuteStopCommand(
 		TimelineCommand command,
-		Dictionary<string, List<ActiveLoopState>> activeMelodies,
-		Dictionary<string, List<string>> commandTargets)
+		Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
+		Dictionary<string, List<Melody>> commandTargets,
+		RuntimeVariableTable variables)
 	{
 		if (!command.Beat.HasValue)
 		{
@@ -71,16 +75,11 @@ public class Timeline
 		}
 
 		float stopBeat = command.Beat.Value;
-		HashSet<string> targetsToStop = ResolveStopTargets(command, activeMelodies, commandTargets);
+		HashSet<Melody> targetsToStop = ResolveStopTargets(command, activeMelodies, commandTargets, variables);
 
-		foreach (string melodyId in targetsToStop)
+		foreach (Melody melody in targetsToStop)
 		{
-			if (!activeMelodies.TryGetValue(melodyId, out List<ActiveLoopState>? starts))
-			{
-				continue;
-			}
-
-			if (!RuntimeEnvironment.Melodies.TryGetValue(melodyId, out Melody? melody))
+			if (!activeMelodies.TryGetValue(melody, out List<ActiveLoopState>? starts))
 			{
 				continue;
 			}
@@ -93,13 +92,18 @@ public class Timeline
 				}
 
 				Melody adjustedMelody = CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps);
-				Loops.Add(new Loop(adjustedMelody, start.StartBeat, stopBeat));
+				Loops.Add(new Loop
+				{
+					Melody0 = adjustedMelody,
+					StartBeat = start.StartBeat,
+					EndBeat = stopBeat
+				});
 				starts.Remove(start);
 			}
 
 			if (starts.Count == 0)
 			{
-				activeMelodies.Remove(melodyId);
+				activeMelodies.Remove(melody);
 			}
 		}
 
@@ -109,39 +113,40 @@ public class Timeline
 		}
 	}
 
-	private static HashSet<string> ResolveStopTargets(
+	private HashSet<Melody> ResolveStopTargets(
 		TimelineCommand command,
-		Dictionary<string, List<ActiveLoopState>> activeMelodies,
-		Dictionary<string, List<string>> commandTargets)
+		Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
+		Dictionary<string, List<Melody>> commandTargets,
+		RuntimeVariableTable variables)
 	{
-		HashSet<string> targetsToStop = new();
+		HashSet<Melody> targetsToStop = new();
 
 		if (command.TargetIds.Any(target => string.Equals(target, "EVERYTHING", StringComparison.OrdinalIgnoreCase)))
 		{
-			foreach (string melodyId in activeMelodies.Keys)
+			foreach (Melody melody in activeMelodies.Keys)
 			{
-				targetsToStop.Add(melodyId);
+				targetsToStop.Add(melody);
 			}
 			return targetsToStop;
 		}
 
 		if (command.TargetIds.Count > 0)
 		{
-			return ExpandTargetsToMelodies(command.TargetIds);
+			return ExpandTargetsToMelodies(command.TargetIds, variables);
 		}
 
-		if (!string.IsNullOrWhiteSpace(command.Id) && commandTargets.TryGetValue(command.Id, out List<string>? commandMelodies))
+		if (!string.IsNullOrWhiteSpace(command.Id) && commandTargets.TryGetValue(command.Id, out List<Melody>? commandMelodies))
 		{
-			foreach (string melodyId in commandMelodies)
+			foreach (Melody melody in commandMelodies)
 			{
-				targetsToStop.Add(melodyId);
+				targetsToStop.Add(melody);
 			}
 		}
 
 		return targetsToStop;
 	}
 
-	private void CloseOpenLoops(Dictionary<string, List<ActiveLoopState>> activeMelodies)
+	private void CloseOpenLoops(Dictionary<Melody, List<ActiveLoopState>> activeMelodies)
 	{
 		float timelineEndBeat = Commands
 			.Where(command => command.Beat.HasValue)
@@ -149,25 +154,25 @@ public class Timeline
 			.DefaultIfEmpty(0)
 			.Max();
 
-		if (RuntimeEnvironment.BeatsPerBar > 0)
+		if (BeatsPerBar > 0)
 		{
-			timelineEndBeat = MathF.Ceiling(timelineEndBeat / RuntimeEnvironment.BeatsPerBar) * RuntimeEnvironment.BeatsPerBar;
+			timelineEndBeat = MathF.Ceiling(timelineEndBeat / BeatsPerBar) * BeatsPerBar;
 		}
 
-		foreach ((string melodyId, List<ActiveLoopState> starts) in activeMelodies)
+		foreach ((Melody melody, List<ActiveLoopState> starts) in activeMelodies)
 		{
-			if (!RuntimeEnvironment.Melodies.TryGetValue(melodyId, out Melody? melody))
-			{
-				continue;
-			}
-
 			foreach (ActiveLoopState start in starts)
 			{
 				float endBeat = Math.Max(timelineEndBeat, start.StartBeat + melody.LengthInBeats);
 				if (endBeat > start.StartBeat)
 				{
 					Melody adjustedMelody = CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps);
-					Loops.Add(new Loop(adjustedMelody, start.StartBeat, endBeat));
+					Loops.Add(new Loop
+					{
+						Melody0 = adjustedMelody,
+						StartBeat = start.StartBeat,
+						EndBeat = endBeat
+					});
 				}
 			}
 		}
@@ -182,21 +187,20 @@ public class Timeline
 
 		Melody adjustedMelody = new()
 		{
-			Id = source.Id,
 			LengthInBeats = source.LengthInBeats,
-			SampleIds = new List<string>(source.SampleIds),
+			Samples = new List<Sample>(source.Samples),
 			Notes = new List<Note>()
 		};
 
 		foreach (Note sourceNote in source.Notes)
 		{
-			Note adjustedNote = new(adjustedMelody)
+			Note adjustedNote = new()
 			{
 				StartBeat = sourceNote.StartBeat,
 				EndBeat = sourceNote.EndBeat,
 				Volume = sourceNote.Volume * gainMultiplier,
 				Pan = sourceNote.Pan,
-				ThePitch = ShiftPitch(sourceNote.ThePitch, pitchShiftHalfsteps)
+				Pitch0 = ShiftPitch(sourceNote.Pitch0, pitchShiftHalfsteps)
 			};
 
 			adjustedMelody.Notes.Add(adjustedNote);
@@ -223,49 +227,67 @@ public class Timeline
 		return shiftedPitch;
 	}
 
-	private static HashSet<string> ExpandTargetsToMelodies(List<string> targets)
+	private static HashSet<Melody> ExpandTargetsToMelodies(List<string> targets, RuntimeVariableTable variables)
 	{
-		HashSet<string> resolvedMelodies = new();
+		HashSet<Melody> resolvedMelodies = new();
 
 		foreach (string target in targets)
 		{
-			ResolveTargetToMelodies(target, resolvedMelodies, new HashSet<string>());
+			ResolveTargetToMelodies(target, resolvedMelodies, new HashSet<Pattern>(), variables);
 		}
 
 		return resolvedMelodies;
 	}
 
-	private static void ResolveTargetToMelodies(string targetId, HashSet<string> resolvedMelodies, HashSet<string> visitedPatterns)
+	private static void ResolveTargetToMelodies(string targetId, HashSet<Melody> resolvedMelodies, HashSet<Pattern> visitedPatterns, RuntimeVariableTable variables)
 	{
-		if (RuntimeEnvironment.Melodies.ContainsKey(targetId))
+		if (variables.TryGet(targetId, out Melody melody))
 		{
-			resolvedMelodies.Add(targetId);
+			resolvedMelodies.Add(melody);
 			return;
 		}
 
-		if (!RuntimeEnvironment.Patterns.TryGetValue(targetId, out Pattern? pattern))
+		if (!variables.TryGet(targetId, out Pattern pattern))
 		{
 			throw new Exception($"Timeline target '{targetId}' is undefined.");
 		}
 
-		if (!visitedPatterns.Add(targetId))
+		if (!visitedPatterns.Add(pattern))
 		{
 			throw new Exception($"Timeline target '{targetId}' contains a recursive pattern reference.");
 		}
 
-		foreach (string childId in pattern.PatternAndMelodyIds)
+		foreach (Melody childMelody in pattern.Melodies)
 		{
-			ResolveTargetToMelodies(childId, resolvedMelodies, visitedPatterns);
+			resolvedMelodies.Add(childMelody);
 		}
 
-		visitedPatterns.Remove(targetId);
+		foreach (Pattern childPattern in pattern.Patterns)
+		{
+			ResolvePatternToMelodies(childPattern, resolvedMelodies, visitedPatterns);
+		}
+
+		visitedPatterns.Remove(pattern);
 	}
 
-	public void Reset()
+	private static void ResolvePatternToMelodies(Pattern pattern, HashSet<Melody> resolvedMelodies, HashSet<Pattern> visitedPatterns)
 	{
-		Settings = new TimelineSettings();
-		Commands.Clear();
-		Loops.Clear();
+		if (!visitedPatterns.Add(pattern))
+		{
+			throw new Exception("Timeline target contains a recursive pattern reference.");
+		}
+
+		foreach (Melody melody in pattern.Melodies)
+		{
+			resolvedMelodies.Add(melody);
+		}
+
+		foreach (Pattern childPattern in pattern.Patterns)
+		{
+			ResolvePatternToMelodies(childPattern, resolvedMelodies, visitedPatterns);
+		}
+
+		visitedPatterns.Remove(pattern);
 	}
 
 	private sealed class ActiveLoopState
@@ -281,13 +303,6 @@ public class Timeline
 			PitchShiftHalfsteps = pitchShiftHalfsteps;
 		}
 	}
-}
-
-public class TimelineSettings
-{
-	public int Bpm = 120;
-	public int TimeSignatureNumerator = 4;
-	public int TimeSignatureDenominator = 4;
 }
 
 public class TimelineCommand
