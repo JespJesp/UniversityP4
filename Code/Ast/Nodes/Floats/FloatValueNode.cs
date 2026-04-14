@@ -18,6 +18,8 @@ internal class FloatValueNode : BranchNode
 		{
 			Parser.ConsumeToken(TokenType.Float, (value) => this._value = value);
 		}
+
+		// Parser.TryConsumeToken(TokenType.Identifier, (value) => this._value = value);
 	}
 
 	protected override void Annotate()

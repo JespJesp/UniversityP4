@@ -25,6 +25,8 @@ public enum TokenType
 	RightParentheses,
 	Comma,
 	Plus,
+	Asterisk,
+	Slash,
 	Newline,
 	Indent,
 	EndOfFile

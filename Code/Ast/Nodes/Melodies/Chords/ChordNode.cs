@@ -19,6 +19,7 @@ public class ChordNode : BranchNode
 	protected override void Parse()
 	{
 		StartBeat = ParseChild(new FloatExpressionNode());
+		Parser.ConsumeToken(TokenType.Comma);
 		EndBeat = ParseChild(new FloatExpressionNode());
 
 		while (Parser.CursorToken.Type == TokenType.Identifier)
