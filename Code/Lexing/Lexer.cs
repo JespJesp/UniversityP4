@@ -28,7 +28,7 @@ public static class Lexer
 			string errorMessage = "Lexical errors:";
 			foreach (LexicalError error in _lexicalErrors)
 			{
-				errorMessage += $"\n- Line: {error.Line}, Column: {error.Column}, Message: {error.Message}";
+				errorMessage += $"\n- Line: '{error.Line}'. Column: '{error.Column}'. {error.Message}";
 			}
 			throw new Exception(errorMessage);
 		}

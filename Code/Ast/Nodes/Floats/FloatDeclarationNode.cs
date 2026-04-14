@@ -5,7 +5,7 @@ namespace Ast.Nodes.Floats;
 
 public class FloatDeclarationNode : SymbolNode
 {
-	internal FloatExpressionNode FloatExpression;
+	internal FloatExpressionNode FloatExpression = new();
 
 	protected override void Parse()
 	{

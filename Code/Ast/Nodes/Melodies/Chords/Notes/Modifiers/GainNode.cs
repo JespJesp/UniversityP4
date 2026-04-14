@@ -8,7 +8,7 @@ namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 public class GainNode : BranchNode
 {
 	public ModifiersNode ModifiersNode;
-	public FloatExpressionNode Volume;
+	public FloatExpressionNode Volume = new();
 
 	public GainNode(ModifiersNode modifiersNode)
 	{

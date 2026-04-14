@@ -5,7 +5,7 @@ namespace Ast.Nodes.Strings;
 
 public class StringDeclarationNode : SymbolNode
 {
-	internal StringExpressionNode StringExpression;
+	internal StringExpressionNode StringExpression = new();
 
 	protected override void Parse()
 	{

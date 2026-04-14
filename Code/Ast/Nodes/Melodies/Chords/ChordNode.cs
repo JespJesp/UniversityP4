@@ -8,8 +8,8 @@ namespace Ast.Nodes.Melodies.Chords;
 public class ChordNode : BranchNode
 {
 	public ChordsNode ChordsNode;
-	public FloatExpressionNode StartBeat;
-	public FloatExpressionNode EndBeat;
+	public FloatExpressionNode StartBeat = new();
+	public FloatExpressionNode EndBeat = new();
 
 	public ChordNode(ChordsNode chordsNode)
 	{

@@ -7,7 +7,7 @@ namespace Ast.Nodes.Samples;
 
 public class SampleNode : SymbolNode
 {
-	public StringExpressionNode FilePath;
+	public StringExpressionNode FilePath = new();
 	public string ReferencePitch = "";
 
 	public Sample Sample = new();

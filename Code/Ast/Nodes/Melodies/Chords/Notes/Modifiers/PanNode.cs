@@ -8,7 +8,7 @@ namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 public class PanNode : BranchNode
 {
 	public ModifiersNode ModifiersNode;
-	public FloatExpressionNode Pan;
+	public FloatExpressionNode Pan = new();
 
 	public PanNode(ModifiersNode modifiersNode)
 	{

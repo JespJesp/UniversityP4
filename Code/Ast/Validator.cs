@@ -19,6 +19,6 @@ public static class Validator
 
 	public static void AddError(Node node, string errorMessage)
 	{
-		_semanticErrors.Add($"Node: '{node.GetType()}'. {errorMessage}");
+		_semanticErrors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {errorMessage}");
 	}
 }
