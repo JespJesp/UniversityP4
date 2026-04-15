@@ -1,6 +1,8 @@
-﻿using Ast;
-using Ast.Nodes;
-using Lexing;
+﻿using Lexing;
+using Parsing;
+using Annotation;
+using Validation;
+using Evaluation;
 
 internal class Program
 {
@@ -8,7 +10,7 @@ internal class Program
 	{
 		if (args.Length != 1)
 		{
-			throw new Exception("Program argument error: No file path provided to be interpreted.");
+			throw new Exception("Program argument error: No file path provided to be interpreted");
 		}
 
 		string filePath = args[0];
@@ -17,7 +19,7 @@ internal class Program
 
 		if (fileFolderPath == null)
 		{
-			throw new Exception("Program argument error: Input file does not exist.");
+			throw new Exception("Program argument error: Input file does not exist");
 		}
 
 		try

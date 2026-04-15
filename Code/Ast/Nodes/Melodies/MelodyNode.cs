@@ -1,9 +1,9 @@
 using Runtime.Objects;
+using Parsing;
 using Ast.Nodes.Melodies.Chords;
 using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies.Samples;
 using Lexing.Tokens;
-using Ast.Nodes.Floats;
 using System.Globalization;
 
 namespace Ast.Nodes.Melodies;
@@ -37,7 +37,7 @@ public class MelodyNode : SymbolNode
 				new(TokenType.Newline),
 				new(TokenType.Indent, "1")
 			};
-			Parser.HandleUniqueOptions(options, optionSeparator);
+			Parser.AllowUniqueOptions(options, optionSeparator);
 		}
 	}
 

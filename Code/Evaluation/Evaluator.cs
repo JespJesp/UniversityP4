@@ -3,7 +3,7 @@ using Ast.Nodes;
 using Runtime;
 using Runtime.Objects;
 
-namespace Ast;
+namespace Evaluation;
 
 public static class Evaluator
 {

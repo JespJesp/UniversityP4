@@ -3,7 +3,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Runtime;
 
-namespace Ast;
+namespace Evaluation;
 
 public static class AudioRenderer
 {

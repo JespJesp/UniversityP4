@@ -1,4 +1,5 @@
 using Ast.NodeArchetypes;
+using Parsing;
 using Ast.Nodes.Melodies;
 using Runtime.Objects;
 using Lexing.Tokens;
@@ -24,7 +25,7 @@ public class ReferenceNode : BranchNode
 
 	protected override void Annotate()
 	{
-		if (!_symbolTable.Contains<PatternNode>(ReferenceId) 
+		if (!_symbolTable.Contains<PatternNode>(ReferenceId)
 			&& !_symbolTable.Contains<MelodyNode>(ReferenceId))
 		{
 			throw new Exception($"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");

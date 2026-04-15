@@ -2,38 +2,37 @@ using Ast.NodeArchetypes;
 using Ast.Nodes;
 using Lexing.Tokens;
 
-namespace Ast;
+namespace Parsing;
 
 public static class Parser
 {
 	private static int _cursorPosition = 0;
 	private static List<Token> _tokens = new();
-	private static List<string> _syntaxErrors = new();
+	private static List<string> _errors = new();
 
 	public static Token CursorToken => _tokens[_cursorPosition];
 
 	public static ProgramNode Parse(List<Token> inputTokens)
 	{
 		_tokens = inputTokens;
-		_cursorPosition = 0;
 
-		ProgramNode programNode = new ProgramNode();
-		programNode.ParseTree();
+		ProgramNode astRoot = new ProgramNode();
+		astRoot.ParseTree();
 
-		if (_syntaxErrors.Any())
+		if (_errors.Any())
 		{
-			throw new Exception("Syntax errors:\n- " + string.Join("\n- ", _syntaxErrors));
+			throw new Exception("Syntax errors:\n- " + string.Join("\n- ", _errors));
 		}
 
-		return programNode;
+		return astRoot;
 	}
 
 	public static void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
-		_syntaxErrors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node type: '{node.GetType()}'. {errorMessage}");
+		_errors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node type: '{node.GetType()}'. {errorMessage}");
 
-		// Skip everything on the line where the syntax error occurred,
-		// since the error will likely impact the whole line
+		// Skip everything on the line where the syntax error occurred
+		// because the error will likely impact the whole line
 		while (CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
@@ -110,7 +109,7 @@ public static class Parser
 	/// 2) may only appear once, thereby making it "unique",
 	/// 3) may appear in a random order.
 	/// </summary>
-	public static void HandleUniqueOptions(Dictionary<TokenType, Action> options, Token[] separator)
+	public static void AllowUniqueOptions(Dictionary<TokenType, Action> options, Token[] separator)
 	{
 		List<TokenType> usedTokenTypes = new();
 		do

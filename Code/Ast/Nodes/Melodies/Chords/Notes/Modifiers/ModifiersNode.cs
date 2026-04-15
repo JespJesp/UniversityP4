@@ -1,4 +1,5 @@
 using Ast.NodeArchetypes;
+using Parsing;
 using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
@@ -28,7 +29,7 @@ public class ModifiersNode : BranchNode
 			}
 		};
 		Token[] optionSeparator = { new(TokenType.Comma) };
-		Parser.HandleUniqueOptions(options, optionSeparator);
+		Parser.AllowUniqueOptions(options, optionSeparator);
 
 		Parser.ConsumeToken(TokenType.RightParentheses);
 	}
