@@ -1,8 +1,8 @@
-﻿using Annotation;
-using Evaluation;
-using Lexing;
-using Parsing;
-using Validation;
+﻿using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Lexing;
+using Phases.Parsing;
+using Phases.Validation;
 
 internal class Program
 {

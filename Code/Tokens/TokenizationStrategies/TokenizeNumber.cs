@@ -1,4 +1,4 @@
-using Lexing;
+using Phases.Lexing;
 
 namespace Tokens.TokenizationStrategies;
 
@@ -23,7 +23,7 @@ public class TokenizeNumber : ITokenizationStrategy
 		}
 
 		// Chain numerical characters together
-		while (!Lexer.AtEndOfFile 
+		while (!Lexer.AtEndOfFile
 			&& (char.IsDigit(Lexer.CursorChar) || Lexer.CursorChar == '.'))
 		{
 			if (Lexer.CursorChar == '.')

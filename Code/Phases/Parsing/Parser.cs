@@ -2,7 +2,7 @@ using Ast.NodeArchetypes;
 using Ast.Nodes;
 using Tokens;
 
-namespace Parsing;
+namespace Phases.Parsing;
 
 public static class Parser
 {

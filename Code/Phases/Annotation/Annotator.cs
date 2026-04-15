@@ -1,7 +1,7 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes;
 
-namespace Annotation;
+namespace Phases.Annotation;
 
 public static class Annotator
 {

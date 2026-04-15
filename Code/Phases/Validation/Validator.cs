@@ -1,7 +1,7 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes;
 
-namespace Validation;
+namespace Phases.Validation;
 
 public static class Validator
 {

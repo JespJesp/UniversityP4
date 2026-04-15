@@ -5,7 +5,7 @@ using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
-using Parsing;
+using Phases.Parsing;
 using Tokens;
 
 namespace Ast.Nodes;

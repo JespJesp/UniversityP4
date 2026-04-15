@@ -1,6 +1,6 @@
 using Tokens.TokenizationStrategies;
 
-namespace Tokens; //TODO: Fix the namespaces after my restructuring
+namespace Tokens;
 
 public static class Tokenizer
 {

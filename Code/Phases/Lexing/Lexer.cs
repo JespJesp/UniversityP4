@@ -1,7 +1,7 @@
 using Tokens;
 using Tokens.TokenizationStrategies;
 
-namespace Lexing;
+namespace Phases.Lexing;
 
 public static class Lexer
 {

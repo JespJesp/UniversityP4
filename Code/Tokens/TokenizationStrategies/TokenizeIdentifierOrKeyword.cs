@@ -1,4 +1,4 @@
-using Lexing;
+using Phases.Lexing;
 
 namespace Tokens.TokenizationStrategies;
 

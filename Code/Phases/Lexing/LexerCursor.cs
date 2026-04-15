@@ -1,4 +1,4 @@
-namespace Tokens;
+namespace Phases.Lexing;
 
 public class LexerCursor
 {

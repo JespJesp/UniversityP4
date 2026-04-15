@@ -1,7 +1,7 @@
-using Annotation;
-using Evaluation;
-using Parsing;
-using Validation;
+using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
 
 namespace Ast.NodeArchetypes;
 
