@@ -2,20 +2,22 @@ namespace Ast.NodeArchetypes;
 
 public abstract class Node
 {
-	protected List<Node> _children = new();
-	protected SymbolTable _symbolTable = new();
-	private bool _createsNestedScope;
 	public int ScopeDepth { get; private set; }
 	public int Column { get; private set; }
 	public int Line { get; private set; }
 
-	protected T ParseChild<T>(T child, bool createsNestedScope = false) where T : Node
+	protected List<Node> _children = new();
+	protected SymbolTable _symbolTable = new();
+
+	private bool _createsNestedScope;
+
+	protected T ParseChild<T>(T child, bool createsNestedScope = false) where T : BranchNode
 	{
 		_children.Add(child);
+
 		child.Column = Parser.CursorToken.Column;
 		child.Line = Parser.CursorToken.Line;
 		child._createsNestedScope = createsNestedScope;
-
 		if (this._createsNestedScope)
 		{
 			child.ScopeDepth = this.ScopeDepth + 1;
@@ -31,7 +33,7 @@ public abstract class Node
 		}
 		catch (Exception exception)
 		{
-			Parser.AddError($"Node type: {child.GetType()}. {exception.Message}");
+			Parser.AddErrorAndSkipLine(child, exception.Message);
 		}
 
 		return child;
@@ -40,7 +42,15 @@ public abstract class Node
 	protected void CascadeAnnotate(SymbolTable availableSymbols)
 	{
 		this._symbolTable = availableSymbols.Clone();
-		Annotate();
+
+		try
+		{
+			Annotate();
+		}
+		catch (Exception exception)
+		{
+			Annotator.AddError(this, exception.Message);
+		}
 
 		SymbolTable childrensSymbols = this._symbolTable;
 		foreach (Node child in _children)
@@ -52,7 +62,15 @@ public abstract class Node
 
 	protected void CascadeValidate()
 	{
-		Validate();
+		try
+		{
+			Validate();
+		}
+		catch (Exception exception)
+		{
+			Validator.AddError(this, exception.Message);
+		}
+
 		foreach (Node child in _children)
 		{
 			child.CascadeValidate();
@@ -67,7 +85,7 @@ public abstract class Node
 		}
 		catch (Exception exception)
 		{
-			throw new Exception($"Column: {this.Column}. Line: {this.Line}. Node: {this.GetType()}. {exception.Message}");
+			Evaluator.ThrowError(this, exception.Message);
 		}
 
 		foreach (Node child in _children)

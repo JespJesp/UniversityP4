@@ -28,7 +28,7 @@ public class PanNode : BranchNode
 
 		if (Pan.Value < -1.0f || Pan.Value > 1.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan.Value}");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: '{Pan.Value}'.");
 		}
 	}
 

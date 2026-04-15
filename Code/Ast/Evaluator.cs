@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Nodes;
 using Runtime;
 using Runtime.Objects;
@@ -18,6 +19,11 @@ public static class Evaluator
 		{
 			throw new Exception($"Evaluation error: {exception}");
 		}
+	}
+
+	public static void ThrowError(Node node, string message)
+	{
+		throw new Exception($"Line: {node.Line}. Column: {node.Column}. Node type: {node.GetType()}. {message}");
 	}
 
 	// TODO: Remove after debugging. It's just an example.

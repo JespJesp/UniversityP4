@@ -24,7 +24,7 @@ public class SampleReferenceNode : BranchNode
 	{
 		if (!_symbolTable.Contains<SampleNode>(ReferenceId))
 		{
-			Annotator.AddError(this, $"Melody: '{SampleReferencesNode.MelodyNode.Id}'. The sample reference '{ReferenceId}' is not declared");
+			throw new Exception($"Melody: '{SampleReferencesNode.MelodyNode.Id}'. The sample reference '{ReferenceId}' is not declared");
 		}
 	}
 

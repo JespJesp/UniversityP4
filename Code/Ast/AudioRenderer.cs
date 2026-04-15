@@ -14,9 +14,11 @@ public static class AudioRenderer
 		List<ISampleProvider> sounds = CreateSounds(inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
+
+		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'.");
 	}
 
-	public static List<ISampleProvider> CreateSounds(string inputFileFolderPath)
+	private static List<ISampleProvider> CreateSounds(string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
 

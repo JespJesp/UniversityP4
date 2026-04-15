@@ -27,7 +27,7 @@ public class ReferenceNode : BranchNode
 		if (!_symbolTable.Contains<PatternNode>(ReferenceId) 
 			&& !_symbolTable.Contains<MelodyNode>(ReferenceId))
 		{
-			Annotator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
+			throw new Exception($"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 

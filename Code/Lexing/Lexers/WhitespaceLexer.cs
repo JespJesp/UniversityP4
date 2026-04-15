@@ -8,16 +8,17 @@ public static class WhitespaceLexer
 	{
 		if (Lexer.CursorChar == '\n')
 		{
+			// Add newline token
 			Lexer.Tokens.Add(new Token(TokenType.Newline, "", Lexer.Cursor.Line, Lexer.Cursor.Column));
 			Lexer.Cursor.MoveToNewLine();
 
+			// Check for following indent token
 			int indentSize = 0;
-			while (Lexer.IsNotEndOfFile && Lexer.CursorChar == '\t')
+			while (!Lexer.AtEndOfFile && Lexer.CursorChar == '\t')
 			{
 				indentSize++;
 				Lexer.Cursor.MoveToNextColumn();
 			}
-
 			if (indentSize != 0)
 			{
 				Lexer.Tokens.Add(new Token(TokenType.Indent, indentSize.ToString(), Lexer.Cursor.Line, Lexer.Cursor.Column));

@@ -8,8 +8,7 @@ internal class Program
 	{
 		if (args.Length != 1)
 		{
-			Console.WriteLine("Error in program argument: No file path provided to be interpreted.");
-			return;
+			throw new Exception("Program argument error: No file path provided to be interpreted.");
 		}
 
 		string filePath = args[0];
@@ -18,8 +17,7 @@ internal class Program
 
 		if (fileFolderPath == null)
 		{
-			Console.WriteLine("Error in program argument: Input file does not exist.");
-			return;
+			throw new Exception("Program argument error: Input file does not exist.");
 		}
 
 		try
@@ -28,14 +26,14 @@ internal class Program
 		}
 		catch (Exception exception)
 		{
-			Console.WriteLine($"Error interpreting file: {exception}");
+			throw new Exception($"Interpretation error: {exception}");
 		}
 	}
 
 	private static void InterpretText(string fileText, string fileFolderPath)
 	{
 		var tokens = Lexer.Lex(fileText);
-		ProgramNode astRoot = Parser.ParseTree(tokens);
+		var astRoot = Parser.Parse(tokens);
 		Annotator.Annotate(astRoot);
 		Validator.Validate(astRoot);
 		Evaluator.Evaluate(astRoot, fileFolderPath);

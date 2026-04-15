@@ -2,8 +2,7 @@ namespace Lexing.Tokens;
 
 public enum TokenType
 {
-	// Identifier and keywords
-	Identifier,
+	// Keywords
 	TimelineKeyword,
 	SampleKeyword,
 	SamplesKeyword,
@@ -16,6 +15,7 @@ public enum TokenType
 	FloatKeyword,
 
 	// Values
+	Identifier,
 	Integer,
 	Float,
 	String,

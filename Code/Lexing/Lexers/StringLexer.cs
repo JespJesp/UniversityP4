@@ -6,26 +6,28 @@ public static class StringLexer
 {
 	public static void Lex()
 	{
-		string str = "";
+		string value = "";
 		int startLine = Lexer.Cursor.Line;
 		int startColumn = Lexer.Cursor.Column;
-		Lexer.Cursor.MoveToNextColumn(); // Skip opening quote
 
-		bool isClosingQuote() => Lexer.CursorChar == '"';
+		// Skip opening quote
+		Lexer.Cursor.MoveToNextColumn();
 
-		while (!isClosingQuote())
+		// Chain characters together until closing quote
+		while (Lexer.CursorChar != '"')
 		{
-			str += Lexer.CursorChar;
+			value += Lexer.CursorChar;
 			Lexer.Cursor.MoveToNextColumn();
 
-			if (!Lexer.IsNotEndOfFile || Lexer.CursorChar == '\n')
+			if (Lexer.AtEndOfFile || Lexer.CursorChar == '\n')
 			{
-				Lexer.AddError(new LexicalError(startLine, startColumn, "String is missing closing quote '\"'"));
-				return;
+				throw new LexicalException(startLine, startColumn, "String is missing closing quote '\"'");
 			}
 		}
 
-		Lexer.Cursor.MoveToNextColumn(); // Skip closing quote
-		Lexer.Tokens.Add(new Token(TokenType.String, str, Lexer.Cursor.Line, startColumn));
+		// Skip closing quote
+		Lexer.Cursor.MoveToNextColumn();
+
+		Lexer.Tokens.Add(new Token(TokenType.String, value, Lexer.Cursor.Line, startColumn));
 	}
 }

@@ -45,7 +45,7 @@ public class MelodyNode : SymbolNode
 	{
 		if (LengthInBeats <= 0)
 		{
-			Validator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
+			throw new Exception($"Melody: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

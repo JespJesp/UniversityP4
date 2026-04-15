@@ -4,17 +4,19 @@ namespace Ast;
 
 public class SymbolTable
 {
+	public Dictionary<SymbolKey, SymbolValue> Symbols = new();
+
 	public record SymbolKey
 	(
 		Type Type,
 		string Id
 	);
+
 	public record SymbolValue
 	(
 		SymbolNode node,
 		int ScopeDepth
 	);
-	public Dictionary<SymbolKey, SymbolValue> Symbols = new();
 
 	public SymbolTable Clone()
 	{
@@ -53,7 +55,11 @@ public class SymbolTable
 		}
 		else
 		{
-			value = default;
+			// The "!" (null-forgiving operator) hides the warning
+			// "cannot convert null literal to non-nullable reference type".
+			// We can safely do this because you should never
+			// use the out parameter value if this method returns false.
+			value = default!;
 			return false;
 		}
 	}

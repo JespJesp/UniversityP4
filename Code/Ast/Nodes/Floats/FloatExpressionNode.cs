@@ -6,12 +6,10 @@ namespace Ast.Nodes.Floats;
 
 public class FloatExpressionNode : BranchNode
 {
-	private enum Operation
-	{
-		None, // Works for both addition and subtraction
-		Multiplication,
-		Division
-	}
+	public float Value = 0;
+
+	private List<Term> _terms = new();
+
 	private class Term
 	{
 		public float Value;
@@ -19,8 +17,13 @@ public class FloatExpressionNode : BranchNode
 		public bool IsIdentifier;
 		public Operation Operation;
 	};
-	private List<Term> _terms = new();
-	public float Value = 0;
+
+	private enum Operation
+	{
+		None, // Works for both addition and subtraction
+		Multiplication,
+		Division
+	}
 
 	protected override void Parse()
 	{
@@ -31,7 +34,7 @@ public class FloatExpressionNode : BranchNode
 			{
 				Operation = newTermOperation.Value
 			};
-			
+
 			newTerm.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.StringValue = value);
 			if (!newTerm.IsIdentifier)
 			{
@@ -63,13 +66,12 @@ public class FloatExpressionNode : BranchNode
 		{
 			if (term.IsIdentifier)
 			{
-				if (!_symbolTable.Contains<FloatDeclarationNode>(term.StringValue))
+				if (!_symbolTable.Contains<FloatConstantNode>(term.StringValue))
 				{
-					Validator.AddError(this, $"Float variable with ID '{term.StringValue}' is not declared.");
-					return;
+					throw new Exception($"Float variable with ID '{term.StringValue}' is not declared.");
 				}
 
-				term.Value = _symbolTable.Get<FloatDeclarationNode>(term.StringValue).FloatExpression.Value;
+				term.Value = _symbolTable.Get<FloatConstantNode>(term.StringValue).FloatExpression.Value;
 			}
 			else
 			{
@@ -88,8 +90,7 @@ public class FloatExpressionNode : BranchNode
 					float divisor = term.Value;
 					if (divisor == 0)
 					{
-						Annotator.AddError(this, "Illegal operation: Cannot divide with 0");
-						return;
+						throw new Exception("Illegal operation: Cannot divide with 0");
 					}
 					this.Value /= divisor;
 					break;

@@ -3,7 +3,7 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Floats;
 
-public class FloatDeclarationNode : SymbolNode
+public class FloatConstantNode : SymbolNode
 {
 	internal FloatExpressionNode FloatExpression = new();
 

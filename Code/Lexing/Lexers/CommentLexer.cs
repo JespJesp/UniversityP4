@@ -7,7 +7,10 @@ public static class CommentLexer
 		int startLine = Lexer.Cursor.Line;
 		int startColumn = Lexer.Cursor.Column;
 
-		Lexer.Cursor.MoveToNextColumn(); // Skip opening percentage
+		// Skip opening percentage
+		Lexer.Cursor.MoveToNextColumn();
+
+		// Skip until closing percentage
 		while (Lexer.CursorChar != '%')
 		{
 			if (Lexer.CursorChar == '\n')
@@ -19,12 +22,13 @@ public static class CommentLexer
 				Lexer.Cursor.MoveToNextColumn();
 			}
 
-			if (!Lexer.IsNotEndOfFile)
+			if (Lexer.AtEndOfFile)
 			{
-				Lexer.AddError(new LexicalError(startLine, startColumn, "Comment is missing closing percentage '%'"));
-				return;
+				throw new LexicalException(startLine, startColumn, "Comment is missing closing percentage '%'");
 			}
 		}
-		Lexer.Cursor.MoveToNextColumn(); // Skip closing percentage
+
+		// Skip closing percentage
+		Lexer.Cursor.MoveToNextColumn();
 	}
 }

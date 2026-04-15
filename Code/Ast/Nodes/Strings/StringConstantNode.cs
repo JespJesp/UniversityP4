@@ -3,7 +3,7 @@ using Lexing.Tokens;
 
 namespace Ast.Nodes.Strings;
 
-public class StringDeclarationNode : SymbolNode
+public class StringConstantNode : SymbolNode
 {
 	internal StringExpressionNode StringExpression = new();
 

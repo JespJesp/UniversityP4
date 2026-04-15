@@ -10,21 +10,21 @@ public static class NumberLexer
 		int startColumn = Lexer.Cursor.Column;
 		bool hasDecimalSymbol = false;
 
+		// Allow a single '-' prefix
 		if (Lexer.CursorChar == '-')
 		{
 			value += Lexer.CursorChar;
 			Lexer.Cursor.MoveToNextColumn();
 		}
 
-		// Chain characters together
-		while (Lexer.IsNotEndOfFile && (char.IsDigit(Lexer.CursorChar) || Lexer.CursorChar == '.'))
+		// Chain numerical characters together
+		while (!Lexer.AtEndOfFile && (char.IsDigit(Lexer.CursorChar) || Lexer.CursorChar == '.'))
 		{
 			if (Lexer.CursorChar == '.')
 			{
 				if (hasDecimalSymbol)
 				{
-					Lexer.AddError(new LexicalError(Lexer.Cursor.Line, Lexer.Cursor.Column, "Encountered multiple decimal symbols '.'"));
-					return;
+					throw new LexicalException(Lexer.Cursor.Line, Lexer.Cursor.Column, "Encountered multiple decimal symbols '.'");
 				}
 				hasDecimalSymbol = true;
 			}
@@ -33,7 +33,7 @@ public static class NumberLexer
 			Lexer.Cursor.MoveToNextColumn();
 		}
 
-		// Determine if it is a float or an integer
+		// Determine whether it is a float or an integer
 		if (hasDecimalSymbol)
 		{
 			Lexer.Tokens.Add(new Token(TokenType.Float, value, Lexer.Cursor.Line, startColumn));

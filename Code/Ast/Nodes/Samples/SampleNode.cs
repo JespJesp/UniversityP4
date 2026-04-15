@@ -9,7 +9,6 @@ public class SampleNode : SymbolNode
 {
 	public StringExpressionNode FilePath = new();
 	public string ReferencePitch = "";
-
 	public Sample Sample = new();
 
 	protected override void Parse()
@@ -28,7 +27,7 @@ public class SampleNode : SymbolNode
 			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Validator.AddError(this, $"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
+			throw new Exception($"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff.");
 		}
 	}
 

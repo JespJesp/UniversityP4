@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Runtime.Objects;
 
-public class Pitch
+public class Pitch : RuntimeObject
 {
 	/// <summary>
 	/// Goes from C=0 to B=11.

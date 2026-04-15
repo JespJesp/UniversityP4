@@ -5,14 +5,16 @@ namespace Ast.Nodes.Strings;
 
 public class StringExpressionNode : BranchNode
 {
+	public string Value = "";
+
+	internal List<Segment> _segments = new();
+
 	internal class Segment
 	{
 		public string Value = "";
 		public string StringOrIdentifierValue = "";
 		public bool IsIdentifier;
 	};
-	internal List<Segment> _segments = new();
-	public string Value = "";
 
 	protected override void Parse()
 	{
@@ -36,12 +38,12 @@ public class StringExpressionNode : BranchNode
 		{
 			if (segment.IsIdentifier)
 			{
-				if (!_symbolTable.Contains<StringDeclarationNode>(segment.StringOrIdentifierValue))
+				if (!_symbolTable.Contains<StringConstantNode>(segment.StringOrIdentifierValue))
 				{
-					Annotator.AddError(this, $"String variable with ID '{segment.StringOrIdentifierValue}' is not declared.");
+					throw new Exception($"String variable with ID '{segment.StringOrIdentifierValue}' is not declared.");
 				}
 
-				segment.Value = _symbolTable.Get<StringDeclarationNode>(segment.StringOrIdentifierValue).StringExpression.Value;
+				segment.Value = _symbolTable.Get<StringConstantNode>(segment.StringOrIdentifierValue).StringExpression.Value;
 			}
 			else
 			{

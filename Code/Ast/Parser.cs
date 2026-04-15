@@ -1,3 +1,4 @@
+using Ast.NodeArchetypes;
 using Ast.Nodes;
 using Lexing.Tokens;
 
@@ -11,7 +12,7 @@ public static class Parser
 
 	public static Token CursorToken => _tokens[_cursorPosition];
 
-	public static ProgramNode ParseTree(List<Token> inputTokens)
+	public static ProgramNode Parse(List<Token> inputTokens)
 	{
 		_tokens = inputTokens;
 		_cursorPosition = 0;
@@ -27,9 +28,9 @@ public static class Parser
 		return programNode;
 	}
 
-	public static void AddError(string errorMessage)
+	public static void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
-		_syntaxErrors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. {errorMessage}");
+		_syntaxErrors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node type: '{node.GetType()}'. {errorMessage}");
 
 		// Skip everything on the line where the syntax error occurred,
 		// since the error will likely impact the whole line

@@ -9,12 +9,15 @@ public static class IdentifierOrKeywordLexer
 		string id = "";
 		int startColumn = Lexer.Cursor.Column;
 
-		while (Lexer.IsNotEndOfFile && Lexer.CursorChar == '_' || Lexer.CursorChar == '#' || char.IsLetterOrDigit(Lexer.CursorChar))
+		// Chain characters together
+		while (!Lexer.AtEndOfFile
+			&& (Lexer.CursorChar == '_' || char.IsLetterOrDigit(Lexer.CursorChar)))
 		{
 			id += Lexer.CursorChar;
 			Lexer.Cursor.MoveToNextColumn();
 		}
 
+		// Check whether it is a keyword
 		TokenType tokenType = id switch
 		{
 			"timeline" => TokenType.TimelineKeyword,
