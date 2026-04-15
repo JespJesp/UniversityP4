@@ -6,7 +6,7 @@ public class TokenizeNumber : ITokenizationStrategy
 {
 	public static bool TryTokenize()
 	{
-		if (Lexer.CursorChar != '-' || !char.IsDigit(Lexer.CursorChar))
+		if (Lexer.CursorChar != '-' && !char.IsDigit(Lexer.CursorChar))
 		{
 			return false;
 		}
@@ -23,7 +23,8 @@ public class TokenizeNumber : ITokenizationStrategy
 		}
 
 		// Chain numerical characters together
-		while (!Lexer.AtEndOfFile && (char.IsDigit(Lexer.CursorChar) || Lexer.CursorChar == '.'))
+		while (!Lexer.AtEndOfFile 
+			&& (char.IsDigit(Lexer.CursorChar) || Lexer.CursorChar == '.'))
 		{
 			if (Lexer.CursorChar == '.')
 			{
@@ -48,6 +49,6 @@ public class TokenizeNumber : ITokenizationStrategy
 			Lexer.Tokens.Add(new Token(TokenType.Integer, value, Lexer.Cursor.Line, startColumn));
 		}
 
-		return false;
+		return true;
 	}
 }

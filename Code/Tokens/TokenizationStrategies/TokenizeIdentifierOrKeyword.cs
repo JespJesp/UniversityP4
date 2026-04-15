@@ -6,7 +6,7 @@ public class TokenizeIdentifierOrKeyword : ITokenizationStrategy
 {
 	public static bool TryTokenize()
 	{
-		if (Lexer.CursorChar != '_' || !char.IsLetter(Lexer.CursorChar))
+		if (Lexer.CursorChar != '_' && !char.IsLetter(Lexer.CursorChar))
 		{
 			return false;
 		}
