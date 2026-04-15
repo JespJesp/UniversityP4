@@ -1,7 +1,7 @@
 using System.Globalization;
-using Parsing;
 using Ast.NodeArchetypes;
-using Lexing.Tokens;
+using Parsing;
+using Tokens;
 
 namespace Ast.Nodes.Floats;
 

@@ -1,4 +1,4 @@
-namespace Lexing;
+namespace Tokens;
 
 public class LexicalException : Exception
 {

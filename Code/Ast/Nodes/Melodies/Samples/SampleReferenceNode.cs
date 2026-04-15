@@ -1,8 +1,8 @@
 using Ast.NodeArchetypes;
-using Parsing;
 using Ast.Nodes.Samples;
+using Parsing;
 using Runtime.Objects;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Ast.Nodes.Melodies.Samples;
 

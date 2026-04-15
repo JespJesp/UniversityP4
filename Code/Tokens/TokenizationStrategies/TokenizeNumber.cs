@@ -1,11 +1,16 @@
-using Lexing.Tokens;
+using Lexing;
 
-namespace Lexing.Lexers;
+namespace Tokens.TokenizationStrategies;
 
-public static class NumberLexer
+public class TokenizeNumber : ITokenizationStrategy
 {
-	public static void Lex()
+	public static bool TryTokenize()
 	{
+		if (Lexer.CursorChar != '-' || !char.IsDigit(Lexer.CursorChar))
+		{
+			return false;
+		}
+
 		string value = "";
 		int startColumn = Lexer.Cursor.Column;
 		bool hasDecimalSymbol = false;
@@ -42,5 +47,7 @@ public static class NumberLexer
 		{
 			Lexer.Tokens.Add(new Token(TokenType.Integer, value, Lexer.Cursor.Line, startColumn));
 		}
+
+		return false;
 	}
 }

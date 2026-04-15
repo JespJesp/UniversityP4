@@ -1,6 +1,6 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Parsing;
 

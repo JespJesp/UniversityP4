@@ -1,11 +1,16 @@
-using Lexing.Tokens;
+using Lexing;
 
-namespace Lexing.Lexers;
+namespace Tokens.TokenizationStrategies;
 
-public static class WhitespaceLexer
+public class TokenizeWhitespace : ITokenizationStrategy
 {
-	public static void Lex()
+	public static bool TryTokenize()
 	{
+		if (!char.IsWhiteSpace(Lexer.CursorChar))
+		{
+			return false;
+		}
+
 		if (Lexer.CursorChar == '\n')
 		{
 			// Add newline token
@@ -28,5 +33,7 @@ public static class WhitespaceLexer
 		{
 			Lexer.Cursor.MoveToNextColumn();
 		}
+
+		return true;
 	}
 }

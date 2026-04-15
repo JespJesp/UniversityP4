@@ -1,11 +1,16 @@
-using Lexing.Tokens;
+using Lexing;
 
-namespace Lexing.Lexers;
+namespace Tokens.TokenizationStrategies;
 
-public static class IdentifierOrKeywordLexer
+public class TokenizeIdentifierOrKeyword : ITokenizationStrategy
 {
-	public static void Lex()
+	public static bool TryTokenize()
 	{
+		if (Lexer.CursorChar != '_' || !char.IsLetter(Lexer.CursorChar))
+		{
+			return false;
+		}
+
 		string id = "";
 		int startColumn = Lexer.Cursor.Column;
 
@@ -34,5 +39,7 @@ public static class IdentifierOrKeywordLexer
 		};
 
 		Lexer.Tokens.Add(new Token(tokenType, id, Lexer.Cursor.Line, startColumn));
+
+		return true;
 	}
 }

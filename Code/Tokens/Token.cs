@@ -1,4 +1,4 @@
-namespace Lexing.Tokens;
+namespace Tokens;
 
 public class Token
 {

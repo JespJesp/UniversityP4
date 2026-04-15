@@ -1,10 +1,10 @@
-using Runtime.Objects;
-using Parsing;
-using Ast.Nodes.Melodies.Chords;
-using Ast.NodeArchetypes;
-using Ast.Nodes.Melodies.Samples;
-using Lexing.Tokens;
 using System.Globalization;
+using Ast.NodeArchetypes;
+using Ast.Nodes.Melodies.Chords;
+using Ast.Nodes.Melodies.Samples;
+using Parsing;
+using Runtime.Objects;
+using Tokens;
 
 namespace Ast.Nodes.Melodies;
 

@@ -1,8 +1,8 @@
-﻿using Lexing;
-using Parsing;
-using Annotation;
-using Validation;
+﻿using Annotation;
 using Evaluation;
+using Lexing;
+using Parsing;
+using Validation;
 
 internal class Program
 {

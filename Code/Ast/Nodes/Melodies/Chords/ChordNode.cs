@@ -1,8 +1,8 @@
 using Ast.NodeArchetypes;
-using Parsing;
 using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies.Chords.Notes;
-using Lexing.Tokens;
+using Parsing;
+using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
 

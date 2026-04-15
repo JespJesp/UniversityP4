@@ -1,6 +1,6 @@
 using Ast.NodeArchetypes;
 using Parsing;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Ast.Nodes.Melodies.Samples;
 

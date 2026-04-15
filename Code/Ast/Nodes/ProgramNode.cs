@@ -1,12 +1,12 @@
 using Ast.NodeArchetypes;
-using Parsing;
 using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
-using Lexing.Tokens;
+using Parsing;
+using Tokens;
 
 namespace Ast.Nodes;
 

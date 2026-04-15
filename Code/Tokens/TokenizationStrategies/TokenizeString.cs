@@ -1,11 +1,16 @@
-using Lexing.Tokens;
+using Lexing;
 
-namespace Lexing.Lexers;
+namespace Tokens.TokenizationStrategies;
 
-public static class StringLexer
+public class TokenizeString : ITokenizationStrategy
 {
-	public static void Lex()
+	public static bool TryTokenize()
 	{
+		if (Lexer.CursorChar != '"')
+		{
+			return false;
+		}
+
 		string value = "";
 		int startLine = Lexer.Cursor.Line;
 		int startColumn = Lexer.Cursor.Column;
@@ -29,5 +34,7 @@ public static class StringLexer
 		Lexer.Cursor.MoveToNextColumn();
 
 		Lexer.Tokens.Add(new Token(TokenType.String, value, Lexer.Cursor.Line, startColumn));
+
+		return true;
 	}
 }

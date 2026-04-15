@@ -1,9 +1,16 @@
-namespace Lexing.Lexers;
+using Lexing;
 
-public static class CommentLexer
+namespace Tokens.TokenizationStrategies;
+
+public class TokenizeComment : ITokenizationStrategy
 {
-	public static void Lex()
+	public static bool TryTokenize()
 	{
+		if (Lexer.CursorChar != '%')
+		{
+			return false;
+		}
+
 		int startLine = Lexer.Cursor.Line;
 		int startColumn = Lexer.Cursor.Column;
 
@@ -30,5 +37,7 @@ public static class CommentLexer
 
 		// Skip closing percentage
 		Lexer.Cursor.MoveToNextColumn();
+
+		return true;
 	}
 }
