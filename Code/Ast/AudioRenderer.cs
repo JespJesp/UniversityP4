@@ -25,9 +25,19 @@ public static class AudioRenderer
 		foreach (Loop loop in timeline.Loops)
 		{
 			Melody melody = loop.Melody0;
-			foreach (Sample sample in melody.Samples)
+			foreach (Note note in melody.Notes)
 			{
-				foreach (Note note in melody.Notes)
+				List<Sample> samplesToRender;
+				if (note.SampleOverride != null)
+				{
+					samplesToRender = new List<Sample> { note.SampleOverride };
+				}
+				else
+				{
+					samplesToRender = melody.Samples;
+				}
+
+				foreach (Sample sample in samplesToRender)
 				{
 					float loops = loop.LengthInBeats / melody.LengthInBeats;
 

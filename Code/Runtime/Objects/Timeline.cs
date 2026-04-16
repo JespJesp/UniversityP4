@@ -200,7 +200,8 @@ public class Timeline : RuntimeObject
 				EndBeat = sourceNote.EndBeat,
 				Volume = sourceNote.Volume * gainMultiplier,
 				Pan = sourceNote.Pan,
-				Pitch0 = ShiftPitch(sourceNote.Pitch0, pitchShiftHalfsteps)
+				Pitch0 = ShiftPitch(sourceNote.Pitch0, pitchShiftHalfsteps),
+				SampleOverride = sourceNote.SampleOverride
 			};
 
 			adjustedMelody.Notes.Add(adjustedNote);
