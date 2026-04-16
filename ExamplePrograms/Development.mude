@@ -1,37 +1,76 @@
 
-% This is a comment %
-
 sample guitar "/Samples/Instruments/electric guitar E4.wav" e4
 sample flute "/Samples/Instruments/flute E.wav" e5
+sample kick "/Samples/Drums/kick A#.wav" a2
+sample snare "/Samples/Drums/snare.wav" c3
+sample hihat "/Samples/Drums/closed hihat.wav" f4
+sample clap "/Samples/Drums/clap.wav" c2
 
-melody 8_guitar
+melody 8_introGuitar
 	samples
 		guitar
-		flute
 	chords
-		1 5 c4(gain 20)
-		2 8 d5
+		0 2 c4(gain 0.7)
+		2 4 e4(gain 0.7)
+		4 6 g4(gain 0.7)
+		6 8 c5(gain 0.7)
 
-% 
-This is a multi-line
-comment that is quite long 
-%
-
-melody 16_flute
+melody 16_verseFlute
 	samples
 		flute
 	chords
-		0 8 a4(gain 0.2) c5(gain 0.2) e5(pan -1, gain 0.2)
-		8 10 b5(gain 0.2)
-		10 12 b5(gain 0.6)
-		12 14 b5(gain 1)
-		14 16 b5(gain 1.4)
+		0 4 e5(gain 0.6)
+		4 8 d5(gain 0.6)
+		8 12 c5(gain 0.6)
+		12 14 d5(gain 0.6)
+		14 16 e5(gain 0.6)
 
-melody 8_newSyntaxExample
+melody 4_drumPattern
 	chords
-		0 2 guitar c4
-		2 4 flute d5
-		4 6 guitar e4
-		6 8 flute c5
+		0 1 kick
+		1 2 hihat
+		2 3 snare
+		3 4 hihat
+
+melody 8_extendedDrums
+	chords
+		0 1 kick
+		1 2 hihat
+		2 3 snare
+		3 4 hihat
+		4 5 kick
+		5 6 hihat
+		6 7 snare
+		7 8 clap
+
+melody 8_guitarWithDrums
+	samples
+		guitar
+	chords
+		0 2 c4(gain 0.8)
+		2 4 e4(gain 0.8)
+		4 6 kick
+		6 8 snare
 
 timeline
+	settings
+		bpm 120
+		timeSignature 4/4
+	intro start 0
+		8_introGuitar
+	drums start 2
+		4_drumPattern
+	intro stop 8
+		8_introGuitar
+	verse start 8
+		16_verseFlute
+	extended_drums start 8
+		8_extendedDrums
+	verse stop 24
+		16_verseFlute
+	extended_drums stop 24
+		8_extendedDrums
+	final start 24
+		8_guitarWithDrums
+	final stop 32
+		8_guitarWithDrums
