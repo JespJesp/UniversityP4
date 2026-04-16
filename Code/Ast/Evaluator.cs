@@ -13,9 +13,11 @@ public static class Evaluator
 		{
 			RuntimeVariableTable globalVariables = new();
 			programNode.CascadeEvaluate(new(), globalVariables);
+			Timeline timeline = globalVariables.Get<Timeline>("timeline");
+			timeline.BuildLoopsFromCommands(globalVariables);
 			AudioRenderer.RenderToFile(globalVariables, inputFileFolderPath);
 
-			ExamplePrintToConsole();
+			ExamplePrintToConsole(globalVariables);
 		}
 		catch (Exception exception)
 		{
@@ -24,9 +26,11 @@ public static class Evaluator
 	}
 
 	// TODO: Remove after debugging. It's just an example.
-	private static void ExamplePrintToConsole()
+	private static void ExamplePrintToConsole(RuntimeVariableTable globalVariables)
 	{
-		foreach (Loop loop in Timeline.Loops)
+		Timeline timeline = globalVariables.Get<Timeline>("timeline");
+
+		foreach (Loop loop in timeline.Loops)
 		{
 			Melody melody = loop.Melody0;
 

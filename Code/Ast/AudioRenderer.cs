@@ -20,8 +20,9 @@ public static class AudioRenderer
 	public static List<ISampleProvider> CreateSounds(RuntimeVariableTable globalVariables, string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
+		Timeline timeline = globalVariables.Get<Timeline>("timeline");
 
-		foreach (Loop loop in Timeline.Loops)
+		foreach (Loop loop in timeline.Loops)
 		{
 			Melody melody = loop.Melody0;
 			foreach (Note note in melody.Notes)
@@ -49,7 +50,7 @@ public static class AudioRenderer
 
 						float durationInBeats = note.EndBeat - note.StartBeat;
 
-						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
 						sounds.Add(sound);
 					}
 
@@ -68,7 +69,7 @@ public static class AudioRenderer
 						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
 						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
-						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
 						sounds.Add(sound);
 					}
 				}
@@ -78,12 +79,12 @@ public static class AudioRenderer
 		return sounds;
 	}
 
-	private static ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
+	private static ISampleProvider CreateSound(Timeline timeline, Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
 	{
 		var reader = new AudioFileReader(inputFileFolderPath + sample.FilePath);
 
 		// Resample the sound to ensure it uses the output's sample rate
-		var resampler = new WdlResamplingSampleProvider(reader, Timeline.SampleRate);
+		var resampler = new WdlResamplingSampleProvider(reader, timeline.SampleRate);
 
 		var volumeProvider = new VolumeSampleProvider(resampler)
 		{
@@ -99,16 +100,16 @@ public static class AudioRenderer
 
 		var offsetter = new OffsetSampleProvider(pitchShifter)
 		{
-			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(globalStartBeat)),
-			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(durationInBeats)) // duration of sample
+			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, globalStartBeat)),
+			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, durationInBeats)) // duration of sample
 		};
 
 		return offsetter;
 	}
 
-	private static float ConvertBeatsToSeconds(float beats)
+	private static float ConvertBeatsToSeconds(Timeline timeline, float beats)
 	{
-		return beats / Timeline.BeatNoteValue * 60f / Timeline.BeatsPerMinute;
+		return beats * 60f / timeline.BeatsPerMinute * 4f / timeline.BeatNoteValue;
 	}
 
 	private static float GetPitchFactor(Pitch samplePitch, Pitch notePitch)
