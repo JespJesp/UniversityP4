@@ -11,9 +11,9 @@ public abstract class SymbolNode : BranchNode
 
 	private void UpsertToSymbolTable()
 	{
-		SymbolTable.SymbolKey key = new(this.GetType(), this.Id);
+		(Type type, string id) key = (this.GetType(), this.Id);
 
-		if (_symbolTable.Symbols.TryGetValue(key, out SymbolTable.SymbolValue? oldEntry))
+		if (_symbolTable.Symbols.TryGetValue(key, out SymbolNode? oldEntry))
 		{
 			if (this.ScopeDepth <= oldEntry.ScopeDepth)
 			{
@@ -21,8 +21,7 @@ public abstract class SymbolNode : BranchNode
 			}
 		}
 
-		SymbolTable.SymbolValue newValue = new(this, this.ScopeDepth);
-		_symbolTable.Symbols[key] = newValue;
+		_symbolTable.Symbols[key] = this;
 	}
 }
 

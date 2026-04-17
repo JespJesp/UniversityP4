@@ -36,18 +36,7 @@ public static class Lexer
 		{
 			try
 			{
-				if (!Tokenizer.TryTokenize<TokenizeWhitespace>()
-					&& !Tokenizer.TryTokenize<TokenizeComment>()
-					&& !Tokenizer.TryTokenize<TokenizeString>()
-					&& !Tokenizer.TryTokenize<TokenizeLeftParentheses>()
-					&& !Tokenizer.TryTokenize<TokenizeRightParentheses>()
-					&& !Tokenizer.TryTokenize<TokenizeComma>()
-					&& !Tokenizer.TryTokenize<TokenizePlus>()
-					&& !Tokenizer.TryTokenize<TokenizeAsterisk>()
-					&& !Tokenizer.TryTokenize<TokenizeSlash>()
-					&& !Tokenizer.TryTokenize<TokenizeNumber>()
-					&& !Tokenizer.TryTokenize<TokenizeIdentifierOrKeyword>()
-					)
+				if (!TryTokenizeChar())
 				{
 					Cursor.MoveToNextColumn();
 					throw new LexicalException(Cursor.Line, Cursor.Column - 1, $"Unknown token type for character: '{CursorChar}'.");
@@ -60,5 +49,20 @@ public static class Lexer
 		}
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", Cursor.Line, Cursor.Column));
+	}
+
+	private static bool TryTokenizeChar()
+	{
+		return Tokenizer.TryTokenize<TokenizeWhitespace>()
+			|| Tokenizer.TryTokenize<TokenizeComment>()
+			|| Tokenizer.TryTokenize<TokenizeString>()
+			|| Tokenizer.TryTokenize<TokenizeLeftParentheses>()
+			|| Tokenizer.TryTokenize<TokenizeRightParentheses>()
+			|| Tokenizer.TryTokenize<TokenizeComma>()
+			|| Tokenizer.TryTokenize<TokenizePlus>()
+			|| Tokenizer.TryTokenize<TokenizeAsterisk>()
+			|| Tokenizer.TryTokenize<TokenizeSlash>()
+			|| Tokenizer.TryTokenize<TokenizeNumber>()
+			|| Tokenizer.TryTokenize<TokenizeIdentifierOrKeyword>();
 	}
 }

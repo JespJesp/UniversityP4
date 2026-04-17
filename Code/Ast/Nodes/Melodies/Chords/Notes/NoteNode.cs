@@ -9,7 +9,7 @@ namespace Ast.Nodes.Melodies.Chords.Notes;
 public class NoteNode : BranchNode
 {
 	public ChordNode ChordNode;
-	public string Pitch = "";
+	public string PitchString = "";
 	public Note Note = new();
 
 	public NoteNode(ChordNode chordsNode)
@@ -19,7 +19,7 @@ public class NoteNode : BranchNode
 
 	protected override void Parse()
 	{
-		Parser.ConsumeToken(TokenType.Identifier, (value) => Pitch = value);
+		Parser.ConsumeToken(TokenType.Identifier, (value) => PitchString = value);
 
 		if (Parser.CursorToken.Type == TokenType.LeftParentheses)
 		{
@@ -27,11 +27,16 @@ public class NoteNode : BranchNode
 		}
 	}
 
+	protected override void Annotate()
+	{
+		Pitch.FromString(this.PitchString);
+	}
+
 	protected override void Evaluate()
 	{
 		this.Note.StartBeat = ChordNode.StartBeat.Value;
 		this.Note.EndBeat = ChordNode.EndBeat.Value;
-		this.Note.Pitch = new(this.Pitch);
+		this.Note.Pitch = Pitch.FromString(this.PitchString);
 
 		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;
 		melody.Notes.Add(Note);

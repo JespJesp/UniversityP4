@@ -13,7 +13,7 @@ public class StringExpressionNode : BranchNode
 	internal class Segment
 	{
 		public string Value = "";
-		public string StringOrIdentifierValue = "";
+		public string RawValue = "";
 		public bool IsIdentifier;
 	};
 
@@ -23,10 +23,10 @@ public class StringExpressionNode : BranchNode
 		{
 			Segment newSegment = new();
 
-			newSegment.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newSegment.StringOrIdentifierValue = value);
+			newSegment.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newSegment.RawValue = value);
 			if (!newSegment.IsIdentifier)
 			{
-				Parser.ConsumeToken(TokenType.String, (value) => newSegment.StringOrIdentifierValue = value);
+				Parser.ConsumeToken(TokenType.String, (value) => newSegment.RawValue = value);
 			}
 
 			_segments.Add(newSegment);
@@ -39,16 +39,16 @@ public class StringExpressionNode : BranchNode
 		{
 			if (segment.IsIdentifier)
 			{
-				if (!_symbolTable.Contains<StringConstantNode>(segment.StringOrIdentifierValue))
+				if (!_symbolTable.Contains<StringConstantNode>(segment.RawValue))
 				{
-					throw new Exception($"String variable with ID '{segment.StringOrIdentifierValue}' is not declared.");
+					throw new Exception($"String variable with ID '{segment.RawValue}' is not declared.");
 				}
 
-				segment.Value = _symbolTable.Get<StringConstantNode>(segment.StringOrIdentifierValue).StringExpression.Value;
+				segment.Value = _symbolTable.Get<StringConstantNode>(segment.RawValue).StringExpression.Value;
 			}
 			else
 			{
-				segment.Value = segment.StringOrIdentifierValue;
+				segment.Value = segment.RawValue;
 			}
 
 			this.Value += segment.Value;

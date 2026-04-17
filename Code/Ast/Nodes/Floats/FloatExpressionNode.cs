@@ -14,7 +14,7 @@ public class FloatExpressionNode : BranchNode
 	private class Term
 	{
 		public float Value;
-		public string StringValue = "";
+		public string RawValue = "";
 		public bool IsIdentifier;
 		public Operation Operation;
 	};
@@ -36,10 +36,10 @@ public class FloatExpressionNode : BranchNode
 				Operation = newTermOperation.Value
 			};
 
-			newTerm.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.StringValue = value);
+			newTerm.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.RawValue = value);
 			if (!newTerm.IsIdentifier)
 			{
-				Parser.ConsumeToken(TokenType.Float, (value) => newTerm.StringValue = value);
+				Parser.ConsumeToken(TokenType.Float, (value) => newTerm.RawValue = value);
 			}
 
 			_terms.Add(newTerm);
@@ -67,16 +67,16 @@ public class FloatExpressionNode : BranchNode
 		{
 			if (term.IsIdentifier)
 			{
-				if (!_symbolTable.Contains<FloatConstantNode>(term.StringValue))
+				if (!_symbolTable.Contains<FloatConstantNode>(term.RawValue))
 				{
-					throw new Exception($"Float variable with ID '{term.StringValue}' is not declared.");
+					throw new Exception($"Float variable with ID '{term.RawValue}' is not declared.");
 				}
 
-				term.Value = _symbolTable.Get<FloatConstantNode>(term.StringValue).FloatExpression.Value;
+				term.Value = _symbolTable.Get<FloatConstantNode>(term.RawValue).FloatExpression.Value;
 			}
 			else
 			{
-				term.Value = float.Parse(term.StringValue, CultureInfo.InvariantCulture);
+				term.Value = float.Parse(term.RawValue, CultureInfo.InvariantCulture);
 			}
 
 			switch (term.Operation)

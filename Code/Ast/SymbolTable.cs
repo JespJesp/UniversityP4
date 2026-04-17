@@ -4,19 +4,7 @@ namespace Ast;
 
 public class SymbolTable
 {
-	public Dictionary<SymbolKey, SymbolValue> Symbols = new();
-
-	public record SymbolKey
-	(
-		Type Type,
-		string Id
-	);
-
-	public record SymbolValue
-	(
-		SymbolNode node,
-		int ScopeDepth
-	);
+	public Dictionary<(Type type, string id), SymbolNode> Symbols = new();
 
 	public SymbolTable Clone()
 	{
@@ -28,18 +16,16 @@ public class SymbolTable
 
 	public bool Contains<T>(string id) where T : Node
 	{
-		SymbolKey key = new(typeof(T), id);
-		return Symbols.ContainsKey(key);
+		return Symbols.ContainsKey((typeof(T), id));
 	}
 
 	public T Get<T>(string id) where T : SymbolNode
 	{
-		SymbolKey key = new(typeof(T), id);
-		T result = (T)Symbols[key].node;
+		T result = (T)Symbols[(typeof(T), id)];
 
 		if (result == null)
 		{
-			throw new Exception($"Internal error: Cannot get variable of type '{typeof(T)}' and id '{id}' from variable table because the variable does not exist.");
+			throw new Exception($"Internal error: Cannot get symbol of type '{typeof(T)}' and id '{id}' from symbol table because the symbol does not exist - this should have been checked in the annotation phase.");
 		}
 
 		return result;
@@ -47,18 +33,14 @@ public class SymbolTable
 
 	public bool TryGet<T>(string id, out T value) where T : SymbolNode
 	{
-		SymbolKey key = new(typeof(T), id);
-		if (Symbols.TryGetValue(key, out SymbolValue? output))
+		if (Symbols.TryGetValue((typeof(T), id), out SymbolNode? output))
 		{
-			value = (T)output.node;
+			value = (T)output;
 			return true;
 		}
 		else
 		{
-			// The "!" (null-forgiving operator) hides the warning
-			// "cannot convert null literal to non-nullable reference type".
-			// We can safely do this because you should never
-			// use the out parameter value if this method returns false.
+			// The "!" (null-forgiving operator) hides the warning "cannot convert null literal to non-nullable reference type". We can safely do this because you should never use the out parameter value if this method returns false.
 			value = default!;
 			return false;
 		}

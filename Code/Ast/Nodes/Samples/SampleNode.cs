@@ -35,7 +35,7 @@ public class SampleNode : SymbolNode
 	protected override void Evaluate()
 	{
 		this.Sample.FilePath = this.FilePath.Value;
-		this.Sample.ReferencePitch = new(this.ReferencePitch);
+		this.Sample.ReferencePitch = Pitch.FromString(this.ReferencePitch);
 	}
 }
 

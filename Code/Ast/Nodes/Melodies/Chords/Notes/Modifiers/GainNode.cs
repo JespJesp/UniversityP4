@@ -29,7 +29,7 @@ public class GainNode : BranchNode
 
 		if (Volume.Value < 0.0f)
 		{
-			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: '{Volume.Value}'");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Volume cannot be negative, but was: '{Volume.Value}'");
 		}
 	}
 

@@ -101,8 +101,7 @@ public static class Parser
 	}
 
 	/// <summary>
-	/// Tries to consume TokenTypes and execute Actions
-	/// as specified in each "(TokenType, Action)" option pair.
+	/// Tries to consume TokenTypes and execute Actions as specified in each "(TokenType, Action)" option pair.
 	/// Each option is separated by a separator (e.g. a comma Token).
 	/// Each option's token type: 
 	/// 1) is not required to appear, thereby making it "optional",
