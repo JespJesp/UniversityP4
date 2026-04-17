@@ -4,22 +4,22 @@ namespace Tokens.TokenizationStrategies;
 
 public class TokenizeIdentifierOrKeyword : ITokenizationStrategy
 {
-	public static bool TryTokenize()
+	public static bool TryTokenize(Lexer lexer)
 	{
-		if (Lexer.CursorChar != '_' && !char.IsLetter(Lexer.CursorChar))
+		if (lexer.CursorChar != '_' && !char.IsLetter(lexer.CursorChar))
 		{
 			return false;
 		}
 
 		string id = "";
-		int startColumn = Lexer.Cursor.Column;
+		int startColumn = lexer.Cursor.Column;
 
 		// Chain characters together
-		while (!Lexer.AtEndOfFile
-			&& (Lexer.CursorChar == '_' || char.IsLetterOrDigit(Lexer.CursorChar)))
+		while (!lexer.AtEndOfFile
+			&& (lexer.CursorChar == '_' || char.IsLetterOrDigit(lexer.CursorChar)))
 		{
-			id += Lexer.CursorChar;
-			Lexer.Cursor.MoveToNextColumn();
+			id += lexer.CursorChar;
+			lexer.Cursor.MoveToNextColumn();
 		}
 
 		// Check whether it is a keyword
@@ -38,7 +38,7 @@ public class TokenizeIdentifierOrKeyword : ITokenizationStrategy
 			_ => TokenType.Identifier // The underscore notation encompasses all other strings
 		};
 
-		Lexer.Tokens.Add(new Token(tokenType, id, Lexer.Cursor.Line, startColumn));
+		lexer.Tokens.Add(new Token(tokenType, id, lexer.Cursor.Line, startColumn));
 
 		return true;
 	}

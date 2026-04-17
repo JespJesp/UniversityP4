@@ -2,7 +2,9 @@ using System.Globalization;
 using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies.Chords;
 using Ast.Nodes.Melodies.Samples;
+using Phases.Evaluation;
 using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
 using Tokens;
 
@@ -13,23 +15,23 @@ public class MelodyNode : SymbolNode
 	public float LengthInBeats;
 	public Melody Melody = new();
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.MelodyKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
-		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
+		parser.ConsumeToken(TokenType.MelodyKeyword);
+		parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
+		parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
 
-		if (Parser.TryConsumeIndent(1))
+		if (parser.TryConsumeIndent(1))
 		{
 			Dictionary<TokenType, Action> options = new()
 			{
 				{
 					TokenType.SamplesKeyword,
-					() => { Parser.ParseChild(this, new SampleReferencesNode(this)); }
+					() => { parser.ParseChild(this, new SampleReferencesNode(this)); }
 				},
 				{
 					TokenType.ChordsKeyword,
-					() => { Parser.ParseChild(this, new ChordsNode(this)); }
+					() => { parser.ParseChild(this, new ChordsNode(this)); }
 				}
 			};
 			Token[] optionSeparator =
@@ -37,11 +39,11 @@ public class MelodyNode : SymbolNode
 				new(TokenType.Newline),
 				new(TokenType.Indent, "1")
 			};
-			Parser.AllowUniqueOptions(options, optionSeparator);
+			parser.AllowUniqueOptions(options, optionSeparator);
 		}
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		if (LengthInBeats <= 0)
 		{
@@ -49,7 +51,7 @@ public class MelodyNode : SymbolNode
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		this.Melody.LengthInBeats = this.LengthInBeats;
 	}

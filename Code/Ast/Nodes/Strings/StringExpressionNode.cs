@@ -1,4 +1,5 @@
 using Ast.NodeArchetypes;
+using Phases.Annotation;
 using Phases.Parsing;
 using Tokens;
 
@@ -17,21 +18,21 @@ public class StringExpressionNode : Node
 		public bool IsIdentifier;
 	};
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
 		do
 		{
 			Segment newSegment = new();
-			newSegment.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newSegment.RawValue = value);
+			newSegment.IsIdentifier = parser.TryConsumeToken(TokenType.Identifier, (value) => newSegment.RawValue = value);
 			if (!newSegment.IsIdentifier)
 			{
-				Parser.ConsumeToken(TokenType.String, (value) => newSegment.RawValue = value);
+				parser.ConsumeToken(TokenType.String, (value) => newSegment.RawValue = value);
 			}
 			_segments.Add(newSegment);
-		} while (Parser.TryConsumeToken(TokenType.Plus));
+		} while (parser.TryConsumeToken(TokenType.Plus));
 	}
 
-	public override void Annotate()
+	public override void Annotate(Annotator annotator)
 	{
 		foreach (Segment segment in _segments)
 		{

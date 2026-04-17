@@ -1,5 +1,7 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Samples;
+using Phases.Annotation;
+using Phases.Evaluation;
 using Phases.Parsing;
 using Runtime.Objects;
 using Tokens;
@@ -16,12 +18,12 @@ public class SampleReferenceNode : Node
 		this.SampleReferencesNode = sampleReferencesNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.Identifier, (value) => ReferenceId = value);
+		parser.ConsumeToken(TokenType.Identifier, (value) => ReferenceId = value);
 	}
 
-	public override void Annotate()
+	public override void Annotate(Annotator annotator)
 	{
 		if (!SymbolTable.Contains<SampleNode>(ReferenceId))
 		{
@@ -29,7 +31,7 @@ public class SampleReferenceNode : Node
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		Melody melody = SymbolTable.Get<MelodyNode>(SampleReferencesNode.MelodyNode.Id).Melody;
 		Sample sample = SymbolTable.Get<SampleNode>(ReferenceId).Sample;

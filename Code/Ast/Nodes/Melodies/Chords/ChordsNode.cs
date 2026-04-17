@@ -13,13 +13,13 @@ public class ChordsNode : Node
 		this.MelodyNode = melodyNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.ChordsKeyword);
+		parser.ConsumeToken(TokenType.ChordsKeyword);
 
-		while (Parser.TryConsumeIndent(2))
+		while (parser.TryConsumeIndent(2))
 		{
-			Parser.ParseChild(this, new ChordNode(this));
+			parser.ParseChild(this, new ChordNode(this));
 		}
 	}
 }

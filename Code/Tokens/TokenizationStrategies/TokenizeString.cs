@@ -4,36 +4,36 @@ namespace Tokens.TokenizationStrategies;
 
 public class TokenizeString : ITokenizationStrategy
 {
-	public static bool TryTokenize()
+	public static bool TryTokenize(Lexer lexer)
 	{
-		if (Lexer.CursorChar != '"')
+		if (lexer.CursorChar != '"')
 		{
 			return false;
 		}
 
 		string value = "";
-		int startLine = Lexer.Cursor.Line;
-		int startColumn = Lexer.Cursor.Column;
+		int startLine = lexer.Cursor.Line;
+		int startColumn = lexer.Cursor.Column;
 
 		// Skip opening quote
-		Lexer.Cursor.MoveToNextColumn();
+		lexer.Cursor.MoveToNextColumn();
 
 		// Chain characters together until closing quote
-		while (Lexer.CursorChar != '"')
+		while (lexer.CursorChar != '"')
 		{
-			value += Lexer.CursorChar;
-			Lexer.Cursor.MoveToNextColumn();
+			value += lexer.CursorChar;
+			lexer.Cursor.MoveToNextColumn();
 
-			if (Lexer.AtEndOfFile || Lexer.CursorChar == '\n')
+			if (lexer.AtEndOfFile || lexer.CursorChar == '\n')
 			{
 				throw new LexicalException(startLine, startColumn, "String is missing closing quote '\"'");
 			}
 		}
 
 		// Skip closing quote
-		Lexer.Cursor.MoveToNextColumn();
+		lexer.Cursor.MoveToNextColumn();
 
-		Lexer.Tokens.Add(new Token(TokenType.String, value, Lexer.Cursor.Line, startColumn));
+		lexer.Tokens.Add(new Token(TokenType.String, value, lexer.Cursor.Line, startColumn));
 
 		return true;
 	}

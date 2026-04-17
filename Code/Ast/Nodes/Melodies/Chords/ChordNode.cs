@@ -2,6 +2,7 @@ using Ast.NodeArchetypes;
 using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies.Chords.Notes;
 using Phases.Parsing;
+using Phases.Validation;
 using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
@@ -17,19 +18,19 @@ public class ChordNode : Node
 		this.ChordsNode = chordsNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		StartBeat = Parser.ParseChild(this, new FloatExpressionNode());
-		Parser.ConsumeToken(TokenType.Comma);
-		EndBeat = Parser.ParseChild(this, new FloatExpressionNode());
+		StartBeat = parser.ParseChild(this, new FloatExpressionNode());
+		parser.ConsumeToken(TokenType.Comma);
+		EndBeat = parser.ParseChild(this, new FloatExpressionNode());
 
-		while (Parser.CursorToken.Type == TokenType.Identifier)
+		while (parser.CursorToken.Type == TokenType.Identifier)
 		{
-			Parser.ParseChild(this, new NoteNode(this));
+			parser.ParseChild(this, new NoteNode(this));
 		}
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		MelodyNode melodyNode = ChordsNode.MelodyNode;
 

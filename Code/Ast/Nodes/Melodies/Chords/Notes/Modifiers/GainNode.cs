@@ -1,6 +1,8 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Floats;
+using Phases.Evaluation;
 using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
 using Tokens;
 
@@ -16,13 +18,13 @@ public class GainNode : Node
 		this.ModifiersNode = modifiersNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.GainKeyword);
-		Volume = Parser.ParseChild(this, new FloatExpressionNode());
+		parser.ConsumeToken(TokenType.GainKeyword);
+		Volume = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
@@ -33,7 +35,7 @@ public class GainNode : Node
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		Note note = ModifiersNode.NoteNode.Note;
 		note.Volume = Volume.Value;

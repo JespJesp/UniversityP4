@@ -4,20 +4,20 @@ using Tokens;
 
 namespace Phases.Parsing;
 
-public static class Parser
+public class Parser
 {
-	private static int _cursorPosition = 0;
-	private static List<Token> _tokens = new();
-	private static List<string> _errors = new();
+	private int _cursorPosition = 0;
+	private List<Token> _tokens = new();
+	private List<string> _errors = new();
 
-	public static Token CursorToken => _tokens[_cursorPosition];
+	public Token CursorToken => _tokens[_cursorPosition];
 
-	public static ProgramNode Parse(List<Token> inputTokens)
+	public ProgramNode Parse(List<Token> inputTokens)
 	{
 		_tokens = inputTokens;
 
 		ProgramNode astRoot = new ProgramNode();
-		astRoot.CascadeParse();
+		astRoot.CascadeParse(this);
 
 		if (_errors.Any())
 		{
@@ -27,7 +27,7 @@ public static class Parser
 		return astRoot;
 	}
 
-	public static T ParseChild<T>(Node parent, T newChild, bool createsNestedScope = false) where T : Node
+	public T ParseChild<T>(Node parent, T newChild, bool createsNestedScope = false) where T : Node
 	{
 		// Assign child properties
 		newChild.CreatesNestedScope = createsNestedScope;
@@ -46,7 +46,7 @@ public static class Parser
 		// Parse child
 		try
 		{
-			newChild.CascadeParse();
+			newChild.CascadeParse(this);
 		}
 		catch (Exception exception)
 		{
@@ -56,7 +56,7 @@ public static class Parser
 		return newChild;
 	}
 
-	public static void AddErrorAndSkipLine(Node node, string errorMessage)
+	public void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
 		_errors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node type: '{node.GetType()}'. {errorMessage}");
 
@@ -68,7 +68,7 @@ public static class Parser
 		}
 	}
 
-	public static void ConsumeToken(TokenType required, Action<string>? useValue = null)
+	public void ConsumeToken(TokenType required, Action<string>? useValue = null)
 	{
 		if (TryConsumeToken(required, useValue) == false)
 		{
@@ -76,7 +76,7 @@ public static class Parser
 		}
 	}
 
-	public static bool TryConsumeToken(TokenType required, Action<string>? useValue = null)
+	public bool TryConsumeToken(TokenType required, Action<string>? useValue = null)
 	{
 		if (!CursorToken.Type.IsSubtypeOf(required))
 		{
@@ -93,7 +93,7 @@ public static class Parser
 		return true;
 	}
 
-	public static bool TryConsumeTokens(Token[] requiredTokens)
+	public bool TryConsumeTokens(Token[] requiredTokens)
 	{
 		bool isCorrectOrder = true;
 		int lookahead = 0;
@@ -119,7 +119,7 @@ public static class Parser
 		}
 	}
 
-	public static bool TryConsumeIndent(int indentSize)
+	public bool TryConsumeIndent(int indentSize)
 	{
 		Token[] newlineAndIndent =
 		{
@@ -137,7 +137,7 @@ public static class Parser
 	/// 2) may only appear once, thereby making it "unique",
 	/// 3) may appear in a random order.
 	/// </summary>
-	public static void AllowUniqueOptions(Dictionary<TokenType, Action> options, Token[] separator)
+	public void AllowUniqueOptions(Dictionary<TokenType, Action> options, Token[] separator)
 	{
 		List<TokenType> usedTokenTypes = new();
 		do

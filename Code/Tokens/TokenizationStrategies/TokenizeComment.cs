@@ -4,39 +4,39 @@ namespace Tokens.TokenizationStrategies;
 
 public class TokenizeComment : ITokenizationStrategy
 {
-	public static bool TryTokenize()
+	public static bool TryTokenize(Lexer lexer)
 	{
-		if (Lexer.CursorChar != '%')
+		if (lexer.CursorChar != '%')
 		{
 			return false;
 		}
 
-		int startLine = Lexer.Cursor.Line;
-		int startColumn = Lexer.Cursor.Column;
+		int startLine = lexer.Cursor.Line;
+		int startColumn = lexer.Cursor.Column;
 
 		// Skip opening percentage
-		Lexer.Cursor.MoveToNextColumn();
+		lexer.Cursor.MoveToNextColumn();
 
 		// Skip until closing percentage
-		while (Lexer.CursorChar != '%')
+		while (lexer.CursorChar != '%')
 		{
-			if (Lexer.CursorChar == '\n')
+			if (lexer.CursorChar == '\n')
 			{
-				Lexer.Cursor.MoveToNewLine();
+				lexer.Cursor.MoveToNewLine();
 			}
 			else
 			{
-				Lexer.Cursor.MoveToNextColumn();
+				lexer.Cursor.MoveToNextColumn();
 			}
 
-			if (Lexer.AtEndOfFile)
+			if (lexer.AtEndOfFile)
 			{
 				throw new LexicalException(startLine, startColumn, "Comment is missing closing percentage '%'");
 			}
 		}
 
 		// Skip closing percentage
-		Lexer.Cursor.MoveToNextColumn();
+		lexer.Cursor.MoveToNextColumn();
 
 		return true;
 	}

@@ -3,18 +3,18 @@ using Tokens.TokenizationStrategies;
 
 namespace Phases.Lexing;
 
-public static class Lexer
+public class Lexer
 {
-	public static List<Token> Tokens = new();
-	public static LexerCursor Cursor = new();
+	public List<Token> Tokens = new();
+	public LexerCursor Cursor = new();
 
-	private static string _inputText = "";
-	private static List<string> _lexicalErrors = new();
+	private string _inputText = "";
+	private List<string> _lexicalErrors = new();
 
-	public static char CursorChar => _inputText[Cursor.Position];
-	public static bool AtEndOfFile => Cursor.Position >= _inputText.Length;
+	public char CursorChar => _inputText[Cursor.Position];
+	public bool AtEndOfFile => Cursor.Position >= _inputText.Length;
 
-	public static List<Token> Lex(string text)
+	public List<Token> Lex(string text)
 	{
 		_inputText = text;
 
@@ -28,7 +28,7 @@ public static class Lexer
 		return Tokens;
 	}
 
-	private static void LexInput()
+	private void LexInput()
 	{
 		// TODO: Add max size to e.g. float and string
 
@@ -51,18 +51,18 @@ public static class Lexer
 		Tokens.Add(new Token(TokenType.EndOfFile, "", Cursor.Line, Cursor.Column));
 	}
 
-	private static bool TryTokenizeChar()
+	private bool TryTokenizeChar()
 	{
-		return Tokenizer.TryTokenize<TokenizeWhitespace>()
-			|| Tokenizer.TryTokenize<TokenizeComment>()
-			|| Tokenizer.TryTokenize<TokenizeString>()
-			|| Tokenizer.TryTokenize<TokenizeLeftParentheses>()
-			|| Tokenizer.TryTokenize<TokenizeRightParentheses>()
-			|| Tokenizer.TryTokenize<TokenizeComma>()
-			|| Tokenizer.TryTokenize<TokenizePlus>()
-			|| Tokenizer.TryTokenize<TokenizeAsterisk>()
-			|| Tokenizer.TryTokenize<TokenizeSlash>()
-			|| Tokenizer.TryTokenize<TokenizeNumber>()
-			|| Tokenizer.TryTokenize<TokenizeIdentifierOrKeyword>();
+		return Tokenizer.TryTokenize<TokenizeWhitespace>(this)
+			|| Tokenizer.TryTokenize<TokenizeComment>(this)
+			|| Tokenizer.TryTokenize<TokenizeString>(this)
+			|| Tokenizer.TryTokenize<TokenizeLeftParentheses>(this)
+			|| Tokenizer.TryTokenize<TokenizeRightParentheses>(this)
+			|| Tokenizer.TryTokenize<TokenizeComma>(this)
+			|| Tokenizer.TryTokenize<TokenizePlus>(this)
+			|| Tokenizer.TryTokenize<TokenizeAsterisk>(this)
+			|| Tokenizer.TryTokenize<TokenizeSlash>(this)
+			|| Tokenizer.TryTokenize<TokenizeNumber>(this)
+			|| Tokenizer.TryTokenize<TokenizeIdentifierOrKeyword>(this);
 	}
 }

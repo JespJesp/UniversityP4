@@ -5,14 +5,14 @@ using Runtime.Objects;
 
 namespace Phases.Evaluation;
 
-public static class Evaluator
+public class Evaluator
 {
-	public static void Evaluate(ProgramNode programNode, string inputFileFolderPath)
+	public void Evaluate(ProgramNode programNode, string inputFileFolderPath)
 	{
 		try
 		{
 			CascadeEvaluate(programNode);
-			AudioRenderer.RenderToFile(inputFileFolderPath);
+			new AudioRenderer().RenderToFile(inputFileFolderPath);
 			ExamplePrintToConsole();
 		}
 		catch (Exception exception)
@@ -21,11 +21,11 @@ public static class Evaluator
 		}
 	}
 
-	private static void CascadeEvaluate(Node node)
+	private void CascadeEvaluate(Node node)
 	{
 		try
 		{
-			node.Evaluate();
+			node.Evaluate(this);
 		}
 		catch (Exception exception)
 		{
@@ -39,7 +39,7 @@ public static class Evaluator
 	}
 
 	// TODO: Remove after debugging. It's just an example.
-	private static void ExamplePrintToConsole()
+	private void ExamplePrintToConsole()
 	{
 		foreach (Loop loop in Timeline.Loops)
 		{

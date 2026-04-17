@@ -5,11 +5,11 @@ using Runtime.Objects;
 
 namespace Phases.Evaluation;
 
-public static class AudioRenderer
+public class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public static void RenderToFile(string inputFileFolderPath)
+	public void RenderToFile(string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = CreateSounds(inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
@@ -18,7 +18,7 @@ public static class AudioRenderer
 		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'.");
 	}
 
-	private static List<ISampleProvider> CreateSounds(string inputFileFolderPath)
+	private List<ISampleProvider> CreateSounds(string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
 
@@ -69,7 +69,7 @@ public static class AudioRenderer
 		return sounds;
 	}
 
-	private static ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
+	private ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
 	{
 		var reader = new AudioFileReader(inputFileFolderPath + sample.FilePath);
 
@@ -97,12 +97,12 @@ public static class AudioRenderer
 		return offsetter;
 	}
 
-	private static float ConvertBeatsToSeconds(float beats)
+	private float ConvertBeatsToSeconds(float beats)
 	{
 		return beats / Timeline.BeatNoteValue * 60f / Timeline.BeatsPerMinute;
 	}
 
-	private static float GetPitchFactor(Pitch samplePitch, Pitch notePitch)
+	private float GetPitchFactor(Pitch samplePitch, Pitch notePitch)
 	{
 		int halfstepDifference = (notePitch.Octave - samplePitch.Octave) * 12
 									  + (notePitch.PitchClass - samplePitch.PitchClass);

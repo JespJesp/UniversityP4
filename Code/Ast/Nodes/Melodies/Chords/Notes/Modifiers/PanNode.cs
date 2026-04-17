@@ -1,6 +1,8 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Floats;
+using Phases.Evaluation;
 using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
 using Tokens;
 
@@ -16,13 +18,13 @@ public class PanNode : Node
 		this.ModifiersNode = modifiersNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.PanKeyword);
-		Pan = Parser.ParseChild(this, new FloatExpressionNode());
+		parser.ConsumeToken(TokenType.PanKeyword);
+		Pan = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
@@ -33,7 +35,7 @@ public class PanNode : Node
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		Note note = ModifiersNode.NoteNode.Note;
 		note.Pan = Pan.Value;

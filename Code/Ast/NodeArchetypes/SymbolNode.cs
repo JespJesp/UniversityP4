@@ -1,10 +1,12 @@
+using Phases.Annotation;
+
 namespace Ast.NodeArchetypes;
 
 public abstract class SymbolNode : Node
 {
 	public string Id = "";
 
-	public sealed override void Annotate()
+	public sealed override void Annotate(Annotator annotator)
 	{
 		UpsertToSymbolTable();
 	}

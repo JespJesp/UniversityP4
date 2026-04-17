@@ -1,3 +1,8 @@
+using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
+
 namespace Ast.NodeArchetypes;
 
 public abstract class Node
@@ -9,9 +14,9 @@ public abstract class Node
 	public SymbolTable SymbolTable = new();
 	public bool CreatesNestedScope;		
 
-	public abstract void CascadeParse();
-	public virtual void Annotate() { }
-	public virtual void Validate() { }
-	public virtual void Evaluate() { }
+	public abstract void CascadeParse(Parser parser);
+	public virtual void Annotate(Annotator annotator) { }
+	public virtual void Validate(Validator validator) { }
+	public virtual void Evaluate(Evaluator evaluator) { }
 }
 

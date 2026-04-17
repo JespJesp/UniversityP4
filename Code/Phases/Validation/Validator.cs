@@ -3,11 +3,11 @@ using Ast.Nodes;
 
 namespace Phases.Validation;
 
-public static class Validator
+public class Validator
 {
-	private static List<string> _errors = new();
+	private List<string> _errors = new();
 
-	public static void Validate(ProgramNode programNode)
+	public void Validate(ProgramNode programNode)
 	{
 		CascadeValidate(programNode);
 
@@ -17,11 +17,11 @@ public static class Validator
 		}
 	}
 
-	private static void CascadeValidate(Node node)
+	private void CascadeValidate(Node node)
 	{
 		try
 		{
-			node.Validate();
+			node.Validate(this);
 		}
 		catch (Exception exception)
 		{

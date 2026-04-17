@@ -1,5 +1,7 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies.Chords.Notes.Modifiers;
+using Phases.Annotation;
+using Phases.Evaluation;
 using Phases.Parsing;
 using Runtime.Objects;
 using Tokens;
@@ -17,22 +19,22 @@ public class NoteNode : Node
 		this.ChordNode = chordsNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.Identifier, (value) => PitchString = value);
+		parser.ConsumeToken(TokenType.Identifier, (value) => PitchString = value);
 
-		if (Parser.CursorToken.Type == TokenType.LeftParentheses)
+		if (parser.CursorToken.Type == TokenType.LeftParentheses)
 		{
-			Parser.ParseChild(this, new ModifiersNode(this));
+			parser.ParseChild(this, new ModifiersNode(this));
 		}
 	}
 
-	public override void Annotate()
+	public override void Annotate(Annotator annotator)
 	{
 		Pitch.FromString(this.PitchString);
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		this.Note.StartBeat = ChordNode.StartBeat.Value;
 		this.Note.EndBeat = ChordNode.EndBeat.Value;

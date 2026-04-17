@@ -4,49 +4,49 @@ namespace Tokens.TokenizationStrategies;
 
 public class TokenizeNumber : ITokenizationStrategy
 {
-	public static bool TryTokenize()
+	public static bool TryTokenize(Lexer lexer)
 	{
-		if (Lexer.CursorChar != '-' && !char.IsDigit(Lexer.CursorChar))
+		if (lexer.CursorChar != '-' && !char.IsDigit(lexer.CursorChar))
 		{
 			return false;
 		}
 
 		string value = "";
-		int startColumn = Lexer.Cursor.Column;
+		int startColumn = lexer.Cursor.Column;
 		bool hasDecimalSymbol = false;
 
 		// Allow a single '-' prefix
-		if (Lexer.CursorChar == '-')
+		if (lexer.CursorChar == '-')
 		{
-			value += Lexer.CursorChar;
-			Lexer.Cursor.MoveToNextColumn();
+			value += lexer.CursorChar;
+			lexer.Cursor.MoveToNextColumn();
 		}
 
 		// Chain numerical characters together
-		while (!Lexer.AtEndOfFile
-			&& (char.IsDigit(Lexer.CursorChar) || Lexer.CursorChar == '.'))
+		while (!lexer.AtEndOfFile
+			&& (char.IsDigit(lexer.CursorChar) || lexer.CursorChar == '.'))
 		{
-			if (Lexer.CursorChar == '.')
+			if (lexer.CursorChar == '.')
 			{
 				if (hasDecimalSymbol)
 				{
-					throw new LexicalException(Lexer.Cursor.Line, Lexer.Cursor.Column, "Encountered multiple decimal symbols '.'");
+					throw new LexicalException(lexer.Cursor.Line, lexer.Cursor.Column, "Encountered multiple decimal symbols '.'");
 				}
 				hasDecimalSymbol = true;
 			}
 
-			value += Lexer.CursorChar;
-			Lexer.Cursor.MoveToNextColumn();
+			value += lexer.CursorChar;
+			lexer.Cursor.MoveToNextColumn();
 		}
 
 		// Determine whether it is a float or an integer
 		if (hasDecimalSymbol)
 		{
-			Lexer.Tokens.Add(new Token(TokenType.Float, value, Lexer.Cursor.Line, startColumn));
+			lexer.Tokens.Add(new Token(TokenType.Float, value, lexer.Cursor.Line, startColumn));
 		}
 		else
 		{
-			Lexer.Tokens.Add(new Token(TokenType.Integer, value, Lexer.Cursor.Line, startColumn));
+			lexer.Tokens.Add(new Token(TokenType.Integer, value, lexer.Cursor.Line, startColumn));
 		}
 
 		return true;

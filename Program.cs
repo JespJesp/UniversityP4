@@ -34,10 +34,10 @@ internal class Program
 
 	private static void InterpretText(string fileText, string fileFolderPath)
 	{
-		var tokens = Lexer.Lex(fileText);
-		var astRoot = Parser.Parse(tokens);
-		Annotator.Annotate(astRoot);
-		Validator.Validate(astRoot);
-		Evaluator.Evaluate(astRoot, fileFolderPath);
+		var tokens = new Lexer().Lex(fileText);
+		var astRoot = new Parser().Parse(tokens);
+		new Annotator().Annotate(astRoot);
+		new Validator().Validate(astRoot);
+		new Evaluator().Evaluate(astRoot, fileFolderPath);
 	}
 }

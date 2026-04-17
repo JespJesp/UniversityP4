@@ -4,15 +4,15 @@ namespace Tokens.TokenizationStrategies;
 
 public class TokenizeComma : ITokenizationStrategy
 {
-	public static bool TryTokenize()
+	public static bool TryTokenize(Lexer lexer)
 	{
-		if (Lexer.CursorChar != ',')
+		if (lexer.CursorChar != ',')
 		{
 			return false;
 		}
 
-		Lexer.Tokens.Add(new Token(TokenType.Comma, "", Lexer.Cursor.Line, Lexer.Cursor.Column));
-		Lexer.Cursor.MoveToNextColumn();
+		lexer.Tokens.Add(new Token(TokenType.Comma, "", lexer.Cursor.Line, lexer.Cursor.Column));
+		lexer.Cursor.MoveToNextColumn();
 
 		return true;
 	}

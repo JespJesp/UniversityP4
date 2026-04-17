@@ -1,11 +1,12 @@
+using Phases.Lexing;
 using Tokens.TokenizationStrategies;
 
 namespace Tokens;
 
 public static class Tokenizer
 {
-	public static bool TryTokenize<T>() where T : ITokenizationStrategy
+	public static bool TryTokenize<T>(Lexer lexer) where T : ITokenizationStrategy
 	{
-		return T.TryTokenize();
+		return T.TryTokenize(lexer);
 	}
 }

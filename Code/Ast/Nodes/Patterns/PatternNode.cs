@@ -1,6 +1,8 @@
 using System.Globalization;
 using Ast.NodeArchetypes;
+using Phases.Evaluation;
 using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
 using Tokens;
 
@@ -12,19 +14,19 @@ public class PatternNode : SymbolNode
 	public List<string> PatternAndMelodyIds = new();
 	public Pattern Pattern = new();
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.PatternKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
+		parser.ConsumeToken(TokenType.PatternKeyword);
+		parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
+		parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
 
-		while (Parser.TryConsumeIndent(1))
+		while (parser.TryConsumeIndent(1))
 		{
-			Parser.ParseChild(this, new ReferenceNode(this));
+			parser.ParseChild(this, new ReferenceNode(this));
 		}
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		if (LengthInBeats <= 0)
 		{
@@ -32,7 +34,7 @@ public class PatternNode : SymbolNode
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		this.Pattern.LengthInBeats = this.LengthInBeats;
 	}

@@ -1,5 +1,6 @@
 using System.Globalization;
 using Ast.NodeArchetypes;
+using Phases.Annotation;
 using Phases.Parsing;
 using Tokens;
 
@@ -26,38 +27,38 @@ public class FloatExpressionNode : Node
 		Division
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
 		Term? newTerm = new() { Operation = Operation.None };
 		do
 		{
 			// Add term
-			newTerm.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.RawValue = value);
+			newTerm.IsIdentifier = parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.RawValue = value);
 			if (!newTerm.IsIdentifier)
 			{
-				Parser.ConsumeToken(TokenType.Float, (value) => newTerm.RawValue = value);
+				parser.ConsumeToken(TokenType.Float, (value) => newTerm.RawValue = value);
 			}
 			_terms.Add(newTerm);
 
 			// Check for more terms
 			newTerm = null;
-			if (Parser.TryConsumeToken(TokenType.Plus)
-					|| TokenTypeExtensions.IsSubtypeOf(Parser.CursorToken.Type, TokenType.Float) && Parser.CursorToken.Value[0] == '-')
+			if (parser.TryConsumeToken(TokenType.Plus)
+					|| TokenTypeExtensions.IsSubtypeOf(parser.CursorToken.Type, TokenType.Float) && parser.CursorToken.Value[0] == '-')
 			{
 				newTerm = new() { Operation = Operation.None };
 			}
-			else if (Parser.TryConsumeToken(TokenType.Asterisk))
+			else if (parser.TryConsumeToken(TokenType.Asterisk))
 			{
 				newTerm = new() { Operation = Operation.Multiplication };
 			}
-			else if (Parser.TryConsumeToken(TokenType.Slash))
+			else if (parser.TryConsumeToken(TokenType.Slash))
 			{
 				newTerm = new() { Operation = Operation.Division };
 			}
 		} while (newTerm is not null);
 	}
 
-	public override void Annotate()
+	public override void Annotate(Annotator annotator)
 	{
 		foreach (Term term in _terms)
 		{

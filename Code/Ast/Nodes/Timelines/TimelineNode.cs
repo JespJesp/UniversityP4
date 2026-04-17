@@ -1,6 +1,8 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies;
+using Phases.Evaluation;
 using Phases.Parsing;
+using Phases.Validation;
 using Runtime;
 using Runtime.Objects;
 using Tokens;
@@ -16,14 +18,14 @@ public class TimelineNode : Node
 		TimelineInstances++;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.TimelineKeyword);
+		parser.ConsumeToken(TokenType.TimelineKeyword);
 
 		// TODO: Implement this
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		if (TimelineInstances > 1)
 		{
@@ -33,7 +35,7 @@ public class TimelineNode : Node
 		// TODO: Implement this
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		// TODO: Implement this
 

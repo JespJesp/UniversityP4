@@ -13,25 +13,25 @@ public class ModifiersNode : Node
 		this.NoteNode = noteNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.LeftParentheses);
+		parser.ConsumeToken(TokenType.LeftParentheses);
 
 		Dictionary<TokenType, Action> options = new()
 		{
 			{
 				TokenType.GainKeyword,
-				() => { Parser.ParseChild(this, new GainNode(this)); }
+				() => { parser.ParseChild(this, new GainNode(this)); }
 			},
 			{
 				TokenType.PanKeyword,
-				() => { Parser.ParseChild(this, new PanNode(this)); }
+				() => { parser.ParseChild(this, new PanNode(this)); }
 			}
 		};
 		Token[] optionSeparator = { new(TokenType.Comma) };
-		Parser.AllowUniqueOptions(options, optionSeparator);
+		parser.AllowUniqueOptions(options, optionSeparator);
 
-		Parser.ConsumeToken(TokenType.RightParentheses);
+		parser.ConsumeToken(TokenType.RightParentheses);
 	}
 }
 

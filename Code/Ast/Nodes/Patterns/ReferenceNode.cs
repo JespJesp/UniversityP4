@@ -1,5 +1,7 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies;
+using Phases.Annotation;
+using Phases.Evaluation;
 using Phases.Parsing;
 using Runtime.Objects;
 using Tokens;
@@ -16,14 +18,14 @@ public class ReferenceNode : Node
 		this.PatternNode = patterNode;
 	}
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
 		string length = "";
-		Parser.ConsumeToken(TokenType.Float, (value) => { length = value; });
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
+		parser.ConsumeToken(TokenType.Float, (value) => { length = value; });
+		parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
-	public override void Annotate()
+	public override void Annotate(Annotator annotator)
 	{
 		if (!SymbolTable.Contains<PatternNode>(ReferenceId)
 			&& !SymbolTable.Contains<MelodyNode>(ReferenceId))
@@ -32,7 +34,7 @@ public class ReferenceNode : Node
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		Pattern pattern = SymbolTable.Get<PatternNode>(PatternNode.Id).Pattern;
 

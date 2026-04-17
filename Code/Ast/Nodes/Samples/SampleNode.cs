@@ -1,6 +1,8 @@
 using Ast.NodeArchetypes;
 using Ast.Nodes.Strings;
+using Phases.Evaluation;
 using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
 using Tokens;
 
@@ -12,15 +14,15 @@ public class SampleNode : SymbolNode
 	public string ReferencePitch = "";
 	public Sample Sample = new();
 
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.SampleKeyword);
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		FilePath = Parser.ParseChild(this, new StringExpressionNode());
-		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
+		parser.ConsumeToken(TokenType.SampleKeyword);
+		parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
+		FilePath = parser.ParseChild(this, new StringExpressionNode());
+		parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	public override void Validate()
+	public override void Validate(Validator validator)
 	{
 		string filePathValue = FilePath.Value;
 		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
@@ -32,7 +34,7 @@ public class SampleNode : SymbolNode
 		}
 	}
 
-	public override void Evaluate()
+	public override void Evaluate(Evaluator evaluator)
 	{
 		this.Sample.FilePath = this.FilePath.Value;
 		this.Sample.ReferencePitch = Pitch.FromString(this.ReferencePitch);

@@ -12,19 +12,19 @@ namespace Ast.Nodes;
 
 public class ProgramNode : Node
 {
-	public override void CascadeParse()
+	public override void CascadeParse(Parser parser)
 	{
-		while (Parser.CursorToken.Type != TokenType.EndOfFile)
+		while (parser.CursorToken.Type != TokenType.EndOfFile)
 		{
-			switch (Parser.CursorToken.Type)
+			switch (parser.CursorToken.Type)
 			{
-				case TokenType.TimelineKeyword: Parser.ParseChild(this, new TimelineNode()); break;
-				case TokenType.PatternKeyword: Parser.ParseChild(this, new PatternNode()); break;
-				case TokenType.MelodyKeyword: Parser.ParseChild(this, new MelodyNode()); break;
-				case TokenType.SampleKeyword: Parser.ParseChild(this, new SampleNode()); break;
-				case TokenType.StringKeyword: Parser.ParseChild(this, new StringConstantNode()); break;
-				case TokenType.FloatKeyword: Parser.ParseChild(this, new FloatConstantNode()); break;
-				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
+				case TokenType.TimelineKeyword: parser.ParseChild(this, new TimelineNode()); break;
+				case TokenType.PatternKeyword: parser.ParseChild(this, new PatternNode()); break;
+				case TokenType.MelodyKeyword: parser.ParseChild(this, new MelodyNode()); break;
+				case TokenType.SampleKeyword: parser.ParseChild(this, new SampleNode()); break;
+				case TokenType.StringKeyword: parser.ParseChild(this, new StringConstantNode()); break;
+				case TokenType.FloatKeyword: parser.ParseChild(this, new FloatConstantNode()); break;
+				case TokenType.Newline: parser.ConsumeToken(TokenType.Newline); break;
 				default: throw new ArgumentOutOfRangeException($"Unexpected token");
 			}
 		}

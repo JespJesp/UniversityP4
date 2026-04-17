@@ -4,11 +4,11 @@ using Ast.Nodes;
 
 namespace Phases.Annotation;
 
-public static class Annotator
+public class Annotator
 {
-	private static List<string> _errors = new();
+	private List<string> _errors = new();
 
-	public static void Annotate(ProgramNode programNode)
+	public void Annotate(ProgramNode programNode)
 	{
 		CascadeAnnotate(programNode, new());
 
@@ -18,13 +18,13 @@ public static class Annotator
 		}
 	}
 
-	private static void CascadeAnnotate(Node node, SymbolTable availableSymbols)
+	private void CascadeAnnotate(Node node, SymbolTable availableSymbols)
 	{
 		node.SymbolTable = availableSymbols.Clone();
 
 		try
 		{
-			node.Annotate();
+			node.Annotate(this);
 		}
 		catch (Exception exception)
 		{
