@@ -4,7 +4,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
 
-public class ChordsNode : BranchNode
+public class ChordsNode : Node
 {
 	public MelodyNode MelodyNode;
 
@@ -13,13 +13,13 @@ public class ChordsNode : BranchNode
 		this.MelodyNode = melodyNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.ChordsKeyword);
 
 		while (Parser.TryConsumeIndent(2))
 		{
-			ParseChild(new ChordNode(this));
+			Parser.ParseChild(this, new ChordNode(this));
 		}
 	}
 }

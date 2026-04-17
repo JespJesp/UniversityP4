@@ -6,7 +6,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Samples;
 
-public class SampleReferenceNode : BranchNode
+public class SampleReferenceNode : Node
 {
 	public SampleReferencesNode SampleReferencesNode;
 	public string ReferenceId = "";
@@ -16,23 +16,23 @@ public class SampleReferenceNode : BranchNode
 		this.SampleReferencesNode = sampleReferencesNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.Identifier, (value) => ReferenceId = value);
 	}
 
-	protected override void Annotate()
+	public override void Annotate()
 	{
-		if (!_symbolTable.Contains<SampleNode>(ReferenceId))
+		if (!SymbolTable.Contains<SampleNode>(ReferenceId))
 		{
 			throw new Exception($"Melody: '{SampleReferencesNode.MelodyNode.Id}'. The sample reference '{ReferenceId}' is not declared");
 		}
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
-		Melody melody = _symbolTable.Get<MelodyNode>(SampleReferencesNode.MelodyNode.Id).Melody;
-		Sample sample = _symbolTable.Get<SampleNode>(ReferenceId).Sample;
+		Melody melody = SymbolTable.Get<MelodyNode>(SampleReferencesNode.MelodyNode.Id).Melody;
+		Sample sample = SymbolTable.Get<SampleNode>(ReferenceId).Sample;
 		melody.Samples.Add(sample);
 	}
 }

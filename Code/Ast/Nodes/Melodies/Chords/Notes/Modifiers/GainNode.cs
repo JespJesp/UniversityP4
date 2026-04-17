@@ -6,7 +6,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class GainNode : BranchNode
+public class GainNode : Node
 {
 	public ModifiersNode ModifiersNode;
 	public FloatExpressionNode Volume = new();
@@ -16,13 +16,13 @@ public class GainNode : BranchNode
 		this.ModifiersNode = modifiersNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.GainKeyword);
-		Volume = ParseChild(new FloatExpressionNode());
+		Volume = Parser.ParseChild(this, new FloatExpressionNode());
 	}
 
-	protected override void Validate()
+	public override void Validate()
 	{
 		NoteNode noteNode = ModifiersNode.NoteNode;
 		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
@@ -33,7 +33,7 @@ public class GainNode : BranchNode
 		}
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
 		Note note = ModifiersNode.NoteNode.Note;
 		note.Volume = Volume.Value;

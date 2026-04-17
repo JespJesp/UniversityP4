@@ -4,7 +4,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Samples;
 
-public class SampleReferencesNode : BranchNode
+public class SampleReferencesNode : Node
 {
 	public MelodyNode MelodyNode;
 
@@ -13,13 +13,13 @@ public class SampleReferencesNode : BranchNode
 		this.MelodyNode = melodyNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.SamplesKeyword);
 
 		while (Parser.TryConsumeIndent(2))
 		{
-			ParseChild(new SampleReferenceNode(this));
+			Parser.ParseChild(this, new SampleReferenceNode(this));
 		}
 	}
 }

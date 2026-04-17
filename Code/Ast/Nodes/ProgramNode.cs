@@ -10,9 +10,9 @@ using Tokens;
 
 namespace Ast.Nodes;
 
-public class ProgramNode : RootNode
+public class ProgramNode : Node
 {
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		bool hasConsumedTimelineKeyword = false;
 
@@ -28,14 +28,14 @@ public class ProgramNode : RootNode
 					else
 					{
 						hasConsumedTimelineKeyword = true;
-						ParseChild(new TimelineNode());
+						Parser.ParseChild(this, new TimelineNode());
 					}
 					break;
-				case TokenType.PatternKeyword: ParseChild(new PatternNode()); break;
-				case TokenType.MelodyKeyword: ParseChild(new MelodyNode()); break;
-				case TokenType.SampleKeyword: ParseChild(new SampleNode()); break;
-				case TokenType.StringKeyword: ParseChild(new StringConstantNode()); break;
-				case TokenType.FloatKeyword: ParseChild(new FloatConstantNode()); break;
+				case TokenType.PatternKeyword: Parser.ParseChild(this, new PatternNode()); break;
+				case TokenType.MelodyKeyword: Parser.ParseChild(this, new MelodyNode()); break;
+				case TokenType.SampleKeyword: Parser.ParseChild(this, new SampleNode()); break;
+				case TokenType.StringKeyword: Parser.ParseChild(this, new StringConstantNode()); break;
+				case TokenType.FloatKeyword: Parser.ParseChild(this, new FloatConstantNode()); break;
 				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
 				default: throw new ArgumentOutOfRangeException($"Unexpected token");
 			}

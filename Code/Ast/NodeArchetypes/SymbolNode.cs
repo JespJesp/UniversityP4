@@ -1,10 +1,10 @@
 namespace Ast.NodeArchetypes;
 
-public abstract class SymbolNode : BranchNode
+public abstract class SymbolNode : Node
 {
 	public string Id = "";
 
-	protected sealed override void Annotate()
+	public sealed override void Annotate()
 	{
 		UpsertToSymbolTable();
 	}
@@ -13,7 +13,7 @@ public abstract class SymbolNode : BranchNode
 	{
 		(Type type, string id) key = (this.GetType(), this.Id);
 
-		if (_symbolTable.Symbols.TryGetValue(key, out SymbolNode? oldEntry))
+		if (SymbolTable.Symbols.TryGetValue(key, out SymbolNode? oldEntry))
 		{
 			if (this.ScopeDepth <= oldEntry.ScopeDepth)
 			{
@@ -21,7 +21,7 @@ public abstract class SymbolNode : BranchNode
 			}
 		}
 
-		_symbolTable.Symbols[key] = this;
+		SymbolTable.Symbols[key] = this;
 	}
 }
 

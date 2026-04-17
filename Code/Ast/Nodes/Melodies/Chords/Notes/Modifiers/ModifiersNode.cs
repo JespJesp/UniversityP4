@@ -4,7 +4,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class ModifiersNode : BranchNode
+public class ModifiersNode : Node
 {
 	public NoteNode NoteNode;
 
@@ -13,7 +13,7 @@ public class ModifiersNode : BranchNode
 		this.NoteNode = noteNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.LeftParentheses);
 
@@ -21,11 +21,11 @@ public class ModifiersNode : BranchNode
 		{
 			{
 				TokenType.GainKeyword,
-				() => { ParseChild(new GainNode(this)); }
+				() => { Parser.ParseChild(this, new GainNode(this)); }
 			},
 			{
 				TokenType.PanKeyword,
-				() => { ParseChild(new PanNode(this)); }
+				() => { Parser.ParseChild(this, new PanNode(this)); }
 			}
 		};
 		Token[] optionSeparator = { new(TokenType.Comma) };

@@ -13,7 +13,7 @@ public class MelodyNode : SymbolNode
 	public float LengthInBeats;
 	public Melody Melody = new();
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.MelodyKeyword);
 		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
@@ -25,11 +25,11 @@ public class MelodyNode : SymbolNode
 			{
 				{
 					TokenType.SamplesKeyword,
-					() => { ParseChild(new SampleReferencesNode(this)); }
+					() => { Parser.ParseChild(this, new SampleReferencesNode(this)); }
 				},
 				{
 					TokenType.ChordsKeyword,
-					() => { ParseChild(new ChordsNode(this)); }
+					() => { Parser.ParseChild(this, new ChordsNode(this)); }
 				}
 			};
 			Token[] optionSeparator =
@@ -41,7 +41,7 @@ public class MelodyNode : SymbolNode
 		}
 	}
 
-	protected override void Validate()
+	public override void Validate()
 	{
 		if (LengthInBeats <= 0)
 		{
@@ -49,7 +49,7 @@ public class MelodyNode : SymbolNode
 		}
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
 		this.Melody.LengthInBeats = this.LengthInBeats;
 	}

@@ -12,7 +12,7 @@ public class PatternNode : SymbolNode
 	public List<string> PatternAndMelodyIds = new();
 	public Pattern Pattern = new();
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.PatternKeyword);
 		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
@@ -20,11 +20,11 @@ public class PatternNode : SymbolNode
 
 		while (Parser.TryConsumeIndent(1))
 		{
-			ParseChild(new ReferenceNode(this));
+			Parser.ParseChild(this, new ReferenceNode(this));
 		}
 	}
 
-	protected override void Validate()
+	public override void Validate()
 	{
 		if (LengthInBeats <= 0)
 		{
@@ -32,7 +32,7 @@ public class PatternNode : SymbolNode
 		}
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
 		this.Pattern.LengthInBeats = this.LengthInBeats;
 	}

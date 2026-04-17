@@ -8,11 +8,11 @@ public class FloatConstantNode : SymbolNode
 {
 	internal FloatExpressionNode FloatExpression = new();
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.FloatKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => this.Id = value);
-		FloatExpression = ParseChild(new FloatExpressionNode());
+		FloatExpression = Parser.ParseChild(this, new FloatExpressionNode());
 	}
 }
 

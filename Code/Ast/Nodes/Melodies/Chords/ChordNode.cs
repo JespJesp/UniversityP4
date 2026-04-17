@@ -6,7 +6,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
 
-public class ChordNode : BranchNode
+public class ChordNode : Node
 {
 	public ChordsNode ChordsNode;
 	public FloatExpressionNode StartBeat = new();
@@ -17,19 +17,19 @@ public class ChordNode : BranchNode
 		this.ChordsNode = chordsNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
-		StartBeat = ParseChild(new FloatExpressionNode());
+		StartBeat = Parser.ParseChild(this, new FloatExpressionNode());
 		Parser.ConsumeToken(TokenType.Comma);
-		EndBeat = ParseChild(new FloatExpressionNode());
+		EndBeat = Parser.ParseChild(this, new FloatExpressionNode());
 
 		while (Parser.CursorToken.Type == TokenType.Identifier)
 		{
-			ParseChild(new NoteNode(this));
+			Parser.ParseChild(this, new NoteNode(this));
 		}
 	}
 
-	protected override void Validate()
+	public override void Validate()
 	{
 		MelodyNode melodyNode = ChordsNode.MelodyNode;
 

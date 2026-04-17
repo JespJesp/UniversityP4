@@ -7,33 +7,33 @@ using Tokens;
 
 namespace Ast.Nodes.Timelines;
 
-public class TimelineNode : BranchNode
+public class TimelineNode : Node
 {
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		// TODO: Implement this
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 	}
 
-	protected override void Validate()
+	public override void Validate()
 	{
 		// TODO: Implement this
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
 		// TODO: Implement this
 
 		// TODO: Remove this; it's for testing
 		Loop exampleLoop1 = new()
 		{
-			Melody = _symbolTable.Get<MelodyNode>("8_guitar").Melody,
+			Melody = SymbolTable.Get<MelodyNode>("8_guitar").Melody,
 			StartBeat = 0,
 			EndBeat = 8
 		};
 		Loop exampleLoop2 = new()
 		{
-			Melody = _symbolTable.Get<MelodyNode>("16_flute").Melody,
+			Melody = SymbolTable.Get<MelodyNode>("16_flute").Melody,
 			StartBeat = 12,
 			EndBeat = 64
 		};

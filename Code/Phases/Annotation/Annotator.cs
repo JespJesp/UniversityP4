@@ -1,3 +1,4 @@
+using Ast;
 using Ast.NodeArchetypes;
 using Ast.Nodes;
 
@@ -9,7 +10,7 @@ public static class Annotator
 
 	public static void Annotate(ProgramNode programNode)
 	{
-		programNode.AnnotateTree();
+		CascadeAnnotate(programNode, new());
 
 		if (_errors.Any())
 		{
@@ -17,8 +18,24 @@ public static class Annotator
 		}
 	}
 
-	public static void AddError(Node node, string errorMessage)
+	private static void CascadeAnnotate(Node node, SymbolTable availableSymbols)
 	{
-		_errors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {errorMessage}");
+		node.SymbolTable = availableSymbols.Clone();
+
+		try
+		{
+			node.Annotate();
+		}
+		catch (Exception exception)
+		{
+			_errors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {exception.Message}");
+		}
+
+		SymbolTable childrensSymbols = node.SymbolTable;
+		foreach (Node child in node.Children)
+		{
+			CascadeAnnotate(child, childrensSymbols);
+			childrensSymbols = child.SymbolTable; // Inherit symbols from older sibling
+		}
 	}
 }

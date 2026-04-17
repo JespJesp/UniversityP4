@@ -17,7 +17,7 @@ public static class Parser
 		_tokens = inputTokens;
 
 		ProgramNode astRoot = new ProgramNode();
-		astRoot.ParseTree();
+		astRoot.CascadeParse();
 
 		if (_errors.Any())
 		{
@@ -25,6 +25,35 @@ public static class Parser
 		}
 
 		return astRoot;
+	}
+
+	public static T ParseChild<T>(Node parent, T newChild, bool createsNestedScope = false) where T : Node
+	{
+		// Assign child properties
+		newChild.CreatesNestedScope = createsNestedScope;
+		newChild.Column = CursorToken.Column;
+		newChild.Line = CursorToken.Line;
+		if (parent.CreatesNestedScope)
+		{
+			newChild.ScopeDepth = parent.ScopeDepth + 1;
+		}
+		else
+		{
+			newChild.ScopeDepth = parent.ScopeDepth;
+		}
+		parent.Children.Add(newChild);
+
+		// Parse child
+		try
+		{
+			newChild.CascadeParse();
+		}
+		catch (Exception exception)
+		{
+			AddErrorAndSkipLine(newChild, exception.Message);
+		}
+
+		return newChild;
 	}
 
 	public static void AddErrorAndSkipLine(Node node, string errorMessage)

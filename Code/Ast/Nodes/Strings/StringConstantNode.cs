@@ -8,11 +8,11 @@ public class StringConstantNode : SymbolNode
 {
 	internal StringExpressionNode StringExpression = new();
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.StringKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => this.Id = value);
-		StringExpression = ParseChild(new StringExpressionNode());
+		StringExpression = Parser.ParseChild(this, new StringExpressionNode());
 	}
 }
 

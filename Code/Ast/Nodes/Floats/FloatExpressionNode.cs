@@ -5,7 +5,7 @@ using Tokens;
 
 namespace Ast.Nodes.Floats;
 
-public class FloatExpressionNode : BranchNode
+public class FloatExpressionNode : Node
 {
 	public float Value = 0;
 
@@ -26,7 +26,7 @@ public class FloatExpressionNode : BranchNode
 		Division
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Operation? newTermOperation = Operation.None;
 		while (newTermOperation is not null)
@@ -61,18 +61,18 @@ public class FloatExpressionNode : BranchNode
 		}
 	}
 
-	protected override void Annotate()
+	public override void Annotate()
 	{
 		foreach (Term term in _terms)
 		{
 			if (term.IsIdentifier)
 			{
-				if (!_symbolTable.Contains<FloatConstantNode>(term.RawValue))
+				if (!SymbolTable.Contains<FloatConstantNode>(term.RawValue))
 				{
 					throw new Exception($"Float variable with ID '{term.RawValue}' is not declared.");
 				}
 
-				term.Value = _symbolTable.Get<FloatConstantNode>(term.RawValue).FloatExpression.Value;
+				term.Value = SymbolTable.Get<FloatConstantNode>(term.RawValue).FloatExpression.Value;
 			}
 			else
 			{

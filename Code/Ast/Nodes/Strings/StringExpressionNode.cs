@@ -4,7 +4,7 @@ using Tokens;
 
 namespace Ast.Nodes.Strings;
 
-public class StringExpressionNode : BranchNode
+public class StringExpressionNode : Node
 {
 	public string Value = "";
 
@@ -17,7 +17,7 @@ public class StringExpressionNode : BranchNode
 		public bool IsIdentifier;
 	};
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		do
 		{
@@ -33,18 +33,18 @@ public class StringExpressionNode : BranchNode
 		} while (Parser.TryConsumeToken(TokenType.Plus));
 	}
 
-	protected override void Annotate()
+	public override void Annotate()
 	{
 		foreach (Segment segment in _segments)
 		{
 			if (segment.IsIdentifier)
 			{
-				if (!_symbolTable.Contains<StringConstantNode>(segment.RawValue))
+				if (!SymbolTable.Contains<StringConstantNode>(segment.RawValue))
 				{
 					throw new Exception($"String variable with ID '{segment.RawValue}' is not declared.");
 				}
 
-				segment.Value = _symbolTable.Get<StringConstantNode>(segment.RawValue).StringExpression.Value;
+				segment.Value = SymbolTable.Get<StringConstantNode>(segment.RawValue).StringExpression.Value;
 			}
 			else
 			{

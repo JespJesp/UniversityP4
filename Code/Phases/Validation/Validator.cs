@@ -9,7 +9,7 @@ public static class Validator
 
 	public static void Validate(ProgramNode programNode)
 	{
-		programNode.ValidateTree();
+		CascadeValidate(programNode);
 
 		if (_errors.Any())
 		{
@@ -17,8 +17,20 @@ public static class Validator
 		}
 	}
 
-	public static void AddError(Node node, string errorMessage)
+	private static void CascadeValidate(Node node)
 	{
-		_errors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {errorMessage}");
+		try
+		{
+			node.Validate();
+		}
+		catch (Exception exception)
+		{
+			_errors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {exception.Message}");
+		}
+
+		foreach (Node child in node.Children)
+		{
+			CascadeValidate(child);
+		}
 	}
 }

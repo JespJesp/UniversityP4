@@ -6,7 +6,7 @@ using Tokens;
 
 namespace Ast.Nodes.Patterns;
 
-public class ReferenceNode : BranchNode
+public class ReferenceNode : Node
 {
 	public PatternNode PatternNode;
 	public string ReferenceId = "";
@@ -16,31 +16,31 @@ public class ReferenceNode : BranchNode
 		this.PatternNode = patterNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		string length = "";
 		Parser.ConsumeToken(TokenType.Float, (value) => { length = value; });
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
 	}
 
-	protected override void Annotate()
+	public override void Annotate()
 	{
-		if (!_symbolTable.Contains<PatternNode>(ReferenceId)
-			&& !_symbolTable.Contains<MelodyNode>(ReferenceId))
+		if (!SymbolTable.Contains<PatternNode>(ReferenceId)
+			&& !SymbolTable.Contains<MelodyNode>(ReferenceId))
 		{
 			throw new Exception($"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
-		Pattern pattern = _symbolTable.Get<PatternNode>(PatternNode.Id).Pattern;
+		Pattern pattern = SymbolTable.Get<PatternNode>(PatternNode.Id).Pattern;
 
-		if (_symbolTable.TryGet(this.ReferenceId, out PatternNode childPatternNode))
+		if (SymbolTable.TryGet(this.ReferenceId, out PatternNode childPatternNode))
 		{
 			pattern.Patterns.Add(childPatternNode.Pattern);
 		}
-		else if (_symbolTable.TryGet(this.ReferenceId, out MelodyNode childMelodyNode))
+		else if (SymbolTable.TryGet(this.ReferenceId, out MelodyNode childMelodyNode))
 		{
 			pattern.Melodies.Add(childMelodyNode.Melody);
 		}

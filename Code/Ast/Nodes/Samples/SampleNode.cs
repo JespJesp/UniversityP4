@@ -12,15 +12,15 @@ public class SampleNode : SymbolNode
 	public string ReferencePitch = "";
 	public Sample Sample = new();
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.SampleKeyword);
 		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		FilePath = ParseChild(new StringExpressionNode());
+		FilePath = Parser.ParseChild(this, new StringExpressionNode());
 		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
 	}
 
-	protected override void Validate()
+	public override void Validate()
 	{
 		string filePathValue = FilePath.Value;
 		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
@@ -32,7 +32,7 @@ public class SampleNode : SymbolNode
 		}
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
 		this.Sample.FilePath = this.FilePath.Value;
 		this.Sample.ReferencePitch = Pitch.FromString(this.ReferencePitch);

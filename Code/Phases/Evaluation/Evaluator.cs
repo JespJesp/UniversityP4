@@ -11,7 +11,7 @@ public static class Evaluator
 	{
 		try
 		{
-			programNode.EvaluateTree();
+			CascadeEvaluate(programNode);
 			AudioRenderer.RenderToFile(inputFileFolderPath);
 			ExamplePrintToConsole();
 		}
@@ -21,9 +21,21 @@ public static class Evaluator
 		}
 	}
 
-	public static void ThrowError(Node node, string message)
+	private static void CascadeEvaluate(Node node)
 	{
-		throw new Exception($"Line: {node.Line}. Column: {node.Column}. Node type: {node.GetType()}. {message}");
+		try
+		{
+			node.Evaluate();
+		}
+		catch (Exception exception)
+		{
+			throw new Exception($"Line: {node.Line}. Column: {node.Column}. Node type: {node.GetType()}. {exception.Message}");
+		}
+
+		foreach (Node child in node.Children)
+		{
+			CascadeEvaluate(child);
+		}
 	}
 
 	// TODO: Remove after debugging. It's just an example.

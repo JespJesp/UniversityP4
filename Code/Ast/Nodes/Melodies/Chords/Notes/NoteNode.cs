@@ -6,7 +6,7 @@ using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes;
 
-public class NoteNode : BranchNode
+public class NoteNode : Node
 {
 	public ChordNode ChordNode;
 	public string PitchString = "";
@@ -17,22 +17,22 @@ public class NoteNode : BranchNode
 		this.ChordNode = chordsNode;
 	}
 
-	protected override void Parse()
+	public override void CascadeParse()
 	{
 		Parser.ConsumeToken(TokenType.Identifier, (value) => PitchString = value);
 
 		if (Parser.CursorToken.Type == TokenType.LeftParentheses)
 		{
-			ParseChild(new ModifiersNode(this));
+			Parser.ParseChild(this, new ModifiersNode(this));
 		}
 	}
 
-	protected override void Annotate()
+	public override void Annotate()
 	{
 		Pitch.FromString(this.PitchString);
 	}
 
-	protected override void Evaluate()
+	public override void Evaluate()
 	{
 		this.Note.StartBeat = ChordNode.StartBeat.Value;
 		this.Note.EndBeat = ChordNode.EndBeat.Value;
