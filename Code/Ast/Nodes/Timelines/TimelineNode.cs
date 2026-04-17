@@ -9,14 +9,27 @@ namespace Ast.Nodes.Timelines;
 
 public class TimelineNode : Node
 {
+	public static int TimelineInstances = 0;
+
+	public TimelineNode()
+	{
+		TimelineInstances++;
+	}
+
 	public override void CascadeParse()
 	{
-		// TODO: Implement this
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
+
+		// TODO: Implement this
 	}
 
 	public override void Validate()
 	{
+		if (TimelineInstances > 1)
+		{
+			throw new Exception("'timeline' keyword appears multiple times.");
+		}
+
 		// TODO: Implement this
 	}
 

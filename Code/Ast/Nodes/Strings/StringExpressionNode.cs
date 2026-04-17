@@ -22,13 +22,11 @@ public class StringExpressionNode : Node
 		do
 		{
 			Segment newSegment = new();
-
 			newSegment.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newSegment.RawValue = value);
 			if (!newSegment.IsIdentifier)
 			{
 				Parser.ConsumeToken(TokenType.String, (value) => newSegment.RawValue = value);
 			}
-
 			_segments.Add(newSegment);
 		} while (Parser.TryConsumeToken(TokenType.Plus));
 	}

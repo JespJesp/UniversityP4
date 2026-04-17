@@ -14,23 +14,11 @@ public class ProgramNode : Node
 {
 	public override void CascadeParse()
 	{
-		bool hasConsumedTimelineKeyword = false;
-
 		while (Parser.CursorToken.Type != TokenType.EndOfFile)
 		{
 			switch (Parser.CursorToken.Type)
 			{
-				case TokenType.TimelineKeyword:
-					if (hasConsumedTimelineKeyword)
-					{
-						Parser.AddErrorAndSkipLine(this, "'timeline' keyword appears multiple times.");
-					}
-					else
-					{
-						hasConsumedTimelineKeyword = true;
-						Parser.ParseChild(this, new TimelineNode());
-					}
-					break;
+				case TokenType.TimelineKeyword: Parser.ParseChild(this, new TimelineNode()); break;
 				case TokenType.PatternKeyword: Parser.ParseChild(this, new PatternNode()); break;
 				case TokenType.MelodyKeyword: Parser.ParseChild(this, new MelodyNode()); break;
 				case TokenType.SampleKeyword: Parser.ParseChild(this, new SampleNode()); break;

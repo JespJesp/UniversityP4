@@ -28,43 +28,40 @@ public class FloatExpressionNode : Node
 
 	public override void CascadeParse()
 	{
-		Operation? newTermOperation = Operation.None;
-		while (newTermOperation is not null)
+		Term? newTerm = new() { Operation = Operation.None };
+		do
 		{
-			Term newTerm = new()
-			{
-				Operation = newTermOperation.Value
-			};
-
+			// Add term
 			newTerm.IsIdentifier = Parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.RawValue = value);
 			if (!newTerm.IsIdentifier)
 			{
 				Parser.ConsumeToken(TokenType.Float, (value) => newTerm.RawValue = value);
 			}
-
 			_terms.Add(newTerm);
 
-			newTermOperation = null;
+			// Check for more terms
+			newTerm = null;
 			if (Parser.TryConsumeToken(TokenType.Plus)
-				|| TokenTypeExtensions.IsSubtypeOf(Parser.CursorToken.Type, TokenType.Float) && Parser.CursorToken.Value[0] == '-')
+					|| TokenTypeExtensions.IsSubtypeOf(Parser.CursorToken.Type, TokenType.Float) && Parser.CursorToken.Value[0] == '-')
 			{
-				newTermOperation = Operation.None;
+				newTerm = new() { Operation = Operation.None };
 			}
 			else if (Parser.TryConsumeToken(TokenType.Asterisk))
 			{
-				newTermOperation = Operation.Multiplication;
+				newTerm = new() { Operation = Operation.Multiplication };
 			}
 			else if (Parser.TryConsumeToken(TokenType.Slash))
 			{
-				newTermOperation = Operation.Division;
+				newTerm = new() { Operation = Operation.Division };
 			}
-		}
+		} while (newTerm is not null);
 	}
 
 	public override void Annotate()
 	{
 		foreach (Term term in _terms)
 		{
+			// Get term value
 			if (term.IsIdentifier)
 			{
 				if (!SymbolTable.Contains<FloatConstantNode>(term.RawValue))
@@ -79,6 +76,7 @@ public class FloatExpressionNode : Node
 				term.Value = float.Parse(term.RawValue, CultureInfo.InvariantCulture);
 			}
 
+			// Apply term to final result
 			switch (term.Operation)
 			{
 				case Operation.None:
