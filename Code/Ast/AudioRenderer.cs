@@ -25,19 +25,9 @@ public static class AudioRenderer
 		foreach (Loop loop in timeline.Loops)
 		{
 			Melody melody = loop.Melody0;
-			foreach (Note note in melody.Notes)
+			foreach (Sample sample in melody.Samples)
 			{
-				List<Sample> samplesToRender;
-				if (note.SampleOverride != null)
-				{
-					samplesToRender = new List<Sample> { note.SampleOverride };
-				}
-				else
-				{
-					samplesToRender = melody.Samples;
-				}
-
-				foreach (Sample sample in samplesToRender)
+				foreach (Note note in melody.Notes)
 				{
 					float loops = loop.LengthInBeats / melody.LengthInBeats;
 
@@ -98,10 +88,19 @@ public static class AudioRenderer
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch0)
 		};
 
-		var offsetter = new OffsetSampleProvider(pitchShifter)
+		var envelopeProvider = new AdsrEnvelopeSampleProvider(
+			pitchShifter,
+			noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),
+			attackSeconds: ConvertBeatsToSeconds(timeline, sample.AttackBeats),
+			holdSeconds: ConvertBeatsToSeconds(timeline, sample.HoldBeats),
+			decaySeconds: ConvertBeatsToSeconds(timeline, sample.DecayBeats),
+			sustainLevel: sample.SustainLevel,
+			releaseSeconds: ConvertBeatsToSeconds(timeline, sample.ReleaseBeats));
+
+		var offsetter = new OffsetSampleProvider(envelopeProvider)
 		{
-			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, globalStartBeat)),
-			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, durationInBeats)) // duration of sample
+			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, globalStartBeat + sample.DelayBeats)),
+			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, durationInBeats + sample.ReleaseBeats))
 		};
 
 		return offsetter;
