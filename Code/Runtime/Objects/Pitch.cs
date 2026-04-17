@@ -11,9 +11,8 @@ public class Pitch : RuntimeObject
 	public int Octave = 5;
 
 	/// <summary>
-	/// Notes:
-	/// 1) This converts the input pitch string to lower case before processing it. For example, this pitch string could be "C5" or "c#3".
-	/// 2) This throws an error if the input string cannot be converted to a pitch.
+	/// Converts the input pitch string to lower case before processing it. For example, this pitch string could be "C5" or "c#3".
+	/// Throws an error if the input string cannot be converted to a pitch.
 	/// </summary>
 	public static Pitch FromString(string pitchString)
 	{

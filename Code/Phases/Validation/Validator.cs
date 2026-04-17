@@ -1,4 +1,4 @@
-using Ast.NodeArchetypes;
+using Ast;
 using Ast.Nodes;
 
 namespace Phases.Validation;

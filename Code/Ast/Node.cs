@@ -3,7 +3,7 @@ using Phases.Evaluation;
 using Phases.Parsing;
 using Phases.Validation;
 
-namespace Ast.NodeArchetypes;
+namespace Ast;
 
 public abstract class Node
 {

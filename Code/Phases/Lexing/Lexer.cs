@@ -1,5 +1,6 @@
 using Tokens;
-using Tokens.TokenizationStrategies;
+using Tokens.Tokenization;
+using Tokens.Tokenization.Strategies;
 
 namespace Phases.Lexing;
 
@@ -53,16 +54,16 @@ public class Lexer
 
 	private bool TryTokenizeChar()
 	{
-		return Tokenizer.TryTokenize<TokenizeWhitespace>(this)
-			|| Tokenizer.TryTokenize<TokenizeComment>(this)
-			|| Tokenizer.TryTokenize<TokenizeString>(this)
-			|| Tokenizer.TryTokenize<TokenizeLeftParentheses>(this)
-			|| Tokenizer.TryTokenize<TokenizeRightParentheses>(this)
-			|| Tokenizer.TryTokenize<TokenizeComma>(this)
-			|| Tokenizer.TryTokenize<TokenizePlus>(this)
-			|| Tokenizer.TryTokenize<TokenizeAsterisk>(this)
-			|| Tokenizer.TryTokenize<TokenizeSlash>(this)
-			|| Tokenizer.TryTokenize<TokenizeNumber>(this)
-			|| Tokenizer.TryTokenize<TokenizeIdentifierOrKeyword>(this);
+		return Tokenizer.TryTokenize<WhitespaceStrategy>(this)
+			|| Tokenizer.TryTokenize<CommentStrategy>(this)
+			|| Tokenizer.TryTokenize<StringStrategy>(this)
+			|| Tokenizer.TryTokenize<LeftParenthesesStrategy>(this)
+			|| Tokenizer.TryTokenize<RightParenthesesStrategy>(this)
+			|| Tokenizer.TryTokenize<CommaStrategy>(this)
+			|| Tokenizer.TryTokenize<PlusStrategy>(this)
+			|| Tokenizer.TryTokenize<AsteriskStrategy>(this)
+			|| Tokenizer.TryTokenize<SlashStrategy>(this)
+			|| Tokenizer.TryTokenize<NumberStrategy>(this)
+			|| Tokenizer.TryTokenize<IdentifierOrKeywordStrategy>(this);
 	}
 }

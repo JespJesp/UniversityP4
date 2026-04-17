@@ -1,5 +1,4 @@
 using System.Globalization;
-using Ast.NodeArchetypes;
 using Ast.Nodes.Melodies.Chords;
 using Ast.Nodes.Melodies.Samples;
 using Phases.Evaluation;
@@ -12,8 +11,8 @@ namespace Ast.Nodes.Melodies;
 
 public class MelodyNode : SymbolNode
 {
-	public float LengthInBeats;
 	public Melody Melody = new();
+	public float LengthInBeats;
 
 	public override void CascadeParse(Parser parser)
 	{

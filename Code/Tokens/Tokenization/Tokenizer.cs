@@ -1,7 +1,7 @@
 using Phases.Lexing;
-using Tokens.TokenizationStrategies;
+using Tokens.Tokenization.Strategies;
 
-namespace Tokens;
+namespace Tokens.Tokenization;
 
 public static class Tokenizer
 {

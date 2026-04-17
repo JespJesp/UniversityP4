@@ -1,4 +1,3 @@
-using Ast.NodeArchetypes;
 using Ast.Nodes.Strings;
 using Phases.Evaluation;
 using Phases.Parsing;
@@ -10,9 +9,9 @@ namespace Ast.Nodes.Samples;
 
 public class SampleNode : SymbolNode
 {
+	public Sample Sample = new();
 	public StringExpressionNode FilePath = new();
 	public string ReferencePitch = "";
-	public Sample Sample = new();
 
 	public override void CascadeParse(Parser parser)
 	{

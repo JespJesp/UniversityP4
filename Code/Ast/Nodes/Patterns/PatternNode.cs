@@ -1,5 +1,4 @@
 using System.Globalization;
-using Ast.NodeArchetypes;
 using Phases.Evaluation;
 using Phases.Parsing;
 using Phases.Validation;
@@ -10,9 +9,9 @@ namespace Ast.Nodes.Patterns;
 
 public class PatternNode : SymbolNode
 {
+	public Pattern Pattern = new();
 	public float LengthInBeats;
 	public List<string> PatternAndMelodyIds = new();
-	public Pattern Pattern = new();
 
 	public override void CascadeParse(Parser parser)
 	{

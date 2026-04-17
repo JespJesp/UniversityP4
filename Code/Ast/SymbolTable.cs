@@ -1,5 +1,3 @@
-using Ast.NodeArchetypes;
-
 namespace Ast;
 
 public class SymbolTable

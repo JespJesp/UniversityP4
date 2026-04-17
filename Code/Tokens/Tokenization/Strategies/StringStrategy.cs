@@ -1,8 +1,8 @@
 using Phases.Lexing;
 
-namespace Tokens.TokenizationStrategies;
+namespace Tokens.Tokenization.Strategies;
 
-public class TokenizeString : ITokenizationStrategy
+public class StringStrategy : ITokenizationStrategy
 {
 	public static bool TryTokenize(Lexer lexer)
 	{

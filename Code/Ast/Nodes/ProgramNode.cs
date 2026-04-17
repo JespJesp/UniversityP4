@@ -1,4 +1,3 @@
-using Ast.NodeArchetypes;
 using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;

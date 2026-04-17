@@ -1,6 +1,6 @@
 using Phases.Annotation;
 
-namespace Ast.NodeArchetypes;
+namespace Ast;
 
 public abstract class SymbolNode : Node
 {
