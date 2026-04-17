@@ -19,17 +19,16 @@ timeline
 	verse stop 48
 		EVERYTHING
 
-samples
-	leadGuitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
-	softPiano "/ExampleSamples/Instruments/synth C.wav" c4
-	raindrop "/ExampleSamples/Instruments/flute E.wav" e5
-	kick "/ExampleSamples/Drums/kick A#.wav" c5
-	snare "/ExampleSamples/Drums/snap.wav" c5
-	closedHihat "/ExampleSamples/Drums/closed hihat.wav" c5
+sample leadGuitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
+sample softPiano "/ExampleSamples/Instruments/synth C.wav" c4
+sample raindrop "/ExampleSamples/Instruments/flute E.wav" e5
+sample kick "/ExampleSamples/Drums/kick A#.wav" c5
+sample snare "/ExampleSamples/Drums/snap.wav" c5
+sample closedHihat "/ExampleSamples/Drums/closed hihat.wav" c5
 
 melody 16_introLeadGuitar
 	samples
-		leadGuitar
+		leadGuitar (delay 0.5, attack 3, hold 5, decay 2, release 8, sustain 0.3)
 	notes
 		0 2 c5
 		2 4 d5

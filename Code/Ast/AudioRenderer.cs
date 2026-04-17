@@ -88,10 +88,19 @@ public static class AudioRenderer
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch0)
 		};
 
-		var offsetter = new OffsetSampleProvider(pitchShifter)
+		var envelopeProvider = new AdsrEnvelopeSampleProvider(
+			pitchShifter,
+			noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),
+			attackSeconds: ConvertBeatsToSeconds(timeline, sample.AttackBeats),
+			holdSeconds: ConvertBeatsToSeconds(timeline, sample.HoldBeats),
+			decaySeconds: ConvertBeatsToSeconds(timeline, sample.DecayBeats),
+			sustainLevel: sample.SustainLevel,
+			releaseSeconds: ConvertBeatsToSeconds(timeline, sample.ReleaseBeats));
+
+		var offsetter = new OffsetSampleProvider(envelopeProvider)
 		{
-			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, globalStartBeat)),
-			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, durationInBeats)) // duration of sample
+			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, globalStartBeat + sample.DelayBeats)),
+			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, durationInBeats + sample.ReleaseBeats))
 		};
 
 		return offsetter;
