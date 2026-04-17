@@ -9,7 +9,8 @@ public static class IdentifierOrKeywordLexer
 		string id = "";
 		int startColumn = Lexer.Cursor.Column;
 
-		while (Lexer.IsNotEndOfFile && Lexer.CursorChar == '_' || Lexer.CursorChar == '#' || char.IsLetterOrDigit(Lexer.CursorChar))
+		while (Lexer.IsNotEndOfFile &&
+      (Lexer.CursorChar == '_' || Lexer.CursorChar == '#' || char.IsLetterOrDigit(Lexer.CursorChar)))
 		{
 			id += Lexer.CursorChar;
 			Lexer.Cursor.MoveToNextColumn();

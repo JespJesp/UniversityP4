@@ -18,7 +18,8 @@ public static class Lexer
 	{
 		// Reset variables
 		Tokens.Clear();
-		_inputText = text;
+		_errors.Clear();
+		_inputText = ExpandUsingStatements(text, new HashSet<string>());
 		Cursor.MoveToStartPosition();
 
 		LexText();
@@ -86,7 +87,55 @@ public static class Lexer
 
 		Tokens.Add(new Token(TokenType.EndOfFile, "", Cursor.Line, Cursor.Column));
 	}
+private static string ExpandUsingStatements(string text, HashSet<string> visitedFiles)
+{
+    var lines = text.Split('\n');
+    var result = new List<string>();
 
+    foreach (var line in lines)
+    {
+        var trimmed = line.Trim();
+
+        if (trimmed.StartsWith("using "))
+        {
+            int firstQuote = trimmed.IndexOf('"');
+            int lastQuote = trimmed.LastIndexOf('"');
+
+            if (firstQuote == -1 || lastQuote == -1 || lastQuote <= firstQuote)
+            {
+                throw new Exception($"Invalid using statement: {line}");
+            }
+
+            string path = trimmed.Substring(firstQuote + 1, lastQuote - firstQuote - 1);
+
+            string fullPath = Path.GetFullPath(path);
+
+            if (visitedFiles.Contains(fullPath))
+            {
+                throw new Exception($"Circular using detected: {fullPath}");
+            }
+
+            if (!File.Exists(fullPath))
+            {
+                throw new Exception($"Could not find file: {fullPath}");
+            }
+
+            visitedFiles.Add(fullPath);
+
+            string fileContent = File.ReadAllText(fullPath);
+
+            string expandedContent = ExpandUsingStatements(fileContent, visitedFiles);
+
+            result.Add(expandedContent);
+        }
+        else
+        {
+            result.Add(line);
+        }
+    }
+
+    return string.Join("\n", result);
+}
 	public static void AddError(LexicalError error)
 	{
 		_errors.Add(error);
