@@ -23,6 +23,7 @@ public enum TokenType
 	// Formatting
 	LeftParentheses,
 	RightParentheses,
+	ForwardSlash,
 	Comma,
 	Plus,
 	Asterisk,
