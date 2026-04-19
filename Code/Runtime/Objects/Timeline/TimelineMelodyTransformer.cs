@@ -1,4 +1,4 @@
-namespace Runtime.Objects;
+namespace Runtime.Objects.Timeline;
 
 internal static class TimelineMelodyTransformer
 {
@@ -24,7 +24,7 @@ internal static class TimelineMelodyTransformer
 				EndBeat = sourceNote.EndBeat,
 				Volume = sourceNote.Volume * gainMultiplier,
 				Pan = sourceNote.Pan,
-				Pitch0 = ShiftPitch(sourceNote.Pitch0, pitchShiftHalfsteps)
+				Pitch = ShiftPitch(sourceNote.Pitch, pitchShiftHalfsteps)
 			};
 
 			adjustedMelody.Notes.Add(adjustedNote);
@@ -42,7 +42,7 @@ internal static class TimelineMelodyTransformer
 			absoluteHalfsteps = 0;
 		}
 
-		Pitch shiftedPitch = new("c0")
+		Pitch shiftedPitch = new()
 		{
 			Octave = absoluteHalfsteps / 12,
 			PitchClass = absoluteHalfsteps % 12

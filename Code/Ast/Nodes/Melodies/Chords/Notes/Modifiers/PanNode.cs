@@ -19,7 +19,7 @@ public class PanNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.PanKeyword);
+		parser.ConsumeToken(TokenType.Identifier, "pan");
 		Pan = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
@@ -30,7 +30,7 @@ public class PanNode : Node
 
 		if (Pan.Value < -1.0f || Pan.Value > 1.0f)
 		{
-			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Pan must be between -1 and 1, but was: '{Pan.Value}'.");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Pan '{Pan.Value}' must be between -1 and 1");
 		}
 	}
 

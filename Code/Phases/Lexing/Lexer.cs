@@ -64,6 +64,6 @@ public class Lexer
 			|| Tokenizer.TryTokenize<AsteriskStrategy>(this)
 			|| Tokenizer.TryTokenize<SlashStrategy>(this)
 			|| Tokenizer.TryTokenize<NumberStrategy>(this)
-			|| Tokenizer.TryTokenize<IdentifierOrKeywordStrategy>(this);
+			|| Tokenizer.TryTokenize<IdentifierStrategy>(this);
 	}
 }

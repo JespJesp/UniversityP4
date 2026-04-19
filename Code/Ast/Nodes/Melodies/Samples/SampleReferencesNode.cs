@@ -14,8 +14,6 @@ public class SampleReferencesNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.SamplesKeyword);
-
 		while (parser.TryConsumeIndent(2))
 		{
 			parser.ParseChild(this, new SampleReferenceNode(this));

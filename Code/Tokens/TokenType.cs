@@ -2,18 +2,6 @@ namespace Tokens;
 
 public enum TokenType
 {
-	// Keywords
-	TimelineKeyword,
-	SampleKeyword,
-	SamplesKeyword,
-	ChordsKeyword,
-	MelodyKeyword,
-	PatternKeyword,
-	GainKeyword,
-	PanKeyword,
-	StringKeyword,
-	FloatKeyword,
-
 	// Values
 	Identifier,
 	Integer,
@@ -23,11 +11,10 @@ public enum TokenType
 	// Formatting
 	LeftParentheses,
 	RightParentheses,
-	ForwardSlash,
+	Slash,
 	Comma,
 	Plus,
 	Asterisk,
-	Slash,
 	Newline,
 	Indent,
 	EndOfFile

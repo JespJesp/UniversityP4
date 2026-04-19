@@ -68,17 +68,35 @@ public class Parser
 		}
 	}
 
-	public void ConsumeToken(TokenType required, Action<string>? useValue = null)
+	public void ConsumeToken(TokenType requiredType, string requiredValue, Action<string>? useValue = null)
 	{
-		if (TryConsumeToken(required, useValue) == false)
+		if (TryConsumeToken(requiredType, requiredValue, useValue) == false)
 		{
-			throw new Exception($"Expected token of type '{required}'");
+			throw new Exception($"Expected token of type '{requiredType}' and value '{requiredValue}'");
+		}
+	}
+	public void ConsumeToken(TokenType requiredType, Action<string>? useValue = null)
+	{
+		if (TryConsumeToken(requiredType, useValue) == false)
+		{
+			throw new Exception($"Expected token of type '{requiredType}'");
 		}
 	}
 
-	public bool TryConsumeToken(TokenType required, Action<string>? useValue = null)
+	public bool TryConsumeToken(TokenType requiredType, string requiredValue, Action<string>? useValue = null)
 	{
-		if (!CursorToken.Type.IsSubtypeOf(required))
+		if (CursorToken.Value != requiredValue)
+		{
+			return false;
+		}
+		else
+		{
+			return TryConsumeToken(requiredType, useValue);
+		}
+	}
+	public bool TryConsumeToken(TokenType requiredType, Action<string>? useValue = null)
+	{
+		if (!CursorToken.Type.IsSubtypeOf(requiredType))
 		{
 			return false;
 		}
@@ -130,29 +148,26 @@ public class Parser
 	}
 
 	/// <summary>
-	/// Tries to consume TokenTypes and execute Actions as specified in each "(TokenType, Action)" option pair.
-	/// Each option is separated by a separator (e.g. a comma Token).
-	/// Each option's token type: 
-	/// 1) is not required to appear, thereby making it "optional",
-	/// 2) may only appear once, thereby making it "unique",
-	/// 3) may appear in a random order.
+	/// Note: Options are allowed to appear in any order.
 	/// </summary>
-	public void AllowUniqueOptions(Dictionary<TokenType, Action> options, Token[] separator)
+	public void TryConsumeOptions(List<Func<bool>> tryConsumeTokenMethods, Token[] separator)
 	{
-		List<TokenType> usedTokenTypes = new();
-		do
+		List<Func<bool>> unusedTryConsumeTokenMethods = new(tryConsumeTokenMethods);
+		while (unusedTryConsumeTokenMethods.Count != 0)
 		{
-			if (options.TryGetValue(CursorToken.Type, out Action? action))
+			foreach (Func<bool> tryConsumeTokenMethod in unusedTryConsumeTokenMethods)
 			{
-				if (usedTokenTypes.Contains(CursorToken.Type))
+				if (tryConsumeTokenMethod())
 				{
-					throw new Exception($"Duplicate optional token '{CursorToken.Type}'");
-				}
+					unusedTryConsumeTokenMethods.Remove(tryConsumeTokenMethod);
 
-				usedTokenTypes.Add(CursorToken.Type);
-				action();
+					if (!TryConsumeTokens(separator))
+					{
+						return;
+					}
+				}
 			}
-		} while (TryConsumeTokens(separator));
+		}
 	}
 }
 

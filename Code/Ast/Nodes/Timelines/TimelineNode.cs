@@ -1,58 +1,47 @@
-using Ast.Nodes.Melodies;
-using Phases.Evaluation;
+using Ast.Nodes.Timelines.Commands;
 using Phases.Parsing;
 using Phases.Validation;
-using Runtime;
-using Runtime.Objects;
+using Runtime.Objects.Timeline;
 using Tokens;
 
 namespace Ast.Nodes.Timelines;
 
-public class TimelineNode : Node
+public class TimelineNode : SymbolNode
 {
-	public static int TimelineInstances = 0;
+	public static int TimelineNodeInstances = 0;
+
+	public Timeline Timeline = new();
 
 	public TimelineNode()
 	{
-		TimelineInstances++;
+		TimelineNodeInstances++;
 	}
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.TimelineKeyword);
+		Id = "timeline"; // TODO: Jesp: The Id should just be nothing/empty, probably.
 
-		// TODO: Implement this
+		while (parser.TryConsumeIndent(1))
+		{
+			if (parser.TryConsumeToken(TokenType.Identifier, "settings", (value) =>
+				{
+					parser.ParseChild(this, new SettingsNode(this));
+				})
+				|| parser.TryConsumeToken(TokenType.Identifier, (value) =>
+				{
+					parser.ParseChild(this, new CommandNode(this, value));
+				}))
+			{
+				throw new Exception($"Unexpected timeline instruction");
+			}
+		}
 	}
 
 	public override void Validate(Validator validator)
 	{
-		if (TimelineInstances > 1)
+		if (TimelineNodeInstances > 1)
 		{
 			throw new Exception("'timeline' keyword appears multiple times.");
 		}
-
-		// TODO: Implement this
-	}
-
-	public override void Evaluate(Evaluator evaluator)
-	{
-		// TODO: Implement this
-
-		// TODO: Remove this; it's for testing
-		Loop exampleLoop1 = new()
-		{
-			Melody = SymbolTable.Get<MelodyNode>("8_guitar").Melody,
-			StartBeat = 0,
-			EndBeat = 8
-		};
-		Loop exampleLoop2 = new()
-		{
-			Melody = SymbolTable.Get<MelodyNode>("16_flute").Melody,
-			StartBeat = 12,
-			EndBeat = 64
-		};
-		Timeline.Loops.Add(exampleLoop1);
-		Timeline.Loops.Add(exampleLoop2);
 	}
 }
-

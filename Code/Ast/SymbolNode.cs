@@ -9,7 +9,10 @@ public abstract class SymbolNode : Node
 	public sealed override void Annotate(Annotator annotator)
 	{
 		UpsertToSymbolTable();
+		AdditionalAnnotation(annotator);
 	}
+
+	public virtual void AdditionalAnnotation(Annotator annotator) {}
 
 	private void UpsertToSymbolTable()
 	{

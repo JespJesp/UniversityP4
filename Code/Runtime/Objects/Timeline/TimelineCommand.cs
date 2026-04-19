@@ -1,4 +1,4 @@
-namespace Runtime.Objects;
+namespace Runtime.Objects.Timeline;
 
 public class TimelineCommand
 {
@@ -10,8 +10,3 @@ public class TimelineCommand
 	public float PitchShiftHalfsteps = 0.0f;
 }
 
-public enum TimelineCommandType
-{
-	Start,
-	Stop
-}

@@ -1,50 +1,52 @@
-using Ast.Tables;
+using Ast;
+using Ast.Nodes.Melodies;
+using Ast.Nodes.Patterns;
 
-namespace Runtime.Objects;
+namespace Runtime.Objects.Timeline;
 
 internal static class TimelineTargetResolver
 {
-	public static HashSet<Melody> ExpandTargetsToMelodies(List<string> targets, RuntimeVariableTable variables)
+	public static HashSet<Melody> ExpandTargetsToMelodies(List<string> targets, SymbolTable globalSymbols)
 	{
 		HashSet<Melody> resolvedMelodies = new();
 
 		foreach (string target in targets)
 		{
-			ResolveTargetToMelodies(target, resolvedMelodies, new HashSet<Pattern>(), variables);
+			ResolveTargetToMelodies(target, resolvedMelodies, new HashSet<Pattern>(), globalSymbols);
 		}
 
 		return resolvedMelodies;
 	}
 
-	private static void ResolveTargetToMelodies(string targetId, HashSet<Melody> resolvedMelodies, HashSet<Pattern> visitedPatterns, RuntimeVariableTable variables)
+	private static void ResolveTargetToMelodies(string targetId, HashSet<Melody> resolvedMelodies, HashSet<Pattern> visitedPatterns, SymbolTable globalSymbols)
 	{
-		if (variables.TryGet(targetId, out Melody melody))
+		if (globalSymbols.TryGet(targetId, out MelodyNode melodyNode))
 		{
-			resolvedMelodies.Add(melody);
+			resolvedMelodies.Add(melodyNode.Melody);
 			return;
 		}
 
-		if (!variables.TryGet(targetId, out Pattern pattern))
+		if (!globalSymbols.TryGet(targetId, out PatternNode patternNode))
 		{
 			throw new Exception($"Timeline target '{targetId}' is undefined.");
 		}
 
-		if (!visitedPatterns.Add(pattern))
+		if (!visitedPatterns.Add(patternNode.Pattern))
 		{
 			throw new Exception($"Timeline target '{targetId}' contains a recursive pattern reference.");
 		}
 
-		foreach (Melody childMelody in pattern.Melodies)
+		foreach (Melody childMelody in patternNode.Pattern.Melodies)
 		{
 			resolvedMelodies.Add(childMelody);
 		}
 
-		foreach (Pattern childPattern in pattern.Patterns)
+		foreach (Pattern childPattern in patternNode.Pattern.Patterns)
 		{
 			ResolvePatternToMelodies(childPattern, resolvedMelodies, visitedPatterns);
 		}
 
-		visitedPatterns.Remove(pattern);
+		visitedPatterns.Remove(patternNode.Pattern);
 	}
 
 	private static void ResolvePatternToMelodies(Pattern pattern, HashSet<Melody> resolvedMelodies, HashSet<Pattern> visitedPatterns)

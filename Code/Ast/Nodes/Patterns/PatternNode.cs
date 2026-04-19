@@ -15,7 +15,6 @@ public class PatternNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.PatternKeyword);
 		parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
 		parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
 

@@ -1,4 +1,3 @@
-using Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 using Phases.Annotation;
 using Phases.Evaluation;
 using Phases.Parsing;
@@ -22,7 +21,7 @@ public class NoteNode : Node
 	{
 		parser.ConsumeToken(TokenType.Identifier, (value) => PitchString = value);
 
-		if (parser.CursorToken.Type == TokenType.LeftParentheses)
+		if (parser.TryConsumeToken(TokenType.LeftParentheses))
 		{
 			parser.ParseChild(this, new ModifiersNode(this));
 		}
@@ -30,7 +29,7 @@ public class NoteNode : Node
 
 	public override void Annotate(Annotator annotator)
 	{
-		Pitch.FromString(this.PitchString);
+		Pitch.FromString(this.PitchString); // Throws error if pitch string cannot be converted
 	}
 
 	public override void Evaluate(Evaluator evaluator)

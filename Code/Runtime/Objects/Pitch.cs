@@ -10,6 +10,15 @@ public class Pitch : RuntimeObject
 	public int PitchClass = 0;
 	public int Octave = 5;
 
+	public Pitch Clone()
+	{
+		return new()
+		{
+			PitchClass = this.PitchClass,
+			Octave = this.Octave,
+		};
+	}
+
 	/// <summary>
 	/// Converts the input pitch string to lower case before processing it. For example, this pitch string could be "C5" or "c#3".
 	/// Throws an error if the input string cannot be converted to a pitch.

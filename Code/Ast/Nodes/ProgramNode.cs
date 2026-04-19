@@ -4,27 +4,51 @@ using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
+using Phases.Annotation;
 using Phases.Parsing;
+using Phases.Validation;
 using Tokens;
 
 namespace Ast.Nodes;
 
 public class ProgramNode : Node
 {
+	public TimelineNode timelineNode = new();
+
 	public override void CascadeParse(Parser parser)
 	{
 		while (parser.CursorToken.Type != TokenType.EndOfFile)
 		{
-			switch (parser.CursorToken.Type)
+			if(parser.TryConsumeToken(TokenType.Identifier, "timeline", (value) =>
+				{
+					timelineNode = parser.ParseChild(this, new TimelineNode());
+				})
+				|| parser.TryConsumeToken(TokenType.Identifier, "pattern", (value) =>
+				{
+					parser.ParseChild(this, new PatternNode());
+				})
+				|| parser.TryConsumeToken(TokenType.Identifier, "melody", (value) =>
+				{
+					parser.ParseChild(this, new MelodyNode());
+				})
+				|| parser.TryConsumeToken(TokenType.Identifier, "sample", (value) =>
+				{
+					parser.ParseChild(this, new SampleNode());
+				})
+				|| parser.TryConsumeToken(TokenType.Identifier, "string", (value) =>
+				{
+					parser.ParseChild(this, new StringConstantNode());
+				})
+				|| parser.TryConsumeToken(TokenType.Identifier, "float", (value) =>
+				{
+					parser.ParseChild(this, new FloatConstantNode());
+				})
+				|| parser.TryConsumeToken(TokenType.Newline, (value) =>
+				{
+					parser.ConsumeToken(TokenType.Newline);
+				}))
 			{
-				case TokenType.TimelineKeyword: parser.ParseChild(this, new TimelineNode()); break;
-				case TokenType.PatternKeyword: parser.ParseChild(this, new PatternNode()); break;
-				case TokenType.MelodyKeyword: parser.ParseChild(this, new MelodyNode()); break;
-				case TokenType.SampleKeyword: parser.ParseChild(this, new SampleNode()); break;
-				case TokenType.StringKeyword: parser.ParseChild(this, new StringConstantNode()); break;
-				case TokenType.FloatKeyword: parser.ParseChild(this, new FloatConstantNode()); break;
-				case TokenType.Newline: parser.ConsumeToken(TokenType.Newline); break;
-				default: throw new ArgumentOutOfRangeException($"Unexpected token");
+				throw new Exception($"Unexpected token");
 			}
 		}
 	}

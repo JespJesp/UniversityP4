@@ -1,7 +1,10 @@
+using Ast;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using Phases.Annotation;
 using Runtime;
 using Runtime.Objects;
+using Runtime.Objects.Timeline;
 
 namespace Phases.Evaluation;
 
@@ -9,22 +12,25 @@ public class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public void RenderToFile(string inputFileFolderPath)
+	public void RenderToFile(Timeline timeline, string inputFileFolderPath)
 	{
-		List<ISampleProvider> sounds = CreateSounds(inputFileFolderPath);
+		List<ISampleProvider> sounds = CreateSounds(timeline, inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 
 		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'.");
 	}
 
-	private List<ISampleProvider> CreateSounds(string inputFileFolderPath)
+	private List<ISampleProvider> CreateSounds(Timeline timeline, string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
 
-		foreach (Loop loop in Timeline.Loops)
+		foreach (Loop loop in timeline.Loops)
 		{
 			Melody melody = loop.Melody;
+
+			// TODO: Q's code has been erroniously overwritten by Christoffer. I'll have to inspect this further.
+
 			foreach (Sample sample in melody.Samples)
 			{
 				foreach (Note note in melody.Notes)
@@ -40,7 +46,7 @@ public class AudioRenderer
 
 						float durationInBeats = note.EndBeat - note.StartBeat;
 
-						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
 						sounds.Add(sound);
 					}
 
@@ -59,7 +65,7 @@ public class AudioRenderer
 						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
 						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
-						ISampleProvider sound = CreateSound(sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
 						sounds.Add(sound);
 					}
 				}
@@ -69,12 +75,12 @@ public class AudioRenderer
 		return sounds;
 	}
 
-	private ISampleProvider CreateSound(Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
+	private ISampleProvider CreateSound(Timeline timeline, Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
 	{
 		var reader = new AudioFileReader(inputFileFolderPath + sample.FilePath);
 
 		// Resample the sound to ensure it uses the output's sample rate
-		var resampler = new WdlResamplingSampleProvider(reader, Timeline.SampleRate);
+		var resampler = new WdlResamplingSampleProvider(reader, timeline.SampleRate);
 
 		var volumeProvider = new VolumeSampleProvider(resampler)
 		{
@@ -87,19 +93,29 @@ public class AudioRenderer
 		{
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
+		
+		var envelopeProvider = new AdsrEnvelopeSampleProvider(
+				pitchShifter,
+				noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),
+				attackSeconds: ConvertBeatsToSeconds(timeline, sample.AttackBeats),
+				holdSeconds: ConvertBeatsToSeconds(timeline, sample.HoldBeats),
+				decaySeconds: ConvertBeatsToSeconds(timeline, sample.DecayBeats),
+				sustainLevel: sample.SustainLevel,
+				releaseSeconds: ConvertBeatsToSeconds(timeline, sample.ReleaseBeats));
 
-		var offsetter = new OffsetSampleProvider(pitchShifter)
+		var offsetter = new OffsetSampleProvider(envelopeProvider)
 		{
-			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(globalStartBeat)),
-			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(durationInBeats)) // duration of sample
+			DelayBy = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, globalStartBeat + sample.DelayBeats)),
+			Take = TimeSpan.FromSeconds(ConvertBeatsToSeconds(timeline, durationInBeats + sample.ReleaseBeats)) // Duration of sample
 		};
 
 		return offsetter;
 	}
 
-	private float ConvertBeatsToSeconds(float beats)
+	private float ConvertBeatsToSeconds(Timeline timeline, float beats)
 	{
-		return beats / Timeline.BeatNoteValue * 60f / Timeline.BeatsPerMinute;
+		// TODO: Jesp: Does this do the right calculation?
+		return beats * 60f / timeline.BeatsPerMinute * 4f / timeline.BeatNoteValue;
 	}
 
 	private float GetPitchFactor(Pitch samplePitch, Pitch notePitch)

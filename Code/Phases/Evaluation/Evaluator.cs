@@ -1,8 +1,7 @@
-
 using Ast;
 using Ast.Nodes;
-using Runtime;
 using Runtime.Objects;
+using Runtime.Objects.Timeline;
 
 namespace Phases.Evaluation;
 
@@ -13,8 +12,13 @@ public class Evaluator
 		try
 		{
 			CascadeEvaluate(programNode);
-			new AudioRenderer().RenderToFile(inputFileFolderPath);
-			ExamplePrintToConsole();
+
+			Timeline timeline = programNode.timelineNode.Timeline;
+			timeline.BuildLoopsFromCommands(programNode.timelineNode.SymbolTable);
+
+			new AudioRenderer().RenderToFile(timeline, inputFileFolderPath);
+
+			ExamplePrintToConsole(timeline);
 		}
 		catch (Exception exception)
 		{
@@ -40,9 +44,9 @@ public class Evaluator
 	}
 
 	// TODO: Remove after debugging. It's just an example.
-	private void ExamplePrintToConsole()
+	private void ExamplePrintToConsole(Timeline timeline)
 	{
-		foreach (Loop loop in Timeline.Loops)
+		foreach (Loop loop in timeline.Loops)
 		{
 			Melody melody = loop.Melody;
 
@@ -64,3 +68,4 @@ public class Evaluator
 		}
 	}
 }
+

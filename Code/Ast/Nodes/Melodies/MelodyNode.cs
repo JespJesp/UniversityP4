@@ -16,29 +16,22 @@ public class MelodyNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.MelodyKeyword);
 		parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
 		parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
 
 		if (parser.TryConsumeIndent(1))
 		{
-			Dictionary<TokenType, Action> options = new()
+			List<Func<bool>> options = new()
 			{
-				{
-					TokenType.SamplesKeyword,
-					() => { parser.ParseChild(this, new SampleReferencesNode(this)); }
-				},
-				{
-					TokenType.ChordsKeyword,
-					() => { parser.ParseChild(this, new ChordsNode(this)); }
-				}
+				() => parser.TryConsumeToken(TokenType.Identifier, "samples", (value) => parser.ParseChild(this, new SampleReferencesNode(this))),
+				() => parser.TryConsumeToken(TokenType.Identifier, "chords", (value) => parser.ParseChild(this, new ChordsNode(this))),
 			};
 			Token[] optionSeparator =
 			{
 				new(TokenType.Newline),
-				new(TokenType.Indent, "1")
+				new(TokenType.Indent, "1"),
 			};
-			parser.AllowUniqueOptions(options, optionSeparator);
+			parser.TryConsumeOptions(options, optionSeparator);
 		}
 	}
 

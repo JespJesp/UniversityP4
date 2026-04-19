@@ -11,6 +11,13 @@ public class SampleReferenceNode : Node
 {
 	public SampleReferencesNode SampleReferencesNode;
 	public string ReferenceId = "";
+	public float DelayBeats;
+	public float AttackBeats;
+	public float HoldBeats;
+	public float DecayBeats;
+	public float SustainLevel;
+	public float ReleaseBeats;
+	public Sample SourceSampleClone = new();
 
 	public SampleReferenceNode(SampleReferencesNode sampleReferencesNode)
 	{
@@ -20,6 +27,11 @@ public class SampleReferenceNode : Node
 	public override void CascadeParse(Parser parser)
 	{
 		parser.ConsumeToken(TokenType.Identifier, (value) => ReferenceId = value);
+
+		if (parser.CursorToken.Type == TokenType.LeftParentheses)
+		{
+			parser.ParseChild(this, new ModifiersNode(this));
+		}
 	}
 
 	public override void Annotate(Annotator annotator)
@@ -33,8 +45,8 @@ public class SampleReferenceNode : Node
 	public override void Evaluate(Evaluator evaluator)
 	{
 		Melody melody = SymbolTable.Get<MelodyNode>(SampleReferencesNode.MelodyNode.Id).Melody;
-		Sample sample = SymbolTable.Get<SampleNode>(ReferenceId).Sample;
-		melody.Samples.Add(sample);
+		Sample sourceSample = SymbolTable.Get<SampleNode>(ReferenceId).Sample;
+		SourceSampleClone = sourceSample.Clone();
+		melody.Samples.Add(SourceSampleClone);
 	}
 }
-

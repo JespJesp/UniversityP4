@@ -19,7 +19,7 @@ public class GainNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.GainKeyword);
+		parser.ConsumeToken(TokenType.Identifier, "gain");
 		Volume = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
@@ -30,7 +30,7 @@ public class GainNode : Node
 
 		if (Volume.Value < 0.0f)
 		{
-			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Volume cannot be negative, but was: '{Volume.Value}'");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Volume '{Volume.Value}' cannot be negative");
 		}
 	}
 

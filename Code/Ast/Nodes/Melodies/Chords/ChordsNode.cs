@@ -14,8 +14,6 @@ public class ChordsNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.ChordsKeyword);
-
 		while (parser.TryConsumeIndent(2))
 		{
 			parser.ParseChild(this, new ChordNode(this));

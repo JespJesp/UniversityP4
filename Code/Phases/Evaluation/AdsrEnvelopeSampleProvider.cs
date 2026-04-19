@@ -1,6 +1,6 @@
 using NAudio.Wave;
 
-namespace Ast;
+namespace Phases.Annotation;
 
 internal sealed class AdsrEnvelopeSampleProvider : ISampleProvider
 {
@@ -17,13 +17,13 @@ internal sealed class AdsrEnvelopeSampleProvider : ISampleProvider
 	public WaveFormat WaveFormat => _source.WaveFormat;
 
 	public AdsrEnvelopeSampleProvider(
-		ISampleProvider source,
-		float noteDurationSeconds,
-		float attackSeconds,
-		float holdSeconds,
-		float decaySeconds,
-		float sustainLevel,
-		float releaseSeconds)
+			ISampleProvider source,
+			float noteDurationSeconds,
+			float attackSeconds,
+			float holdSeconds,
+			float decaySeconds,
+			float sustainLevel,
+			float releaseSeconds)
 	{
 		_source = source;
 		_noteDurationSeconds = Math.Max(0.0f, noteDurationSeconds);

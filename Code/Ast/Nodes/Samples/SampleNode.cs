@@ -15,7 +15,6 @@ public class SampleNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.SampleKeyword);
 		parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
 		FilePath = parser.ParseChild(this, new StringExpressionNode());
 		parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });

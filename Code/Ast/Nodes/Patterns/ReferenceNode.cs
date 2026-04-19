@@ -29,7 +29,7 @@ public class ReferenceNode : Node
 		if (!SymbolTable.Contains<PatternNode>(ReferenceId)
 			&& !SymbolTable.Contains<MelodyNode>(ReferenceId))
 		{
-			throw new Exception($"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
+			throw new Exception($"Pattern: '{PatternNode.Id}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 
