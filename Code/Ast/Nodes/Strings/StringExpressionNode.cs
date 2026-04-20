@@ -7,7 +7,6 @@ namespace Ast.Nodes.Strings;
 public class StringExpressionNode : Node
 {
 	public string Value = "";
-
 	internal List<Segment> _segments = new();
 
 	internal class Segment

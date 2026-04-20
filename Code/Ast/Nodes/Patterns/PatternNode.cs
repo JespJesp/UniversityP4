@@ -11,7 +11,6 @@ public class PatternNode : SymbolNode
 {
 	public Pattern Pattern = new();
 	public float LengthInBeats;
-	public List<string> PatternAndMelodyIds = new();
 
 	public override void CascadeParse(Parser parser)
 	{

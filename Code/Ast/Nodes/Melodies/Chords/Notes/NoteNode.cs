@@ -11,9 +11,9 @@ namespace Ast.Nodes.Melodies.Chords.Notes;
 public class NoteNode : Node
 {
 	public ChordNode ChordNode;
-	public string? PitchString;
-	public string? SampleOverrideId;
 	public Note Note = new();
+	public string? PitchString;
+	private string? _sampleOverrideId;
 
 	public NoteNode(ChordNode chordsNode)
 	{
@@ -30,7 +30,7 @@ public class NoteNode : Node
 		}
 		else
 		{
-			SampleOverrideId = firstIdentifier;
+			_sampleOverrideId = firstIdentifier;
 			if (parser.TryConsumeToken(TokenType.Identifier, out string pitchStringValue))
 			{
 				// Note: We cannot simply do "out PitchString", since the out would set its value to "", not null.
@@ -47,9 +47,9 @@ public class NoteNode : Node
 	public override void Annotate(Annotator annotator)
 	{
 		List<string> errors = new();
-		if (SampleOverrideId is not null && !SymbolTable.Contains<SampleNode>(SampleOverrideId))
+		if (_sampleOverrideId is not null && !SymbolTable.Contains<SampleNode>(_sampleOverrideId))
 		{
-			errors.Add($"Sample reference '{SampleOverrideId}' is not declared");
+			errors.Add($"Sample reference '{_sampleOverrideId}' is not declared");
 		}
 
 		if (errors.Count != 0)
@@ -88,9 +88,9 @@ public class NoteNode : Node
 		{
 			this.Note.Pitch = Pitch.FromString(this.PitchString);
 		}
-		if (SampleOverrideId is not null)
+		if (_sampleOverrideId is not null)
 		{
-			this.Note.SampleOverride = SymbolTable.Get<SampleNode>(SampleOverrideId).Sample;
+			this.Note.SampleOverride = SymbolTable.Get<SampleNode>(_sampleOverrideId).Sample;
 		}
 
 		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;

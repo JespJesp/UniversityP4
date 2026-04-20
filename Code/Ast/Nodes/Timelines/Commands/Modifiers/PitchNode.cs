@@ -1,16 +1,15 @@
-using System.Globalization;
+using Ast.Nodes.Floats;
 using Phases.Evaluation;
 using Phases.Parsing;
 using Phases.Validation;
 using Runtime.Objects.Timelines;
-using Tokens;
 
 namespace Ast.Nodes.Timelines.Commands.Modifiers;
 
 public class PitchNode : Node
 {
 	public ModifiersNode ModifiersNode;
-	private float? _pitchShiftHalfsteps;
+	private FloatExpressionNode _pitchShiftHalfsteps = new();
 
 	public PitchNode(ModifiersNode modifiersNode)
 	{
@@ -19,9 +18,7 @@ public class PitchNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		// TODO: This could use a float expression node instead
-		parser.ConsumeToken(TokenType.Float, out string pitchShiftHalfstepsValue);
-		_pitchShiftHalfsteps = float.Parse(pitchShiftHalfstepsValue, CultureInfo.InvariantCulture);
+		_pitchShiftHalfsteps = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
 	public override void Validate(Validator validator)
@@ -36,11 +33,8 @@ public class PitchNode : Node
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		if (_pitchShiftHalfsteps is not null)
-		{
-			TimelineCommand command = ModifiersNode.CommandNode.Command;
-			command.PitchShiftHalfsteps = _pitchShiftHalfsteps.Value;
-		}
+		TimelineCommand command = ModifiersNode.CommandNode.Command;
+		command.PitchShiftHalfsteps = _pitchShiftHalfsteps.Value;
 	}
 }
 

@@ -12,10 +12,10 @@ public class SettingsNode : Node
 	public static int SettingsNodeInstances = 0;
 
 	public TimelineNode timelineNode;
-	// TODO: Maybe also add sample rate as optional parameter?
-	public float? Bpm;
-	public int? TimeSignatureNumerator;
-	public int? TimeSignatureDenominator;
+	private float? _bpm;
+	private int? _sampleRate;
+	private int? _timeSignatureNumerator;
+	private int? _timeSignatureDenominator;
 
 	public SettingsNode(TimelineNode timelineNode)
 	{
@@ -37,7 +37,15 @@ public class SettingsNode : Node
 						() =>
 						{
 							parser.ConsumeToken(TokenType.Float, out string bpmValue);
-							Bpm = float.Parse(bpmValue, CultureInfo.InvariantCulture);
+							_bpm = float.Parse(bpmValue, CultureInfo.InvariantCulture);
+						}
+					),
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "samplerate"),
+						() =>
+						{
+							parser.ConsumeToken(TokenType.Integer, out string sampleRateValue);
+							_sampleRate = int.Parse(sampleRateValue);
 						}
 					),
 					(
@@ -45,12 +53,12 @@ public class SettingsNode : Node
 						() =>
 						{
 							parser.ConsumeToken(TokenType.Integer, out string numeratorValue);
-							TimeSignatureNumerator = int.Parse(numeratorValue, CultureInfo.InvariantCulture);
+							_timeSignatureNumerator = int.Parse(numeratorValue, CultureInfo.InvariantCulture);
 
 							parser.ConsumeToken(TokenType.Slash);
 
 							parser.ConsumeToken(TokenType.Integer, out string denominatorValue);
-							TimeSignatureDenominator = int.Parse(denominatorValue, CultureInfo.InvariantCulture);
+							_timeSignatureDenominator = int.Parse(denominatorValue, CultureInfo.InvariantCulture);
 						}
 					),
 				},
@@ -70,14 +78,18 @@ public class SettingsNode : Node
 		}
 
 		List<string> errors = new();
-		if (Bpm is not null && Bpm <= 0)
+		if (_bpm is not null && _bpm <= 0)
 		{
-			errors.Add($"BPM '{Bpm}' must be positive");
+			errors.Add($"BPM '{_bpm}' must be positive");
 		}
-		if (TimeSignatureNumerator is not null && TimeSignatureNumerator <= 0
-				&& TimeSignatureDenominator is not null && TimeSignatureDenominator <= 0)
+		if (_bpm is not null && _sampleRate <= 0)
 		{
-			errors.Add($"Time signature values '{TimeSignatureNumerator}/{TimeSignatureDenominator}' must both be positive");
+			errors.Add($"Sample rate '{_bpm}' must be positive");
+		}
+		if (_timeSignatureNumerator is not null && _timeSignatureNumerator <= 0
+				&& _timeSignatureDenominator is not null && _timeSignatureDenominator <= 0)
+		{
+			errors.Add($"Time signature values '{_timeSignatureNumerator}/{_timeSignatureDenominator}' must both be positive");
 		}
 		if (errors.Count != 0)
 		{
@@ -89,17 +101,21 @@ public class SettingsNode : Node
 	{
 		Timeline timeline = timelineNode.Timeline;
 
-		if (Bpm is not null)
+		if (_bpm is not null)
 		{
-			timeline.BeatsPerMinute = Bpm.Value;
+			timeline.BeatsPerMinute = _bpm.Value;
 		}
-		if (TimeSignatureNumerator is not null)
+		if (_sampleRate is not null)
 		{
-			timeline.BeatsPerBar = TimeSignatureNumerator.Value;
+			timeline.SampleRate = _sampleRate.Value;
 		}
-		if (TimeSignatureDenominator is not null)
+		if (_timeSignatureNumerator is not null)
 		{
-			timeline.BeatNoteValue = TimeSignatureDenominator.Value;
+			timeline.BeatsPerBar = _timeSignatureNumerator.Value;
+		}
+		if (_timeSignatureDenominator is not null)
+		{
+			timeline.BeatNoteValue = _timeSignatureDenominator.Value;
 		}
 	}
 }

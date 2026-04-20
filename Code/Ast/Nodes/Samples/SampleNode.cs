@@ -10,19 +10,19 @@ namespace Ast.Nodes.Samples;
 public class SampleNode : SymbolNode
 {
 	public Sample Sample = new();
-	public StringExpressionNode FilePath = new();
-	public string ReferencePitch = "";
+	private StringExpressionNode _filePath = new();
+	private string _referencePitch = "";
 
 	public override void CascadeParse(Parser parser)
 	{
 		parser.ConsumeToken(TokenType.Identifier, out this.Id);
-		FilePath = parser.ParseChild(this, new StringExpressionNode());
-		parser.TryConsumeToken(TokenType.Identifier, out this.ReferencePitch);
+		_filePath = parser.ParseChild(this, new StringExpressionNode());
+		parser.TryConsumeToken(TokenType.Identifier, out this._referencePitch);
 	}
 
 	public override void Validate(Validator validator)
 	{
-		string filePathValue = FilePath.Value;
+		string filePathValue = _filePath.Value;
 		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
@@ -34,8 +34,8 @@ public class SampleNode : SymbolNode
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Sample.FilePath = this.FilePath.Value;
-		this.Sample.ReferencePitch = Pitch.FromString(this.ReferencePitch);
+		this.Sample.FilePath = this._filePath.Value;
+		this.Sample.ReferencePitch = Pitch.FromString(this._referencePitch);
 	}
 }
 

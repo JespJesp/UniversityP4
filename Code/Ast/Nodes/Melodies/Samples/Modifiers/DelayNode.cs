@@ -9,7 +9,7 @@ namespace Ast.Nodes.Melodies.Samples.Modifiers;
 public class DelayNode : Node
 {
 	public ModifiersNode ModifiersNode;
-	public FloatExpressionNode DelayBeats = new();
+	private FloatExpressionNode _delayBeats = new();
 
 	public DelayNode(ModifiersNode modifiersNode)
 	{
@@ -18,23 +18,23 @@ public class DelayNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		DelayBeats = parser.ParseChild(this, new FloatExpressionNode());
+		_delayBeats = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
 	public override void Validate(Validator validator)
 	{
-		if (DelayBeats.Value < 0.0f)
+		if (_delayBeats.Value < 0.0f)
 		{
 			SampleReferenceNode sampleReferenceNode = ModifiersNode.SampleReferenceNode;
 			MelodyNode melodyNode = sampleReferenceNode.SampleReferencesNode.MelodyNode;
-			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Delay '{DelayBeats.Value}' cannot be negative");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Delay '{_delayBeats.Value}' cannot be negative");
 		}
 	}
 
 	public override void Evaluate(Evaluator evaluator)
 	{
 		Sample sourceSampleClone = ModifiersNode.SampleReferenceNode.SourceSampleClone;
-		sourceSampleClone.DelayBeats = DelayBeats.Value;
+		sourceSampleClone.DelayBeats = _delayBeats.Value;
 	}
 }
 

@@ -9,7 +9,7 @@ namespace Ast.Nodes.Melodies.Samples.Modifiers;
 public class ReleaseNode : Node
 {
 	public ModifiersNode ModifiersNode;
-	public FloatExpressionNode ReleaseBeats = new();
+	private FloatExpressionNode _releaseBeats = new();
 
 	public ReleaseNode(ModifiersNode modifiersNode)
 	{
@@ -18,23 +18,23 @@ public class ReleaseNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		ReleaseBeats = parser.ParseChild(this, new FloatExpressionNode());
+		_releaseBeats = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
 	public override void Validate(Validator validator)
 	{
-		if (ReleaseBeats.Value < 0.0f)
+		if (_releaseBeats.Value < 0.0f)
 		{
 			SampleReferenceNode sampleReferenceNode = ModifiersNode.SampleReferenceNode;
 			MelodyNode melodyNode = sampleReferenceNode.SampleReferencesNode.MelodyNode;
-			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Release '{ReleaseBeats.Value}' cannot be negative");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Release '{_releaseBeats.Value}' cannot be negative");
 		}
 	}
 
 	public override void Evaluate(Evaluator evaluator)
 	{
 		Sample sourceSampleClone = ModifiersNode.SampleReferenceNode.SourceSampleClone;
-		sourceSampleClone.ReleaseBeats = ReleaseBeats.Value;
+		sourceSampleClone.ReleaseBeats = _releaseBeats.Value;
 	}
 }
 

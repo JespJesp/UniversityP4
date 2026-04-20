@@ -1,8 +1,6 @@
-using Ast;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Phases.Annotation;
-using Runtime;
 using Runtime.Objects;
 using Runtime.Objects.Timelines;
 
@@ -122,8 +120,7 @@ public class AudioRenderer
 
 	private float ConvertBeatsToSeconds(Timeline timeline, float beats)
 	{
-		// TODO: Jesp: Does this do the right calculation?
-		return beats * 60f / timeline.BeatsPerMinute * 4f / timeline.BeatNoteValue;
+		return beats * 60f / timeline.BeatsPerMinute * (4f / timeline.BeatNoteValue) * (timeline.BeatsPerBar / 4f);
 	}
 
 	private float GetPitchFactor(Pitch samplePitch, Pitch notePitch)

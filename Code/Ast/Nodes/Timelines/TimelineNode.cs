@@ -16,9 +16,6 @@ public class TimelineNode : SymbolNode
 	{
 		TimelineNodeInstances++;
 
-		// TODO: Jesp: The Id should just be nothing/empty, probably.
-		Id = "timeline";
-
 		while (parser.TryConsumeIndent(1))
 		{
 			if (parser.TryConsumeToken(TokenType.Identifier, "settings"))

@@ -1,4 +1,4 @@
-using System.Globalization;
+using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Phases.Annotation;
@@ -16,8 +16,8 @@ public class CommandNode : Node
 	public TimelineCommand Command = new();
 	public string CommandId = "";
 	public string CommandType = "";
-	public float? CommandBeat;
-	public List<string> CommandTargetIds = new();
+	private FloatExpressionNode _commandBeat = new();
+	private List<string> _commandTargetIds = new();
 
 	public CommandNode(TimelineNode timelineNode)
 	{
@@ -41,11 +41,7 @@ public class CommandNode : Node
 		}
 
 		// Optional beat
-		// TODO: This could use a float expression node instead
-		if (parser.TryConsumeToken(TokenType.Float, out string beatValue))
-		{
-			CommandBeat = float.Parse(beatValue, CultureInfo.InvariantCulture);
-		}
+		_commandBeat = parser.ParseChild(this, new FloatExpressionNode(isOptional: true));
 
 		// Optional command modifiers
 		if (parser.TryConsumeToken(TokenType.LeftParentheses))
@@ -59,19 +55,19 @@ public class CommandNode : Node
 			if (parser.TryConsumeToken(TokenType.Float, out string lengthPart)) // Check for patterns and melody IDs
 			{
 				parser.ConsumeToken(TokenType.Identifier, out string namePart);
-				CommandTargetIds.Add(lengthPart + namePart);
+				_commandTargetIds.Add(lengthPart + namePart);
 			}
 			else // Check for other IDs, e.g. "EVERYTHING"
 			{
 				parser.ConsumeToken(TokenType.Identifier, out string identifierValue);
-				CommandTargetIds.Add(identifierValue);
+				_commandTargetIds.Add(identifierValue);
 			}
 		}
 	}
 
 	public override void Annotate(Annotator annotator)
 	{
-		foreach (string targetId in CommandTargetIds)
+		foreach (string targetId in _commandTargetIds)
 		{
 			if (targetId != "EVERYTHING"
 				&& !SymbolTable.Contains<PatternNode>(targetId)
@@ -87,9 +83,9 @@ public class CommandNode : Node
 	{
 		// ADD error for unexpected timeline command
 		List<string> errors = new();
-		if (CommandBeat < 0)
+		if (_commandBeat.Value < 0)
 		{
-			errors.Add($"Timeline beat '{CommandBeat}' cannot be negative");
+			errors.Add($"Timeline beat '{_commandBeat.Value}' cannot be negative");
 		}
 		if (!Enum.TryParse(CommandType, ignoreCase: true, out TimelineCommandType result))
 		{
@@ -97,18 +93,18 @@ public class CommandNode : Node
 		}
 		if (CommandType == TimelineCommandType.Start.ToString())
 		{
-			if (CommandTargetIds.Count == 0)
+			if (_commandTargetIds.Count == 0)
 			{
 				errors.Add("Start commands must specify at least one target melody or pattern");
 			}
 		}
 		else if (CommandType == TimelineCommandType.Stop.ToString())
 		{
-			if (!CommandBeat.HasValue)
+			if (!_commandBeat.HasValue)
 			{
 				errors.Add("Stop commands must specify a beat value");
 			}
-			if (CommandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(CommandId))
+			if (_commandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(CommandId))
 			{
 				errors.Add("Stop commands must specify targets, EVERYTHING, or a command ID");
 			}
@@ -123,11 +119,11 @@ public class CommandNode : Node
 	{
 		Command.Id = CommandId;
 		Command.Type = Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true);
-		if (CommandBeat is not null)
+		if (_commandBeat.HasValue)
 		{
-			Command.Beat = CommandBeat.Value;
+			Command.Beat = _commandBeat.Value;
 		}
-		foreach (string targetId in CommandTargetIds)
+		foreach (string targetId in _commandTargetIds)
 		{
 			Command.TargetIds.Add(targetId);
 		}

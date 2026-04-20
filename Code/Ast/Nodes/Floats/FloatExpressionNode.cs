@@ -8,8 +8,14 @@ namespace Ast.Nodes.Floats;
 public class FloatExpressionNode : Node
 {
 	public float Value = 0;
-
+	public bool HasValue;
+	private bool _isOptional;
 	private List<Term> _terms = new();
+
+	public FloatExpressionNode(bool isOptional = false)
+	{
+		_isOptional = isOptional;
+	}
 
 	private class Term
 	{
@@ -36,8 +42,27 @@ public class FloatExpressionNode : Node
 			newTerm.IsIdentifier = parser.TryConsumeToken(TokenType.Identifier, out newTerm.RawValue);
 			if (!newTerm.IsIdentifier)
 			{
-				parser.ConsumeToken(TokenType.Float, out newTerm.RawValue);
+				if (_isOptional)
+				{
+					parser.TryConsumeToken(TokenType.Float, out newTerm.RawValue);
+				}
+				else
+				{
+					parser.ConsumeToken(TokenType.Float, out newTerm.RawValue);
+				}
 			}
+
+			// Quit if the optional float expression is not used
+			if (newTerm.RawValue == "")
+			{
+				HasValue = false;
+				break;
+			}
+			else
+			{
+				HasValue = true;
+			}
+
 			_terms.Add(newTerm);
 
 			// Check for more terms

@@ -133,5 +133,5 @@ timeline
 		8_darkPad
 	disgusting start 32
 		16_badFlute
-	disgusting stop 48
+	disgusting stop 32+16
 		16_badFlute

@@ -11,12 +11,6 @@ public class SampleReferenceNode : Node
 {
 	public SampleReferencesNode SampleReferencesNode;
 	public string ReferenceId = "";
-	public float DelayBeats;
-	public float AttackBeats;
-	public float HoldBeats;
-	public float DecayBeats;
-	public float SustainLevel;
-	public float ReleaseBeats;
 	public Sample SourceSampleClone = new();
 
 	public SampleReferenceNode(SampleReferencesNode sampleReferencesNode)

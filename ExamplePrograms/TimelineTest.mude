@@ -78,7 +78,7 @@ timeline
 		16_introLeadGuitar
 	intro stop 16
 		EVERYTHING
-	verse start 16
+	verse start 0
 		16_verseLeadGuitar
 		32_verseRhythmGuitar
 		32_versePianoDrops
