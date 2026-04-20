@@ -1,34 +1,46 @@
-using Ast.Tables;
 using Ast.Nodes.Samples;
+using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Parsing;
 using Runtime.Objects;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Ast.Nodes.Melodies.Samples;
 
-public class SampleReferenceNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class SampleReferenceNode : Node
 {
-	public string Id = "";
+	public SampleReferencesNode SampleReferencesNode;
+	public string ReferenceId = "";
+	public Sample SourceSampleClone = new();
 
-	protected override void Parse()
+	public SampleReferenceNode(SampleReferencesNode sampleReferencesNode)
 	{
-		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = value);
+		this.SampleReferencesNode = sampleReferencesNode;
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void CascadeParse(Parser parser)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+		parser.ConsumeToken(TokenType.Identifier, out this.ReferenceId);
 
-		if (!symbols.Contains(typeof(SampleNode), Id))
+		if (parser.TryConsumeToken(TokenType.LeftParentheses))
 		{
-			Annotator.AddSemanticError(this, $"Melody: '{melodyNode.Id}'. The sample reference '{Id}' is not declared");
+			parser.ParseChild(this, new ModifiersNode(this));
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	public override void Annotate(Annotator annotator)
 	{
-		Melody melody = variables.Get<Melody>(ancestors.Get<MelodyNode>().Id);
-		Sample sample = variables.Get<Sample>(Id);
-		melody.Samples.Add(sample);
+		if (!SymbolTable.Contains<SampleNode>(ReferenceId))
+		{
+			throw new Exception($"Melody: '{SampleReferencesNode.MelodyNode.Id}'. The sample reference '{ReferenceId}' is not declared");
+		}
+	}
+
+	public override void Evaluate(Evaluator evaluator)
+	{
+		Melody melody = SymbolTable.Get<MelodyNode>(SampleReferencesNode.MelodyNode.Id).Melody;
+		Sample sourceSample = SymbolTable.Get<SampleNode>(ReferenceId).Sample;
+		SourceSampleClone = sourceSample.Clone();
+		melody.Samples.Add(SourceSampleClone);
 	}
 }
-

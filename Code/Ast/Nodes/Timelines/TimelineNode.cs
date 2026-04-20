@@ -1,30 +1,43 @@
-using Ast.Tables;
-using Lexing.Tokens;
-using Runtime;
-using Runtime.Objects;
+using Ast.Nodes.Timelines.Commands;
+using Phases.Parsing;
+using Phases.Validation;
+using Runtime.Objects.Timelines;
+using Tokens;
 
 namespace Ast.Nodes.Timelines;
 
-public class TimelineNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class TimelineNode : SymbolNode
 {
-	protected override void Parse()
+	public static int TimelineNodeInstances = 0;
+
+	public Timeline Timeline = new();
+
+	public override void CascadeParse(Parser parser)
 	{
-		// TODO: Implement this
-		Parser.ConsumeToken(TokenType.TimelineKeyword);
+		TimelineNodeInstances++;
+
+		while (parser.TryConsumeIndent(1))
+		{
+			if (parser.TryConsumeToken(TokenType.Identifier, "settings"))
+			{
+				parser.ParseChild(this, new SettingsNode(this));
+			}
+			else if (parser.CursorToken.Type == TokenType.Identifier)
+			{
+				parser.ParseChild(this, new CommandNode(this));
+			}
+			else
+			{
+				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected timeline instruction");
+			}
+		}
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void Validate(Validator validator)
 	{
-		// TODO: Implement this
-	}
-
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
-	{
-		// TODO: Implement this
-
-		// TODO: Remove this; it's for testing
-		Timeline.Loops.Add(new(variables.Get<Melody>("8_guitar"), 0, 8));
-		Timeline.Loops.Add(new(variables.Get<Melody>("16_flute"), 12, 64));
+		if (TimelineNodeInstances > 1)
+		{
+			throw new Exception("'timeline' keyword appears multiple times");
+		}
 	}
 }
-

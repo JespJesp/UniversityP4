@@ -1,28 +1,53 @@
-using System.Runtime.CompilerServices;
+using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
+using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
-using Ast.Tables;
-using Lexing.Tokens;
+using Phases.Parsing;
+using Tokens;
 
 namespace Ast.Nodes;
 
-public class ProgramNode(Node parent = null, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ProgramNode : Node
 {
-	protected override void Parse()
+	public TimelineNode timelineNode = new();
+
+	public override void CascadeParse(Parser parser)
 	{
-		while (Parser.CurrentToken.Type != TokenType.EndOfFile)
+		while (parser.CursorToken.Type != TokenType.EndOfFile)
 		{
-			//TODO: Implement that only one timeline keyword can be present (you can't define multiple timelines)
-			switch (Parser.CurrentToken.Type)
+			if (parser.TryConsumeToken(TokenType.Identifier, "timeline"))
 			{
-				case TokenType.TimelineKeyword: new TimelineNode(this); break;
-				case TokenType.PatternKeyword: new PatternNode(this); break;
-				case TokenType.MelodyKeyword: new MelodyNode(this); break;
-				case TokenType.SampleKeyword: new SampleNode(this); break;
-				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
-				default: throw new ArgumentOutOfRangeException($"Unexpected token");
+				timelineNode = parser.ParseChild(this, new TimelineNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "pattern"))
+			{
+				parser.ParseChild(this, new PatternNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "melody"))
+			{
+				parser.ParseChild(this, new MelodyNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "sample"))
+			{
+				parser.ParseChild(this, new SampleNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "string"))
+			{
+				parser.ParseChild(this, new StringConstantNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "float"))
+			{
+				parser.ParseChild(this, new FloatConstantNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Newline))
+			{
+				// Do nothing
+			}
+			else
+			{
+				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected program instruction");
 			}
 		}
 	}

@@ -1,40 +1,41 @@
-using Ast.Tables;
+using Ast.Nodes.Strings;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Ast.Nodes.Samples;
 
-public class SampleNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
+public class SampleNode : SymbolNode
 {
-	public string FilePath = "";
-	public string ReferencePitch = "";
-	Sample Sample0;
+	public Sample Sample = new();
+	private StringExpressionNode _filePath = new();
+	private string _referencePitch = "";
 
-	protected override void Parse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.SampleKeyword);
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		Parser.ConsumeToken(TokenType.String, (value) => { FilePath = value; });
-		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
+		parser.ConsumeToken(TokenType.Identifier, out this.Id);
+		_filePath = parser.ParseChild(this, new StringExpressionNode());
+		parser.TryConsumeToken(TokenType.Identifier, out this._referencePitch);
 	}
 
-	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void Validate(Validator validator)
 	{
-		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+		string filePathValue = _filePath.Value;
+		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+			&& !filePathValue.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
+			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
+			&& !filePathValue.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Annotator.AddSemanticError(this, $"Sample: '{Id}'. File path '{FilePath}' must be a .wav file");
-			// TODO: Also allow for .mp3, .flac, and such (all the audio files that NAudio supports)
+			throw new Exception($"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Sample0 = new()
-		{
-			FilePath = this.FilePath,
-			ReferencePitch = new(this.ReferencePitch)
-		};
-		variables.Upsert(this.Sample0, Id);
+		this.Sample.FilePath = this._filePath.Value;
+		this.Sample.ReferencePitch = Pitch.FromString(this._referencePitch);
 	}
 }
 

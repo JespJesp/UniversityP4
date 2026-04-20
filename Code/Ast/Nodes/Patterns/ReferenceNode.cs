@@ -1,44 +1,53 @@
-using Ast.Tables;
 using Ast.Nodes.Melodies;
+using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Parsing;
 using Runtime.Objects;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Ast.Nodes.Patterns;
 
-public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ReferenceNode : Node
 {
-	public string Id = "";
+	public PatternNode PatternNode;
+	public string ReferenceId = "";
 
-	protected override void Parse()
+	public ReferenceNode(PatternNode patterNode)
 	{
-		string length = "";
-		Parser.ConsumeToken(TokenType.Float, (value) => { length = value; });
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = length + value; });
+		this.PatternNode = patterNode;
 	}
 
-	protected override void Annotate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void CascadeParse(Parser parser)
 	{
-		if (!symbols.Contains(typeof(PatternNode), Id) && !symbols.Contains(typeof(MelodyNode), Id))
+		parser.ConsumeToken(TokenType.Float, out string length);
+		parser.ConsumeToken(TokenType.Identifier, out string name);
+		this.ReferenceId = length + name;
+	}
+
+	public override void Annotate(Annotator annotator)
+	{
+		if (!SymbolTable.Contains<PatternNode>(ReferenceId)
+			&& !SymbolTable.Contains<MelodyNode>(ReferenceId))
 		{
-			Annotator.AddSemanticError(this, $"Pattern: '{Id}'. The pattern or melody reference '{Id}' is not declared");
+			throw new Exception($"Pattern: '{PatternNode.Id}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable localVariables)
+	public override void Evaluate(Evaluator evaluator)
 	{
-		Pattern pattern = localVariables.Get<Pattern>(ancestors.Get<PatternNode>().Id);
+		Pattern pattern = SymbolTable.Get<PatternNode>(PatternNode.Id).Pattern;
 
-		if (localVariables.TryGet(this.Id, out Pattern childPattern))
+		if (SymbolTable.TryGet(this.ReferenceId, out PatternNode childPatternNode))
 		{
-			pattern.Patterns.Add(childPattern);
+			pattern.Patterns.Add(childPatternNode.Pattern);
 		}
-		else if (localVariables.TryGet(this.Id, out Melody childMelody))
+		else if (SymbolTable.TryGet(this.ReferenceId, out MelodyNode childMelodyNode))
 		{
-			pattern.Melodies.Add(childMelody);
+			pattern.Melodies.Add(childMelodyNode.Melody);
 		}
 		else
 		{
-			throw new Exception($"Pattern references undefined ID '{this.Id}'");
+			throw new Exception($"Pattern references undefined ID '{this.ReferenceId}'");
 		}
 	}
 }

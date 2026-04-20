@@ -1,42 +1,41 @@
-using Ast.Tables;
-using Runtime.Objects;
-using Lexing.Tokens;
 using System.Globalization;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
+using Runtime.Objects;
+using Tokens;
 
 namespace Ast.Nodes.Patterns;
 
-public class PatternNode(Node parent, bool createsNestedScope = false) : SymbolNode(parent, createsNestedScope)
+public class PatternNode : SymbolNode
 {
+	public Pattern Pattern = new();
 	public float LengthInBeats;
-	public List<string> PatternAndMelodyIds = new();
-	public Pattern Pattern0;
 
-	protected override void Parse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.PatternKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => { LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture); });
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
+		parser.ConsumeToken(TokenType.Float, out string lengthValue);
+		this.LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
 
-		while (Parser.TryConsumeIndent(1))
+		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
+		this.Id = LengthInBeats + nameValue;
+
+		while (parser.TryConsumeIndent(1))
 		{
-			new ReferenceNode(this);
+			parser.ParseChild(this, new ReferenceNode(this));
 		}
 	}
 
-	protected override void AdditionalAnnotation(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void Validate(Validator validator)
 	{
 		if (LengthInBeats <= 0)
 		{
-			Annotator.AddSemanticError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
+			throw new Exception($"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable localVariables)
+	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Pattern0 = new()
-		{
-			LengthInBeats = this.LengthInBeats
-		};
-		localVariables.Upsert(this.Pattern0, Id);
+		this.Pattern.LengthInBeats = this.LengthInBeats;
 	}
 }
