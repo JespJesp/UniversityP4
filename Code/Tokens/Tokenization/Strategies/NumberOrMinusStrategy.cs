@@ -2,7 +2,7 @@ using Phases.Lexing;
 
 namespace Tokens.Tokenization.Strategies;
 
-public class NumberStrategy : ITokenizationStrategy
+public class NumberOrMinusStrategy : ITokenizationStrategy
 {
 	public static bool TryTokenize(Lexer lexer)
 	{
@@ -39,12 +39,15 @@ public class NumberStrategy : ITokenizationStrategy
 			lexer.Cursor.MoveToNextColumn();
 		}
 
-		// Determine whether it is a float or an integer
-		if (hasDecimalSymbol)
+		if (value == "-") // If single minus symbol
+		{
+			lexer.Tokens.Add(new Token(TokenType.Minus, "", lexer.Cursor.Line, startColumn));
+		}
+		else if (hasDecimalSymbol) // If float
 		{
 			lexer.Tokens.Add(new Token(TokenType.Float, value, lexer.Cursor.Line, startColumn));
 		}
-		else
+		else  // If integer
 		{
 			lexer.Tokens.Add(new Token(TokenType.Integer, value, lexer.Cursor.Line, startColumn));
 		}

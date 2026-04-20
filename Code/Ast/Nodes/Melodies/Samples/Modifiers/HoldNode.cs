@@ -27,7 +27,7 @@ public class HoldNode : Node
 		{
 			SampleReferenceNode sampleReferenceNode = ModifiersNode.SampleReferenceNode;
 			MelodyNode melodyNode = sampleReferenceNode.SampleReferencesNode.MelodyNode;
-			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Hold '{HoldBeats.Value}' cannot be negative.");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Hold '{HoldBeats.Value}' cannot be negative");
 		}
 	}
 

@@ -40,7 +40,7 @@ public class Lexer
 				if (!TryTokenizeChar())
 				{
 					Cursor.MoveToNextColumn();
-					throw new LexicalException(Cursor.Line, Cursor.Column - 1, $"Unknown token type for character: '{CursorChar}'.");
+					throw new LexicalException(Cursor.Line, Cursor.Column - 1, $"Unknown token type for character: '{CursorChar}'");
 				}
 			}
 			catch (LexicalException exception)
@@ -63,7 +63,7 @@ public class Lexer
 			|| Tokenizer.TryTokenize<PlusStrategy>(this)
 			|| Tokenizer.TryTokenize<AsteriskStrategy>(this)
 			|| Tokenizer.TryTokenize<SlashStrategy>(this)
-			|| Tokenizer.TryTokenize<NumberStrategy>(this)
+			|| Tokenizer.TryTokenize<NumberOrMinusStrategy>(this)
 			|| Tokenizer.TryTokenize<IdentifierStrategy>(this);
 	}
 }

@@ -2,7 +2,7 @@ using Ast;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 
-namespace Runtime.Objects.Timeline;
+namespace Runtime.Objects.Timelines;
 
 internal static class TimelineTargetResolver
 {
@@ -28,12 +28,12 @@ internal static class TimelineTargetResolver
 
 		if (!globalSymbols.TryGet(targetId, out PatternNode patternNode))
 		{
-			throw new Exception($"Timeline target '{targetId}' is undefined.");
+			throw new Exception($"Timeline target '{targetId}' is undefined");
 		}
 
 		if (!visitedPatterns.Add(patternNode.Pattern))
 		{
-			throw new Exception($"Timeline target '{targetId}' contains a recursive pattern reference.");
+			throw new Exception($"Timeline target '{targetId}' contains a recursive pattern reference");
 		}
 
 		foreach (Melody childMelody in patternNode.Pattern.Melodies)
@@ -53,7 +53,7 @@ internal static class TimelineTargetResolver
 	{
 		if (!visitedPatterns.Add(pattern))
 		{
-			throw new Exception("Timeline target contains a recursive pattern reference.");
+			throw new Exception("Timeline target contains a recursive pattern reference");
 		}
 
 		foreach (Melody melody in pattern.Melodies)

@@ -1,6 +1,6 @@
 using Ast;
 
-namespace Runtime.Objects.Timeline;
+namespace Runtime.Objects.Timelines;
 
 internal static class TimelineLoopBuilder
 {
@@ -64,7 +64,7 @@ internal static class TimelineLoopBuilder
 	{
 		if (!command.Beat.HasValue)
 		{
-			throw new Exception("Timeline stop command is missing a beat value.");
+			throw new Exception("Timeline stop command is missing a beat value");
 		}
 
 		float stopBeat = command.Beat.Value;

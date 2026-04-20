@@ -27,7 +27,7 @@ public class DecayNode : Node
 		{
 			SampleReferenceNode sampleReferenceNode = ModifiersNode.SampleReferenceNode;
 			MelodyNode melodyNode = sampleReferenceNode.SampleReferencesNode.MelodyNode;
-			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Decay '{DecayBeats.Value}' cannot be negative.");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Decay '{DecayBeats.Value}' cannot be negative");
 		}
 	}
 

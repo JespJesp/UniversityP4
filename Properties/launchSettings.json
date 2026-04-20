@@ -2,7 +2,7 @@
 	"profiles": {
 		"MyProjectProfile": {
 			"commandName": "Project",
-			"commandLineArgs": "ExamplePrograms/TimelineTest.mude",
+			"commandLineArgs": "ExamplePrograms/Development.mude",
 			"workingDirectory": "."
 		}
 	}

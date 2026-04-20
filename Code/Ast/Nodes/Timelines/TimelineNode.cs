@@ -1,7 +1,7 @@
 using Ast.Nodes.Timelines.Commands;
 using Phases.Parsing;
 using Phases.Validation;
-using Runtime.Objects.Timeline;
+using Runtime.Objects.Timelines;
 using Tokens;
 
 namespace Ast.Nodes.Timelines;
@@ -17,7 +17,7 @@ public class TimelineNode : SymbolNode
 		TimelineNodeInstances++;
 
 		// TODO: Jesp: The Id should just be nothing/empty, probably.
-		Id = "timeline"; 
+		Id = "timeline";
 
 		while (parser.TryConsumeIndent(1))
 		{
@@ -31,7 +31,7 @@ public class TimelineNode : SymbolNode
 			}
 			else
 			{
-				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected timeline instruction.");
+				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected timeline instruction");
 			}
 		}
 	}
@@ -40,7 +40,7 @@ public class TimelineNode : SymbolNode
 	{
 		if (TimelineNodeInstances > 1)
 		{
-			throw new Exception("'timeline' keyword appears multiple times.");
+			throw new Exception("'timeline' keyword appears multiple times");
 		}
 	}
 }

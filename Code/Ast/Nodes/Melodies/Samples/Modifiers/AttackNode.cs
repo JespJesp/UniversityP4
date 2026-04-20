@@ -27,7 +27,7 @@ public class AttackNode : Node
 		{
 			SampleReferenceNode sampleReferenceNode = ModifiersNode.SampleReferenceNode;
 			MelodyNode melodyNode = sampleReferenceNode.SampleReferencesNode.MelodyNode;
-			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Attack '{AttackBeats.Value}' cannot be negative.");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Sample reference: '{sampleReferenceNode.ReferenceId}'. Attack '{AttackBeats.Value}' cannot be negative");
 		}
 	}
 

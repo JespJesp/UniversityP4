@@ -4,7 +4,7 @@ using NAudio.Wave.SampleProviders;
 using Phases.Annotation;
 using Runtime;
 using Runtime.Objects;
-using Runtime.Objects.Timeline;
+using Runtime.Objects.Timelines;
 
 namespace Phases.Evaluation;
 
@@ -18,7 +18,7 @@ public class AudioRenderer
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 
-		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'.");
+		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'");
 	}
 
 	private List<ISampleProvider> CreateSounds(Timeline timeline, string inputFileFolderPath)
@@ -29,11 +29,19 @@ public class AudioRenderer
 		{
 			Melody melody = loop.Melody;
 
-			// TODO: Jesp: Q's code has been erroniously overwritten by Christoffer. I'll have to inspect this further.
-
-			foreach (Sample sample in melody.Samples)
+			foreach (Note note in melody.Notes)
 			{
-				foreach (Note note in melody.Notes)
+				List<Sample> samplesToRender;
+				if (note.SampleOverride != null)
+				{
+					samplesToRender = new List<Sample> { note.SampleOverride };
+				}
+				else
+				{
+					samplesToRender = melody.Samples;
+				}
+
+				foreach (Sample sample in samplesToRender)
 				{
 					float loops = loop.LengthInBeats / melody.LengthInBeats;
 
@@ -93,7 +101,7 @@ public class AudioRenderer
 		{
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
-		
+
 		var envelopeProvider = new AdsrEnvelopeSampleProvider(
 				pitchShifter,
 				noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),

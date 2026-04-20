@@ -47,7 +47,7 @@ public class ProgramNode : Node
 			}
 			else
 			{
-				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected program instruction.");
+				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected program instruction");
 			}
 		}
 	}

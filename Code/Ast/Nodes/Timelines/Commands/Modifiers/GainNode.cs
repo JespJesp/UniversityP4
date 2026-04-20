@@ -3,7 +3,7 @@ using Ast.Nodes.Floats;
 using Phases.Evaluation;
 using Phases.Parsing;
 using Phases.Validation;
-using Runtime.Objects.Timeline;
+using Runtime.Objects.Timelines;
 using Tokens;
 
 namespace Ast.Nodes.Timelines.Commands.Modifiers;

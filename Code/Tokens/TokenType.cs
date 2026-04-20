@@ -14,6 +14,7 @@ public enum TokenType
 	Slash,
 	Comma,
 	Plus,
+	Minus,
 	Asterisk,
 	Newline,
 	Indent,

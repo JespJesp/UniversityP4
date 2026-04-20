@@ -39,7 +39,7 @@ public class StringExpressionNode : Node
 			{
 				if (!SymbolTable.Contains<StringConstantNode>(segment.RawValue))
 				{
-					throw new Exception($"String variable with ID '{segment.RawValue}' is not declared.");
+					throw new Exception($"String variable with ID '{segment.RawValue}' is not declared");
 				}
 
 				segment.Value = SymbolTable.Get<StringConstantNode>(segment.RawValue).StringExpression.Value;

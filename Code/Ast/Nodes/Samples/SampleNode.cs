@@ -28,7 +28,7 @@ public class SampleNode : SymbolNode
 			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
 			&& !filePathValue.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			throw new Exception($"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff.");
+			throw new Exception($"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 

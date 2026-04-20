@@ -23,7 +23,7 @@ public class SymbolTable
 
 		if (result == null)
 		{
-			throw new Exception($"Internal error: Cannot get symbol of type '{typeof(T)}' and id '{id}' from symbol table because the symbol does not exist - this should have been checked in the annotation phase.");
+			throw new Exception($"Internal error: Cannot get symbol of type '{typeof(T)}' and id '{id}' from symbol table because the symbol does not exist - this should have been checked in the annotation phase");
 		}
 
 		return result;

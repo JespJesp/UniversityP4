@@ -21,14 +21,15 @@ public class FloatExpressionNode : Node
 
 	private enum Operation
 	{
-		None, // Works for both addition and subtraction
+		Addition, // Works for both addition and subtraction
+		Subtraction,
 		Multiplication,
 		Division
 	}
 
 	public override void CascadeParse(Parser parser)
 	{
-		Term? newTerm = new() { Operation = Operation.None };
+		Term? newTerm = new() { Operation = Operation.Addition };
 		do
 		{
 			// Add term
@@ -40,11 +41,16 @@ public class FloatExpressionNode : Node
 			_terms.Add(newTerm);
 
 			// Check for more terms
+			// NOTE: For example, "2 - 1" and "2-1" are both allowed expressions, but it's important to note that they must be handled differently, since "2 - 1" consists of 3 tokens (a float "2", a minus "-", and float "1"), while "2-1" consists of 2 tokens (a float "2", and a float "-1").
 			newTerm = null;
 			if (parser.TryConsumeToken(TokenType.Plus)
 					|| TokenTypeExtensions.IsSubtypeOf(parser.CursorToken.Type, TokenType.Float) && parser.CursorToken.Value[0] == '-')
 			{
-				newTerm = new() { Operation = Operation.None };
+				newTerm = new() { Operation = Operation.Addition };
+			}
+			else if (parser.TryConsumeToken(TokenType.Minus))
+			{
+				newTerm = new() { Operation = Operation.Subtraction };
 			}
 			else if (parser.TryConsumeToken(TokenType.Asterisk))
 			{
@@ -66,7 +72,7 @@ public class FloatExpressionNode : Node
 			{
 				if (!SymbolTable.Contains<FloatConstantNode>(term.RawValue))
 				{
-					throw new Exception($"Float variable with ID '{term.RawValue}' is not declared.");
+					throw new Exception($"Float variable with ID '{term.RawValue}' is not declared");
 				}
 
 				term.Value = SymbolTable.Get<FloatConstantNode>(term.RawValue).FloatExpression.Value;
@@ -79,8 +85,11 @@ public class FloatExpressionNode : Node
 			// Apply term to final result
 			switch (term.Operation)
 			{
-				case Operation.None:
+				case Operation.Addition:
 					this.Value += term.Value;
+					break;
+				case Operation.Subtraction:
+					this.Value -= term.Value;
 					break;
 				case Operation.Multiplication:
 					this.Value *= term.Value;

@@ -1,4 +1,4 @@
-namespace Runtime.Objects.Timeline;
+namespace Runtime.Objects.Timelines;
 
 public enum TimelineCommandType
 {

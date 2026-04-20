@@ -1,8 +1,8 @@
 
 % This is a comment %
 
-string instruments "/Samples/Instruments"
-string drumsFolder "/Samples/Instruments"
+string instrumentsFolder "/Samples/Instruments"
+string drumsFolder "/Samples/Drums"
 string electricGuitarSample "/electric guitar E4.wav"
 
 % 
@@ -10,7 +10,7 @@ This is a
 multi-line comment
 %
 
-sample guitar instrumentsFolder+"/electric guitar E4.wav" e4
+sample guitar instrumentsFolder+electricGuitarSample e4
 sample flute instrumentsFolder+"/flute E.wav" e5
 sample kick drumsFolder+"/kick A#.wav" a2
 sample snare drumsFolder+"/snare.wav" c3
@@ -104,11 +104,7 @@ melody 8_switchLead
 timeline
 	settings
 		bpm 148
-		timeSignature 4/4
-	disgusting start 0
-		16_badFlute
-	disgusting stop 16
-		16_badFlute
+		timesignature 4/4
 	intro start 0
 		8_darkPad
 		8_introKick
@@ -135,3 +131,7 @@ timeline
 		8_darkPad
 	outro stop 32
 		8_darkPad
+	disgusting start 32
+		16_badFlute
+	disgusting stop 48
+		16_badFlute

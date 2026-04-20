@@ -19,12 +19,31 @@ public class Pitch : RuntimeObject
 		};
 	}
 
+	public static bool IsPitch(string pitchString)
+	{
+		try
+		{
+			FromString(pitchString); // Throws error if pitch string cannot be converted
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+
 	/// <summary>
 	/// Converts the input pitch string to lower case before processing it. For example, this pitch string could be "C5" or "c#3".
 	/// Throws an error if the input string cannot be converted to a pitch.
 	/// </summary>
 	public static Pitch FromString(string pitchString)
 	{
+		if (pitchString.Length < 2)
+		{
+			throw new Exception($"Pitch '{pitchString}' is too short a string to be a pitch");
+		}
+
 		Pitch pitch = new();
 
 		string toLower = pitchString.ToLower();
@@ -46,7 +65,7 @@ public class Pitch : RuntimeObject
 			case "a": pitch.PitchClass = 9; break;
 			case "a#" or "bb": pitch.PitchClass = 10; break;
 			case "b": pitch.PitchClass = 11; break;
-			default: throw new Exception($"Pitch class '{pitchClass}' is not recognized.");
+			default: throw new Exception($"Pitch class '{pitchClass}' is not recognized");
 		}
 
 		try
@@ -55,7 +74,7 @@ public class Pitch : RuntimeObject
 		}
 		catch
 		{
-			throw new Exception($"Octave '{octave}' is not an unsigned integer.");
+			throw new Exception($"Octave '{octave}' is not an unsigned integer");
 		}
 
 		return pitch;

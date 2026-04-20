@@ -31,7 +31,7 @@ public class PatternNode : SymbolNode
 	{
 		if (LengthInBeats <= 0)
 		{
-			throw new Exception($"Pattern: '{Id}'. Length cannot be <= 0.");
+			throw new Exception($"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 

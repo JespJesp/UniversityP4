@@ -2,7 +2,7 @@ using System.Globalization;
 using Phases.Evaluation;
 using Phases.Parsing;
 using Phases.Validation;
-using Runtime.Objects.Timeline;
+using Runtime.Objects.Timelines;
 using Tokens;
 
 namespace Ast.Nodes.Timelines;
@@ -66,13 +66,13 @@ public class SettingsNode : Node
 	{
 		if (SettingsNodeInstances > 1)
 		{
-			throw new Exception("'settings' keyword appears multiple times in timeline.");
+			throw new Exception("'settings' keyword appears multiple times in timeline");
 		}
 
 		List<string> errors = new();
 		if (Bpm is not null && Bpm <= 0)
 		{
-			errors.Add($"BPM '{Bpm}' must be positive.");
+			errors.Add($"BPM '{Bpm}' must be positive");
 		}
 		if (TimeSignatureNumerator is not null && TimeSignatureNumerator <= 0
 				&& TimeSignatureDenominator is not null && TimeSignatureDenominator <= 0)

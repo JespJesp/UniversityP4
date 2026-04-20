@@ -1,4 +1,4 @@
-namespace Runtime.Objects.Timeline;
+namespace Runtime.Objects.Timelines;
 
 internal static class TimelineMelodyTransformer
 {
@@ -24,7 +24,8 @@ internal static class TimelineMelodyTransformer
 				EndBeat = sourceNote.EndBeat,
 				Volume = sourceNote.Volume * gainMultiplier,
 				Pan = sourceNote.Pan,
-				Pitch = ShiftPitch(sourceNote.Pitch, pitchShiftHalfsteps)
+				Pitch = ShiftPitch(sourceNote.Pitch, pitchShiftHalfsteps),
+				SampleOverride = sourceNote.SampleOverride
 			};
 
 			adjustedMelody.Notes.Add(adjustedNote);
