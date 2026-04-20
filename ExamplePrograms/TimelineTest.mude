@@ -1,0 +1,92 @@
+timeline
+	settings
+		timeSignature 4/4
+		bpm 140
+	intro start 0
+		16_introLeadGuitar
+	intro stop 16
+		EVERYTHING
+	verse start 16
+		16_verseLeadGuitar
+		32_verseRhythmGuitar
+		32_versePianoDrops
+	drums start 16
+		4_fourOnTheFloorKick
+		4_fourOnTheFloorSnare
+		4_fourOnTheFloorClosedHihat
+	snare stop 32
+		4_fourOnTheFloorSnare
+	verse stop 48
+		EVERYTHING
+
+samples
+	leadGuitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
+	softPiano "/ExampleSamples/Instruments/synth C.wav" c4
+	raindrop "/ExampleSamples/Instruments/flute E.wav" e5
+	kick "/ExampleSamples/Drums/kick A#.wav" c5
+	snare "/ExampleSamples/Drums/snap.wav" c5
+	closedHihat "/ExampleSamples/Drums/closed hihat.wav" c5
+
+melody 16_introLeadGuitar
+	samples
+		leadGuitar
+	notes
+		0 2 c5
+		2 4 d5
+		4 8 e5
+		8 10 a5
+		10 12 e5
+		12 16 d5
+
+melody 16_verseLeadGuitar
+	samples
+		leadGuitar
+	notes
+		0 2 c5
+		2 4 d4
+		4 6 e4
+		8 10 a5
+		10 16 e5
+
+melody 32_verseRhythmGuitar
+	samples
+		leadGuitar
+	notes
+		0 8 e4 b4 e5
+		8 16 g4 b4 d5
+		16 24 d4 a4 d5
+		24 32 c4 g4 c5
+
+melody 32_versePianoDrops
+	samples
+		softPiano
+		raindrop
+	notes
+		0 8 d4 d5 d6
+		8 16 d4 d5 d6
+		16 24 d4 d5 d6
+		24 32 d4 d5 d6
+
+melody 4_fourOnTheFloorKick
+	samples
+		kick
+	notes
+		0 1 c5
+		2 3 c5
+
+melody 4_fourOnTheFloorSnare
+	samples
+		snare
+	notes
+		1 2 c5
+		3 4 c5
+
+melody 4_fourOnTheFloorClosedHihat
+	samples
+		closedHihat
+	notes
+		0 1 a5(gain 0.5)
+		1 2 c5(gain 1)
+		2 3 a5(gain 0.5)
+		3 4 d5(gain 1)
+

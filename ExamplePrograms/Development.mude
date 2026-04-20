@@ -1,0 +1,30 @@
+
+% This is a comment %
+
+sample guitar "/Samples/Instruments/electric guitar E4.wav" e4
+sample flute "/Samples/Instruments/flute E.wav" e5
+
+melody 8_guitar
+	samples
+		guitar
+		flute
+	chords
+		1 5 c4(gain 20)
+		2 8 d5
+
+% 
+This is a multi-line
+comment that is quite long 
+%
+
+melody 16_flute
+	samples
+		flute
+	chords
+		0 8 a4(gain 0.2) c5(gain 0.2) e5(pan -1, gain 0.2)
+		8 10 b5(gain 0.2)
+		10 12 b5(gain 0.6)
+		12 14 b5(gain 1)
+		14 16 b5(gain 1.4)
+
+timeline

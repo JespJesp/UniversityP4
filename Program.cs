@@ -1,54 +1,42 @@
-﻿using LexicalAnalysis;
-using SyntaxAnalysis;
-using SemanticAnalysis;
-using Evaluation;
+﻿using Ast;
+using Ast.Nodes;
+using Lexing;
 
 internal class Program
 {
 	static void Main(string[] args)
 	{
-		string filePath = GetFilePath(args);
-		string fileContent = GetFileContent(filePath);
-		InterpretText(fileContent);
-	}
-
-	static string GetFilePath(string[] args)
-	{
-		if (args.Length == 0)
+		if (args.Length != 1)
 		{
-			throw new Exception("Error getting file path from program argument: No file path provided.");
+			Console.WriteLine("Error in program argument: No file path provided to be interpreted.");
+			return;
 		}
-		return args[0];
-	}
 
-	static string GetFileContent(string filePath)
-	{
+		string filePath = args[0];
+		string fileContent = File.ReadAllText(filePath);
+		string? fileFolderPath = Path.GetDirectoryName(filePath);
+
+		if (fileFolderPath == null)
+		{
+			Console.WriteLine("Error in program argument: Input file does not exist.");
+			return;
+		}
+
 		try
 		{
-			return File.ReadAllText(filePath);
-		}
-		catch (FileNotFoundException)
-		{
-			throw new Exception($"Error reading file: File '{filePath}' not found.");
+			InterpretText(fileContent, fileFolderPath);
 		}
 		catch (Exception exception)
 		{
-			throw new Exception($"Error reading file: {exception.Message}");
+			Console.WriteLine($"Error interpreting file: {exception}");
 		}
 	}
 
-	static void InterpretText(string text)
+	private static void InterpretText(string fileText, string fileFolderPath)
 	{
-		try
-		{
-			var tokens = new LexicalAnalyzer().Tokenize(text);
-			var song = new SyntaxAnalyzer().Parse(tokens);
-			new SemanticAnalyzer().Validate(song);
-			new Evaluator().Evaluate(song);
-		}
-		catch (Exception exception)
-		{
-			Console.WriteLine($"Error interpreting file: {exception.Message}");
-		}
+		var tokens = Lexer.Lex(fileText);
+		ProgramNode astRoot = Parser.ParseTree(tokens);
+		Validator.ValidateTree(astRoot);
+		Evaluator.EvaluateTree(astRoot, fileFolderPath);
 	}
 }
