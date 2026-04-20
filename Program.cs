@@ -34,7 +34,7 @@ internal class Program
 
 	private static void InterpretText(string fileText, string fileFolderPath)
 	{
-		var tokens = new Lexer().Lex(fileText);
+		var tokens = new Lexer().Lex(fileText, fileFolderPath);
 		var astRoot = new Parser().Parse(tokens);
 		new Annotator().Annotate(astRoot);
 		new Validator().Validate(astRoot);

@@ -1,9 +1,7 @@
 
 % This is a comment %
 
-string instrumentsFolder "/Samples/Instruments"
-string drumsFolder "/Samples/Drums"
-string electricGuitarSample "/electric guitar E4.wav"
+using "test.mude"
 
 % 
 This is a 
