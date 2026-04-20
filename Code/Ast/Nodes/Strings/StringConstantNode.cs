@@ -9,7 +9,7 @@ public class StringConstantNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, (value) => this.Id = value);
+		parser.ConsumeToken(TokenType.Identifier, out this.Id);
 		StringExpression = parser.ParseChild(this, new StringExpressionNode());
 	}
 }

@@ -62,53 +62,68 @@ public class Parser
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line
-		while (CursorToken.Type != TokenType.Newline)
+		while (CursorToken.Type != TokenType.EndOfFile && CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}
 	}
 
-	public void ConsumeToken(TokenType requiredType, string requiredValue, Action<string>? useValue = null)
-	{
-		if (TryConsumeToken(requiredType, requiredValue, useValue) == false)
-		{
-			throw new Exception($"Expected token of type '{requiredType}' and value '{requiredValue}'");
-		}
-	}
-	public void ConsumeToken(TokenType requiredType, Action<string>? useValue = null)
-	{
-		if (TryConsumeToken(requiredType, useValue) == false)
-		{
-			throw new Exception($"Expected token of type '{requiredType}'");
-		}
-	}
-
-	public bool TryConsumeToken(TokenType requiredType, string requiredValue, Action<string>? useValue = null)
-	{
-		if (CursorToken.Value != requiredValue)
-		{
-			return false;
-		}
-		else
-		{
-			return TryConsumeToken(requiredType, useValue);
-		}
-	}
-	public bool TryConsumeToken(TokenType requiredType, Action<string>? useValue = null)
+	public bool TryConsumeToken(TokenType requiredType, out string tokenValue)
 	{
 		if (!CursorToken.Type.IsSubtypeOf(requiredType))
 		{
+			tokenValue = "";
 			return false;
 		}
 
-		if (useValue is not null)
-		{
-			useValue(CursorToken.Value);
-		}
+		tokenValue = CursorToken.Value;
 
 		_cursorPosition++;
 
 		return true;
+	}
+	public bool TryConsumeToken(TokenType requiredType, string requiredValue, out string tokenValue)
+	{
+		if (CursorToken.Value != requiredValue)
+		{
+			tokenValue = "";
+			return false;
+		}
+		else
+		{
+			return TryConsumeToken(requiredType, out tokenValue);
+		}
+	}
+	public bool TryConsumeToken(TokenType requiredType, string requiredValue)
+	{
+		return TryConsumeToken(requiredType, requiredValue, out string ignoredTokenValue);
+	}
+	public bool TryConsumeToken(TokenType requiredType)
+	{
+		return TryConsumeToken(requiredType, out string ignoredTokenValue);
+	}
+
+	public void ConsumeToken(TokenType requiredType, out string tokenValue)
+	{
+		if (TryConsumeToken(requiredType, out tokenValue) == false)
+		{
+			throw new Exception($"Expected token of type '{requiredType}'");
+		}
+	}
+	public void ConsumeToken(TokenType requiredType, string requiredValue, out string tokenValue)
+	{
+		if (TryConsumeToken(requiredType, requiredValue, out tokenValue) == false)
+		{
+			throw new Exception($"Expected token of type '{requiredType}' and value '{requiredValue}'");
+		}
+	}
+	public void ConsumeToken(TokenType requiredType, string requiredValue)
+	{
+		ConsumeToken(requiredType, requiredValue, out string ignoredTokenValue);
+	}
+	public void ConsumeToken(TokenType requiredType)
+	{
+		ConsumeToken(requiredType, out string ignoredTokenValue);
 	}
 
 	public bool TryConsumeTokens(Token[] requiredTokens)
@@ -150,21 +165,25 @@ public class Parser
 	/// <summary>
 	/// Note: Options are allowed to appear in any order.
 	/// </summary>
-	public void TryConsumeOptions(List<Func<bool>> tryConsumeTokenMethods, Token[] separator)
+	public void TryConsumeOptions(List<(Func<bool> tryConsumeToken, Action afterConsumption)> options, Token[] separator)
 	{
-		List<Func<bool>> unusedTryConsumeTokenMethods = new(tryConsumeTokenMethods);
-		while (unusedTryConsumeTokenMethods.Count != 0)
-		{
-			foreach (Func<bool> tryConsumeTokenMethod in unusedTryConsumeTokenMethods)
-			{
-				if (tryConsumeTokenMethod())
-				{
-					unusedTryConsumeTokenMethods.Remove(tryConsumeTokenMethod);
+		List<(Func<bool> tryConsumeToken, Action afterConsumption)> unusedOptions = new(options);
 
-					if (!TryConsumeTokens(separator))
+		TryUseOption();
+
+		void TryUseOption()
+		{
+			foreach (var option in unusedOptions)
+			{
+				if (option.tryConsumeToken())
+				{
+					option.afterConsumption();
+					unusedOptions.Remove(option);
+					if (TryConsumeTokens(separator))
 					{
-						return;
+						TryUseOption();
 					}
+					return;
 				}
 			}
 		}

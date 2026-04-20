@@ -2,8 +2,6 @@ using Ast;
 
 namespace Runtime.Objects.Timeline;
 
-// TODO: Look through all of this Timeline stuff
-
 public class Timeline : RuntimeObject
 {
 	public int SampleRate = 48000;

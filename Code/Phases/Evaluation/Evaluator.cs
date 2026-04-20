@@ -63,7 +63,13 @@ public class Evaluator
 			Console.WriteLine("Notes:");
 			foreach (Note note in melody.Notes)
 			{
-				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Pitch octave: {note.Pitch.Octave}, Volume: {note.Volume}, Pan: {note.Pan}");
+				string sampleOverrideText = "";
+				if (note.SampleOverride != null)
+				{
+					sampleOverrideText = $", Sample override: '{note.SampleOverride.FilePath}'";
+				}
+
+				Console.WriteLine($"  - Time: {note.StartBeat}-{note.EndBeat}, Pitch octave: {note.Pitch.Octave}, Volume: {note.Volume}, Pan: {note.Pan}{sampleOverrideText}");
 			}
 		}
 	}

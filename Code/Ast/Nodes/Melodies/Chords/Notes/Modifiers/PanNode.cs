@@ -19,7 +19,6 @@ public class PanNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, "pan");
 		Pan = parser.ParseChild(this, new FloatExpressionNode());
 	}
 

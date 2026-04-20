@@ -15,22 +15,40 @@ public class ModifiersNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		List<Func<bool>> options = new()
-		{
-			() => parser.TryConsumeToken(TokenType.Identifier, "attack", (value) => parser.ParseChild(this, new AttackNode(this))),
-			() => parser.TryConsumeToken(TokenType.Identifier, "decay", (value) => parser.ParseChild(this, new DecayNode(this))),
-			() => parser.TryConsumeToken(TokenType.Identifier, "delay", (value) => parser.ParseChild(this, new DelayNode(this))),
-			() => parser.TryConsumeToken(TokenType.Identifier, "hold", (value) => parser.ParseChild(this, new HoldNode(this))),
-			() => parser.TryConsumeToken(TokenType.Identifier, "release", (value) => parser.ParseChild(this, new ReleaseNode(this))),
-			() => parser.TryConsumeToken(TokenType.Identifier, "sustain", (value) => parser.ParseChild(this, new SustainNode(this))),
-		};
-		Token[] optionSeparator =
-		{
-			new(TokenType.Comma)
-		};
-		parser.TryConsumeOptions(options, optionSeparator);
+		parser.TryConsumeOptions
+		(
+			new() 
+			{
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "attack"),
+					() => parser.ParseChild(this, new AttackNode(this))
+				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "decay"),
+					() => parser.ParseChild(this, new DecayNode(this))
+				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "delay"),
+					() => parser.ParseChild(this, new DelayNode(this))
+				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "hold"),
+					() => parser.ParseChild(this, new HoldNode(this))
+				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "release"),
+					() => parser.ParseChild(this, new ReleaseNode(this))
+				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "sustain"),
+					() => parser.ParseChild(this, new SustainNode(this))
+				),
+			},
+			[
+				new(TokenType.Comma)
+			]
+		);
 
 		parser.ConsumeToken(TokenType.RightParentheses);
 	}
 }
-

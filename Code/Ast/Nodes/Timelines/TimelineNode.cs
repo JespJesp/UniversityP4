@@ -12,27 +12,26 @@ public class TimelineNode : SymbolNode
 
 	public Timeline Timeline = new();
 
-	public TimelineNode()
-	{
-		TimelineNodeInstances++;
-	}
-
 	public override void CascadeParse(Parser parser)
 	{
-		Id = "timeline"; // TODO: Jesp: The Id should just be nothing/empty, probably.
+		TimelineNodeInstances++;
+
+		// TODO: Jesp: The Id should just be nothing/empty, probably.
+		Id = "timeline"; 
 
 		while (parser.TryConsumeIndent(1))
 		{
-			if (parser.TryConsumeToken(TokenType.Identifier, "settings", (value) =>
-				{
-					parser.ParseChild(this, new SettingsNode(this));
-				})
-				|| parser.TryConsumeToken(TokenType.Identifier, (value) =>
-				{
-					parser.ParseChild(this, new CommandNode(this, value));
-				}))
+			if (parser.TryConsumeToken(TokenType.Identifier, "settings"))
 			{
-				throw new Exception($"Unexpected timeline instruction");
+				parser.ParseChild(this, new SettingsNode(this));
+			}
+			else if (parser.CursorToken.Type == TokenType.Identifier)
+			{
+				parser.ParseChild(this, new CommandNode(this));
+			}
+			else
+			{
+				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected timeline instruction.");
 			}
 		}
 	}

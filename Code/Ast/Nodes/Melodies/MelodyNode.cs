@@ -16,22 +16,32 @@ public class MelodyNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
-		parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
+		parser.ConsumeToken(TokenType.Float, out string lengthValue);
+		this.LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
+
+		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
+		this.Id = LengthInBeats + nameValue;
 
 		if (parser.TryConsumeIndent(1))
 		{
-			List<Func<bool>> options = new()
-			{
-				() => parser.TryConsumeToken(TokenType.Identifier, "samples", (value) => parser.ParseChild(this, new SampleReferencesNode(this))),
-				() => parser.TryConsumeToken(TokenType.Identifier, "chords", (value) => parser.ParseChild(this, new ChordsNode(this))),
-			};
-			Token[] optionSeparator =
-			{
-				new(TokenType.Newline),
-				new(TokenType.Indent, "1"),
-			};
-			parser.TryConsumeOptions(options, optionSeparator);
+			parser.TryConsumeOptions
+			(
+				new()
+				{
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "samples"),
+						() => parser.ParseChild(this, new SampleReferencesNode(this))
+					),
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "chords"),
+						() => parser.ParseChild(this, new ChordsNode(this))
+					),
+				},
+				[
+					new(TokenType.Newline),
+					new(TokenType.Indent, "1"),
+				]
+			);
 		}
 	}
 

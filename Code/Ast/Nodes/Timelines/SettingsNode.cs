@@ -19,33 +19,46 @@ public class SettingsNode : Node
 
 	public SettingsNode(TimelineNode timelineNode)
 	{
-		SettingsNodeInstances++;
 		this.timelineNode = timelineNode;
 	}
 
 	public override void CascadeParse(Parser parser)
 	{
-		while (parser.TryConsumeIndent(2))
+		SettingsNodeInstances++;
+
+		if (parser.TryConsumeIndent(2))
 		{
-			List<Func<bool>> options = new()
-			{
-				() => parser.TryConsumeToken(TokenType.Identifier, "bpm", (value) =>
+			parser.TryConsumeOptions
+			(
+				new()
+				{
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "bpm"),
+						() =>
 						{
-							// TODO: This could use a float expression node instead
-							parser.ConsumeToken(TokenType.Float, value => Bpm = float.Parse(value, CultureInfo.InvariantCulture));
-						}),
-				() => parser.TryConsumeToken(TokenType.Identifier, "timesignature", (value) =>
+							parser.ConsumeToken(TokenType.Float, out string bpmValue);
+							Bpm = float.Parse(bpmValue, CultureInfo.InvariantCulture);
+						}
+					),
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "timesignature"),
+						() =>
 						{
-							parser.ConsumeToken(TokenType.Integer, value => TimeSignatureNumerator = int.Parse(value, CultureInfo.InvariantCulture));
+							parser.ConsumeToken(TokenType.Integer, out string numeratorValue);
+							TimeSignatureNumerator = int.Parse(numeratorValue, CultureInfo.InvariantCulture);
+
 							parser.ConsumeToken(TokenType.Slash);
-							parser.ConsumeToken(TokenType.Integer, value => TimeSignatureDenominator = int.Parse(value, CultureInfo.InvariantCulture));
-						}),
-			};
-			Token[] optionSeparator =
-			{
-				new(TokenType.Comma)
-			};
-			parser.TryConsumeOptions(options, optionSeparator);
+
+							parser.ConsumeToken(TokenType.Integer, out string denominatorValue);
+							TimeSignatureDenominator = int.Parse(denominatorValue, CultureInfo.InvariantCulture);
+						}
+					),
+				},
+				[
+					new(TokenType.Newline),
+					new(TokenType.Indent, "2"),
+				]
+			);
 		}
 	}
 

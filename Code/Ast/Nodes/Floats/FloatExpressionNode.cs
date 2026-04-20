@@ -32,10 +32,10 @@ public class FloatExpressionNode : Node
 		do
 		{
 			// Add term
-			newTerm.IsIdentifier = parser.TryConsumeToken(TokenType.Identifier, (value) => newTerm.RawValue = value);
+			newTerm.IsIdentifier = parser.TryConsumeToken(TokenType.Identifier, out newTerm.RawValue);
 			if (!newTerm.IsIdentifier)
 			{
-				parser.ConsumeToken(TokenType.Float, (value) => newTerm.RawValue = value);
+				parser.ConsumeToken(TokenType.Float, out newTerm.RawValue);
 			}
 			_terms.Add(newTerm);
 

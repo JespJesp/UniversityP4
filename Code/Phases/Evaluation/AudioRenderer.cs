@@ -29,7 +29,7 @@ public class AudioRenderer
 		{
 			Melody melody = loop.Melody;
 
-			// TODO: Q's code has been erroniously overwritten by Christoffer. I'll have to inspect this further.
+			// TODO: Jesp: Q's code has been erroniously overwritten by Christoffer. I'll have to inspect this further.
 
 			foreach (Sample sample in melody.Samples)
 			{

@@ -19,7 +19,7 @@ public class NoteNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, (value) => PitchString = value);
+		parser.ConsumeToken(TokenType.Identifier, out PitchString);
 
 		if (parser.TryConsumeToken(TokenType.LeftParentheses))
 		{

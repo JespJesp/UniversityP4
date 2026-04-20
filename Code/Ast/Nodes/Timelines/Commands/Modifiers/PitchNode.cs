@@ -20,7 +20,8 @@ public class PitchNode : Node
 	public override void CascadeParse(Parser parser)
 	{
 		// TODO: This could use a float expression node instead
-		parser.ConsumeToken(TokenType.Float, value => _pitchShiftHalfsteps = float.Parse(value, CultureInfo.InvariantCulture));
+		parser.ConsumeToken(TokenType.Float, out string pitchShiftHalfstepsValue);
+		_pitchShiftHalfsteps = float.Parse(pitchShiftHalfstepsValue, CultureInfo.InvariantCulture);
 	}
 
 	public override void Validate(Validator validator)

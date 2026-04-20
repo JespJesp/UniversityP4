@@ -4,9 +4,7 @@ using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
-using Phases.Annotation;
 using Phases.Parsing;
-using Phases.Validation;
 using Tokens;
 
 namespace Ast.Nodes;
@@ -19,36 +17,37 @@ public class ProgramNode : Node
 	{
 		while (parser.CursorToken.Type != TokenType.EndOfFile)
 		{
-			if(parser.TryConsumeToken(TokenType.Identifier, "timeline", (value) =>
-				{
-					timelineNode = parser.ParseChild(this, new TimelineNode());
-				})
-				|| parser.TryConsumeToken(TokenType.Identifier, "pattern", (value) =>
-				{
-					parser.ParseChild(this, new PatternNode());
-				})
-				|| parser.TryConsumeToken(TokenType.Identifier, "melody", (value) =>
-				{
-					parser.ParseChild(this, new MelodyNode());
-				})
-				|| parser.TryConsumeToken(TokenType.Identifier, "sample", (value) =>
-				{
-					parser.ParseChild(this, new SampleNode());
-				})
-				|| parser.TryConsumeToken(TokenType.Identifier, "string", (value) =>
-				{
-					parser.ParseChild(this, new StringConstantNode());
-				})
-				|| parser.TryConsumeToken(TokenType.Identifier, "float", (value) =>
-				{
-					parser.ParseChild(this, new FloatConstantNode());
-				})
-				|| parser.TryConsumeToken(TokenType.Newline, (value) =>
-				{
-					parser.ConsumeToken(TokenType.Newline);
-				}))
+			if (parser.TryConsumeToken(TokenType.Identifier, "timeline"))
 			{
-				throw new Exception($"Unexpected token");
+				timelineNode = parser.ParseChild(this, new TimelineNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "pattern"))
+			{
+				parser.ParseChild(this, new PatternNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "melody"))
+			{
+				parser.ParseChild(this, new MelodyNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "sample"))
+			{
+				parser.ParseChild(this, new SampleNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "string"))
+			{
+				parser.ParseChild(this, new StringConstantNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Identifier, "float"))
+			{
+				parser.ParseChild(this, new FloatConstantNode());
+			}
+			else if (parser.TryConsumeToken(TokenType.Newline))
+			{
+				// Do nothing
+			}
+			else
+			{
+				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected program instruction.");
 			}
 		}
 	}

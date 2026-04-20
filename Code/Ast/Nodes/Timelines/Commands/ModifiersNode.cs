@@ -16,16 +16,23 @@ public class ModifiersNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		List<Func<bool>> options = new() 
-		{
-			() => parser.TryConsumeToken(TokenType.Identifier, "gain", (value) => parser.ParseChild(this, new GainNode(this))),
-			() => parser.TryConsumeToken(TokenType.Identifier, "pitch", (value) => parser.ParseChild(this, new PitchNode(this))),
-		};
-		Token[] optionSeparator =
-		{
-			new(TokenType.Comma)
-		};
-		parser.TryConsumeOptions(options, optionSeparator);
+		parser.TryConsumeOptions
+		(
+			new()
+			{
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "gain"),
+					() => parser.ParseChild(this, new GainNode(this))
+				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "pitch"),
+					() => parser.ParseChild(this, new PitchNode(this))
+				),
+			},
+			[
+				new(TokenType.Comma)
+			]
+		);
 
 		parser.ConsumeToken(TokenType.RightParentheses);
 	}

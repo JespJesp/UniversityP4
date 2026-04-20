@@ -15,9 +15,9 @@ public class SampleNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
+		parser.ConsumeToken(TokenType.Identifier, out this.Id);
 		FilePath = parser.ParseChild(this, new StringExpressionNode());
-		parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
+		parser.TryConsumeToken(TokenType.Identifier, out this.ReferencePitch);
 	}
 
 	public override void Validate(Validator validator)

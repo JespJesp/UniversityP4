@@ -19,7 +19,6 @@ public class GainNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, "gain");
 		Volume = parser.ParseChild(this, new FloatExpressionNode());
 	}
 

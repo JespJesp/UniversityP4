@@ -21,7 +21,8 @@ public class GainNode : Node
 	public override void CascadeParse(Parser parser)
 	{
 		// TODO: This could use a float expression node instead
-		parser.ConsumeToken(TokenType.Float, value => _gainMultiplier = float.Parse(value, CultureInfo.InvariantCulture));
+		parser.ConsumeToken(TokenType.Float, out string gainMultiplierValue);
+		_gainMultiplier = float.Parse(gainMultiplierValue, CultureInfo.InvariantCulture);
 	}
 
 	public override void Validate(Validator validator)

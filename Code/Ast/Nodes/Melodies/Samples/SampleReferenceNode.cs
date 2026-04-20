@@ -26,9 +26,9 @@ public class SampleReferenceNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, (value) => ReferenceId = value);
+		parser.ConsumeToken(TokenType.Identifier, out this.ReferenceId);
 
-		if (parser.CursorToken.Type == TokenType.LeftParentheses)
+		if (parser.TryConsumeToken(TokenType.LeftParentheses))
 		{
 			parser.ParseChild(this, new ModifiersNode(this));
 		}

@@ -10,38 +10,42 @@ using Tokens;
 
 namespace Ast.Nodes.Timelines.Commands;
 
-public class CommandNode : SymbolNode
+public class CommandNode : Node
 {
 	public TimelineNode TimelineNode;
 	public TimelineCommand Command = new();
-	public string FirstIdentifier = "";
+	public string CommandId = "";
 	public string CommandType = "";
 	public float? CommandBeat;
 	public List<string> CommandTargetIds = new();
 
-	public CommandNode(TimelineNode timelineNode, string firstIdentifier)
+	public CommandNode(TimelineNode timelineNode)
 	{
 		this.TimelineNode = timelineNode;
-		this.FirstIdentifier = firstIdentifier;
 	}
 
 	public override void CascadeParse(Parser parser)
 	{
 		// Identifier and command, or just command
-		if (Enum.TryParse(FirstIdentifier, ignoreCase: true, out TimelineCommandType result))
+		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifierValue);
+		if (Enum.TryParse(firstIdentifierValue, ignoreCase: true, out TimelineCommandType result))
 		{
-			Id = "";
-			CommandType = FirstIdentifier.ToLowerInvariant();
+			CommandId = "";
+			CommandType = firstIdentifierValue.ToLowerInvariant();
 		}
 		else
 		{
-			Id = FirstIdentifier;
-			parser.ConsumeToken(TokenType.Identifier, (value) => CommandType = value.ToLowerInvariant());
+			CommandId = firstIdentifierValue;
+			parser.ConsumeToken(TokenType.Identifier, out string typeValue);
+			CommandType = typeValue.ToLowerInvariant();
 		}
 
 		// Optional beat
 		// TODO: This could use a float expression node instead
-		parser.TryConsumeToken(TokenType.Float, value => CommandBeat = float.Parse(value, CultureInfo.InvariantCulture)); 
+		if (parser.TryConsumeToken(TokenType.Float, out string beatValue))
+		{
+			CommandBeat = float.Parse(beatValue, CultureInfo.InvariantCulture);
+		}
 
 		// Optional command modifiers
 		if (parser.TryConsumeToken(TokenType.LeftParentheses))
@@ -52,15 +56,22 @@ public class CommandNode : SymbolNode
 		// Command targets
 		while (parser.TryConsumeIndent(2))
 		{
-			string lengthPart = "";
-			parser.ConsumeToken(TokenType.Float, value => lengthPart = value);
-			parser.ConsumeToken(TokenType.Identifier, value => CommandTargetIds.Add(lengthPart + value));
+			if (parser.TryConsumeToken(TokenType.Float, out string lengthPart)) // Check for patterns and melody IDs
+			{
+				parser.ConsumeToken(TokenType.Identifier, out string namePart);
+				CommandTargetIds.Add(lengthPart + namePart);
+			}
+			else // Check for other IDs, e.g. "EVERYTHING"
+			{
+				parser.ConsumeToken(TokenType.Identifier, out string identifierValue);
+				CommandTargetIds.Add(identifierValue);
+			}
 		}
 	}
 
-	public override void AdditionalAnnotation(Annotator annotator)
+	public override void Annotate(Annotator annotator)
 	{
-		foreach(string targetId in CommandTargetIds)
+		foreach (string targetId in CommandTargetIds)
 		{
 			if (targetId != "EVERYTHING"
 				&& !SymbolTable.Contains<PatternNode>(targetId)
@@ -97,7 +108,7 @@ public class CommandNode : SymbolNode
 			{
 				errors.Add("Stop commands must specify a beat value");
 			}
-			if (CommandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(Id))
+			if (CommandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(CommandId))
 			{
 				errors.Add("Stop commands must specify targets, EVERYTHING, or a command ID");
 			}
@@ -110,7 +121,7 @@ public class CommandNode : SymbolNode
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		Command.Id = Id;
+		Command.Id = CommandId;
 		Command.Type = Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true);
 		if (CommandBeat is not null)
 		{

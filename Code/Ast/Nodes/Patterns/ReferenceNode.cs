@@ -19,9 +19,9 @@ public class ReferenceNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		string length = "";
-		parser.ConsumeToken(TokenType.Float, (value) => { length = value; });
-		parser.ConsumeToken(TokenType.Identifier, (value) => { ReferenceId = length + value; });
+		parser.ConsumeToken(TokenType.Float, out string length);
+		parser.ConsumeToken(TokenType.Identifier, out string name);
+		this.ReferenceId = length + name;
 	}
 
 	public override void Annotate(Annotator annotator)
