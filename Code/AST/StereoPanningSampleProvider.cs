@@ -1,6 +1,6 @@
 using NAudio.Wave;
  
-namespace Ast;
+namespace AST;
 public class StereoPanningSampleProvider : ISampleProvider
 	{
 		private readonly ISampleProvider _source;
