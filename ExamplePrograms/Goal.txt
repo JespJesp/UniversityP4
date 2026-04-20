@@ -79,24 +79,19 @@ samples
 % Drums %
 
 4_fourOnTheFloorKick
-	samples
-		kick
 	notes 
-		1-1 c5
-		3-3 c5
+		1-1 kick c5
+		3-3 kick
 
 4_fourOnTheFloorSnare
-	samples
-		snare
 	notes 
-		3-3 c5
+		3-3 snare c5
 
 4_fourOnTheFloorClosedHihat
-	samples
-		closedHihat
 	notes 
-		1-1 a5 volume(0.5)
-		2-2 c5 volume(1)
-		3-3 a5 volume(0.5)
+		1-1 closedHihat a5 volume(0.5)
+		2-2 closedHihat c5 volume(1)
+		3-3 closedHihat a5 volume(0.5)
+		4-4 closedHihat d5 volume(1)
 		4-4 d5 volume(1)
 
