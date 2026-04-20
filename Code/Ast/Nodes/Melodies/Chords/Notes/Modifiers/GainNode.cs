@@ -1,35 +1,41 @@
-using System.Globalization;
-using Ast.Tables;
+using Ast.Nodes.Floats;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
-using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class GainNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class GainNode : Node
 {
-	public float Volume = 1;
+	public ModifiersNode ModifiersNode;
+	private FloatExpressionNode _volume = new();
 
-	protected override void Parse()
+	public GainNode(ModifiersNode modifiersNode)
 	{
-		Parser.ConsumeToken(TokenType.GainKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => Volume = float.Parse(value, CultureInfo.InvariantCulture));
+		this.ModifiersNode = modifiersNode;
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void CascadeParse(Parser parser)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
-		NoteNode noteNode = ancestors.Get<NoteNode>();
+		_volume = parser.ParseChild(this, new FloatExpressionNode());
+	}
 
-		if (Volume < 0.0f)
+	public override void Validate(Validator validator)
+	{
+		NoteNode noteNode = ModifiersNode.NoteNode;
+		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
+
+		if (_volume.Value < 0.0f)
 		{
-			Validator.AddError(this, $"Melody: '{melodyNode}'. Note: '{noteNode.Pitch}'. Volume cannot be negative, but was: {Volume}");
+			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Volume '{_volume.Value}' cannot be negative");
 		}
 	}
 
-	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	public override void Evaluate(Evaluator evaluator)
 	{
-		Note note = ancestors.Get<NoteNode>().Note0;
-		note.Volume = Volume;
+		Note note = ModifiersNode.NoteNode.Note;
+		note.Volume = _volume.Value;
 	}
 }
 
