@@ -18,6 +18,7 @@ public static class Lexer
 	{
 		// Reset variables
 		Tokens.Clear();
+		_errors.Clear();
 		_inputText = text;
 		Cursor.MoveToStartPosition();
 

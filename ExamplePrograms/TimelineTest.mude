@@ -2,21 +2,21 @@ timeline
 	settings
 		timeSignature 4/4
 		bpm 140
-	intro start 0
+	intro start
 		16_introLeadGuitar
 	intro stop 16
 		EVERYTHING
-	verse start 16
+	verse start
 		16_verseLeadGuitar
 		32_verseRhythmGuitar
 		32_versePianoDrops
-	drums start 16
+	drums start
 		4_fourOnTheFloorKick
 		4_fourOnTheFloorSnare
 		4_fourOnTheFloorClosedHihat
-	snare stop 32
+	snare stop after 16
 		4_fourOnTheFloorSnare
-	verse stop 48
+	verse stop after 32
 		EVERYTHING
 
 sample leadGuitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4

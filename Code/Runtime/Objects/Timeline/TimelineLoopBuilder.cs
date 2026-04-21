@@ -10,32 +10,43 @@ internal static class TimelineLoopBuilder
 
 		var activeMelodies = new Dictionary<Melody, List<ActiveLoopState>>();
 		var commandTargets = new Dictionary<string, List<Melody>>();
+		float currentBeat = 0;
+		float maxResolvedBeat = 0;
 
 		foreach (TimelineCommand command in timeline.Commands)
 		{
 			switch (command.Type)
 			{
 				case TimelineCommandType.Start:
-					ExecuteStartCommand(command, activeMelodies, commandTargets, variables);
+				{
+					float startBeat = command.Beat ?? currentBeat;
+					ExecuteStartCommand(command, startBeat, activeMelodies, commandTargets, variables);
+					currentBeat = startBeat;
+					maxResolvedBeat = Math.Max(maxResolvedBeat, startBeat);
 					break;
+				}
 				case TimelineCommandType.Stop:
-					ExecuteStopCommand(command, timeline.Loops, activeMelodies, commandTargets, variables);
+				{
+					float resolvedStopBeat = ExecuteStopCommand(command, currentBeat, timeline.Loops, activeMelodies, commandTargets, variables);
+					currentBeat = resolvedStopBeat;
+					maxResolvedBeat = Math.Max(maxResolvedBeat, resolvedStopBeat);
 					break;
+				}
 				default:
 					throw new Exception($"Unexpected timeline command type: {command.Type}");
 			}
 		}
 
-		CloseOpenLoops(timeline, activeMelodies);
+		CloseOpenLoops(timeline, activeMelodies, maxResolvedBeat);
 	}
 
 	private static void ExecuteStartCommand(
 		TimelineCommand command,
+		float startBeat,
 		Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
 		Dictionary<string, List<Melody>> commandTargets,
 		RuntimeVariableTable variables)
 	{
-		float startBeat = command.Beat ?? 0;
 		HashSet<Melody> melodies = TimelineTargetResolver.ExpandTargetsToMelodies(command.TargetIds, variables);
 
 		foreach (Melody melody in melodies)
@@ -55,19 +66,20 @@ internal static class TimelineLoopBuilder
 		}
 	}
 
-	private static void ExecuteStopCommand(
+	private static float ExecuteStopCommand(
 		TimelineCommand command,
+		float currentBeat,
 		List<Loop> loops,
 		Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
 		Dictionary<string, List<Melody>> commandTargets,
 		RuntimeVariableTable variables)
 	{
-		if (!command.Beat.HasValue)
+		if (command.IsBeatRelativeToStart)
 		{
-			throw new Exception("Timeline stop command is missing a beat value.");
+			return ExecuteRelativeStopCommand(command, currentBeat, loops, activeMelodies, commandTargets, variables);
 		}
 
-		float stopBeat = command.Beat.Value;
+		float stopBeat = command.Beat ?? currentBeat;
 		HashSet<Melody> targetsToStop = ResolveStopTargets(command, activeMelodies, commandTargets, variables);
 
 		foreach (Melody melody in targetsToStop)
@@ -104,6 +116,65 @@ internal static class TimelineLoopBuilder
 		{
 			commandTargets.Remove(command.Id);
 		}
+
+		return stopBeat;
+	}
+
+	private static float ExecuteRelativeStopCommand(
+		TimelineCommand command,
+		float currentBeat,
+		List<Loop> loops,
+		Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
+		Dictionary<string, List<Melody>> commandTargets,
+		RuntimeVariableTable variables)
+	{
+		if (!command.Beat.HasValue)
+		{
+			throw new Exception("Relative stop command is missing a beat offset.");
+		}
+
+		float relativeOffset = command.Beat.Value;
+		float maxStopBeat = currentBeat;
+		HashSet<Melody> targetsToStop = ResolveStopTargets(command, activeMelodies, commandTargets, variables);
+
+		foreach (Melody melody in targetsToStop)
+		{
+			if (!activeMelodies.TryGetValue(melody, out List<ActiveLoopState>? starts))
+			{
+				continue;
+			}
+
+			foreach (ActiveLoopState start in starts.ToList())
+			{
+				float stopBeat = start.StartBeat + relativeOffset;
+				if (start.StartBeat >= stopBeat)
+				{
+					continue;
+				}
+
+				Melody adjustedMelody = TimelineMelodyTransformer.CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps);
+				loops.Add(new Loop
+				{
+					Melody0 = adjustedMelody,
+					StartBeat = start.StartBeat,
+					EndBeat = stopBeat
+				});
+				maxStopBeat = Math.Max(maxStopBeat, stopBeat);
+				starts.Remove(start);
+			}
+
+			if (starts.Count == 0)
+			{
+				activeMelodies.Remove(melody);
+			}
+		}
+
+		if (!string.IsNullOrWhiteSpace(command.Id))
+		{
+			commandTargets.Remove(command.Id);
+		}
+
+		return maxStopBeat;
 	}
 
 	private static HashSet<Melody> ResolveStopTargets(
@@ -139,13 +210,9 @@ internal static class TimelineLoopBuilder
 		return targetsToStop;
 	}
 
-	private static void CloseOpenLoops(Timeline timeline, Dictionary<Melody, List<ActiveLoopState>> activeMelodies)
+	private static void CloseOpenLoops(Timeline timeline, Dictionary<Melody, List<ActiveLoopState>> activeMelodies, float maxResolvedBeat)
 	{
-		float timelineEndBeat = timeline.Commands
-			.Where(command => command.Beat.HasValue)
-			.Select(command => command.Beat!.Value)
-			.DefaultIfEmpty(0)
-			.Max();
+		float timelineEndBeat = maxResolvedBeat;
 
 		if (timeline.BeatsPerBar > 0)
 		{

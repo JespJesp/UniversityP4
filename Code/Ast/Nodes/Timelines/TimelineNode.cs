@@ -60,6 +60,7 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Variab
 				Id = command.Id,
 				Type = command.Type,
 				Beat = command.Beat,
+				IsBeatRelativeToStart = command.IsBeatRelativeToStart,
 				TargetIds = new List<string>(command.TargetIds),
 				GainMultiplier = command.GainMultiplier,
 				PitchShiftHalfsteps = command.PitchShiftHalfsteps
@@ -124,6 +125,16 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Variab
 
 	private static void ParseOptionalCommandBeat(TimelineCommand command)
 	{
+		if (command.Type == TimelineCommandType.Stop
+			&& Parser.CurrentToken.Type == TokenType.Identifier
+			&& string.Equals(Parser.CurrentToken.Value, "after", StringComparison.OrdinalIgnoreCase))
+		{
+			Parser.ConsumeToken(TokenType.Identifier);
+			Parser.ConsumeToken(TokenType.Float, value => command.Beat = float.Parse(value, CultureInfo.InvariantCulture));
+			command.IsBeatRelativeToStart = true;
+			return;
+		}
+
 		if (Parser.CurrentToken.Type != TokenType.Integer && Parser.CurrentToken.Type != TokenType.Float)
 		{
 			return;
@@ -210,14 +221,14 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Variab
 			Validator.AddError(this, $"Timeline gain cannot be negative, got: {command.GainMultiplier}");
 		}
 
-		if (command.Type == TimelineCommandType.Stop && !command.Beat.HasValue)
-		{
-			Validator.AddError(this, "Stop commands must specify a beat value");
-		}
-
 		if (command.Type == TimelineCommandType.Stop && (command.GainMultiplier != 1.0f || command.PitchShiftHalfsteps != 0.0f))
 		{
 			Validator.AddError(this, "Stop commands cannot use gain or pitch modifiers");
+		}
+
+		if (command.Type == TimelineCommandType.Stop && command.IsBeatRelativeToStart && !command.Beat.HasValue)
+		{
+			Validator.AddError(this, "Relative stop commands must specify a beat offset");
 		}
 
 		if (command.Type == TimelineCommandType.Stop && command.TargetIds.Count == 0 && string.IsNullOrWhiteSpace(command.Id))
