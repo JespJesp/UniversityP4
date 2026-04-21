@@ -3,6 +3,7 @@ using NAudio.Wave.SampleProviders;
 using Phases.Annotation;
 using Runtime.Objects;
 using Runtime.Objects.Timelines;
+using AST;
 
 namespace Phases.Evaluation;
 
@@ -93,11 +94,11 @@ public class AudioRenderer
 			Volume = note.Volume
 		};
 
-		// TODO: Implement panning
+		var panProvider = new StereoPanningSampleProvider(volumeProvider, note.Pan);
 
-		var pitchShifter = new SmbPitchShiftingSampleProvider(volumeProvider)
+		var pitchShifter = new SmbPitchShiftingSampleProvider(panProvider)
 		{
-			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
+    	PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
 		var envelopeProvider = new AdsrEnvelopeSampleProvider(

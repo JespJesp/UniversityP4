@@ -15,9 +15,12 @@ public class Lexer
 	public char CursorChar => _inputText[Cursor.Position];
 	public bool AtEndOfFile => Cursor.Position >= _inputText.Length;
 
-	public List<Token> Lex(string text)
+	public List<Token> Lex(string text, string baseDirectory)
 	{
-		_inputText = text;
+		Tokens.Clear();
+		_lexicalErrors.Clear();
+		Cursor = new LexerCursor();
+		_inputText = ExpandUsingStatements(text, baseDirectory, new HashSet<string>());
 
 		LexInput();
 
@@ -29,6 +32,54 @@ public class Lexer
 		return Tokens;
 	}
 
+private static string ExpandUsingStatements(string text, string baseDirectory, HashSet<string> visitedFiles)
+{
+    var lines = text.Split('\n');
+    var result = new List<string>();
+
+    foreach (var line in lines)
+    {
+        var trimmed = line.Trim();
+
+        if (trimmed.StartsWith("using "))
+        {
+            int firstQuote = trimmed.IndexOf('"');
+            int lastQuote = trimmed.LastIndexOf('"');
+
+            if (firstQuote == -1 || lastQuote == -1 || lastQuote <= firstQuote)
+            {
+                throw new Exception($"Invalid using statement: {line}");
+            }
+
+            string path = trimmed.Substring(firstQuote + 1, lastQuote - firstQuote - 1);
+            string fullPath = Path.GetFullPath(Path.Combine(baseDirectory, path));
+
+            if (visitedFiles.Contains(fullPath))
+            {
+                throw new Exception($"Circular using detected: {fullPath}");
+            }
+
+            if (!File.Exists(fullPath))
+            {
+                throw new Exception($"Could not find file: {fullPath}");
+            }
+
+            visitedFiles.Add(fullPath);
+
+            string fileContent = File.ReadAllText(fullPath);
+            string includedBaseDirectory = Path.GetDirectoryName(fullPath)!;
+            string expandedContent = ExpandUsingStatements(fileContent, includedBaseDirectory, visitedFiles);
+
+            result.Add(expandedContent);
+        }
+        else
+        {
+            result.Add(line);
+        }
+    }
+
+    return string.Join("\n", result);
+}
 	private void LexInput()
 	{
 		// TODO: Add max size to e.g. float and string
