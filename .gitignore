@@ -485,5 +485,3 @@ $RECYCLE.BIN/
 
 # Custom gitignore stuff for our project
 ProgramOutput.wav
-GeneratedOutput/
-*.wav
