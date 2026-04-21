@@ -9,6 +9,8 @@ public class Annotator
 
 	public void Annotate(ProgramNode programNode)
 	{
+		_errors.Clear();
+
 		CascadeAnnotate(programNode, new());
 
 		if (_errors.Any())

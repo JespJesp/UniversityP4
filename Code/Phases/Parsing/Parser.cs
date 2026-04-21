@@ -14,6 +14,8 @@ public class Parser
 
 	public ProgramNode Parse(List<Token> inputTokens)
 	{
+		_cursorPosition = 0;
+		_errors.Clear();
 		_tokens = inputTokens;
 
 		ProgramNode astRoot = new ProgramNode();

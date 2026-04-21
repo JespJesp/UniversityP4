@@ -1,7 +1,7 @@
 
 % This is a comment %
 
-using "test.mude"
+import "test.mude"
 
 % 
 This is a 
@@ -14,18 +14,21 @@ sample kick drumsFolder+"/kick A#.wav" a2
 sample snare drumsFolder+"/snare.wav" c3
 sample hihat drumsFolder+"/closed hihat.wav" f4
 sample clap drumsFolder+"/clap.wav" c2
+sample siren instrumentsFolder+"/Siren C.wav" c5
+sample sirenWithStereoPan instrumentsFolder+"/Siren C stereo half pan to the right.wav" c5
 
 float exampleNumber 0.9
 
-melody 16_badFlute
+melody 24_test
 	samples
-		flute
+		sirenWithStereoPan
 	chords
 		0,8 a4(gain 0.2) c5(gain 0.2) e5(pan -1, gain 0.2)
-		10,12 b5(gain exampleNumber)
-		8,10 b5(gain 0.2)
-		12,14 b5(gain 1/8)
-		14,16 b5(gain 1.4*3)
+		10,12 b5(gain exampleNumber, pan 0.5)
+		8,10 b5(gain 0.2, pan 0)
+		12,14 b5(gain 1/4, pan 1)
+		14,16 b5(gain 1.4*3, pan -0.5)
+		16,24 b5(gain 1.4*3, pan -1)
 
 melody 8_darkPad
 	samples
@@ -129,7 +132,7 @@ timeline
 		8_darkPad
 	outro stop 32
 		8_darkPad
-	disgusting start 32
-		16_badFlute
-	disgusting stop 32+16
-		16_badFlute
+	test start 32
+		24_test
+	test stop 32+24
+		24_test

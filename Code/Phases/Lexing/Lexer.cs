@@ -8,7 +8,8 @@ public class Lexer
 {
 	public List<Token> Tokens = new();
 	public LexerCursor Cursor = new();
-
+	public string BaseDirectory { get; private set; } = "";
+	public List<string> ImportedFilePaths = new();
 	private string _inputText = "";
 	private List<string> _lexicalErrors = new();
 
@@ -17,10 +18,11 @@ public class Lexer
 
 	public List<Token> Lex(string text, string baseDirectory)
 	{
-		Tokens.Clear();
 		_lexicalErrors.Clear();
+		Tokens.Clear();
 		Cursor = new LexerCursor();
-		_inputText = ExpandUsingStatements(text, baseDirectory, new HashSet<string>());
+		BaseDirectory = baseDirectory;
+		_inputText = text;
 
 		LexInput();
 
@@ -32,54 +34,45 @@ public class Lexer
 		return Tokens;
 	}
 
-private static string ExpandUsingStatements(string text, string baseDirectory, HashSet<string> visitedFiles)
-{
-    var lines = text.Split('\n');
-    var result = new List<string>();
+	public bool ExpectString(string expected)
+	{
+		string lookaheadCharacters = "";
+		for (int i = 0; i < expected.Length; i++)
+		{
+			// Return if at end of file
+			if (Cursor.Position + i >= _inputText.Length)
+			{
+				break;
+			}
 
-    foreach (var line in lines)
-    {
-        var trimmed = line.Trim();
+			lookaheadCharacters += _inputText[Cursor.Position + i];
+		}
 
-        if (trimmed.StartsWith("using "))
-        {
-            int firstQuote = trimmed.IndexOf('"');
-            int lastQuote = trimmed.LastIndexOf('"');
+		return lookaheadCharacters == expected;
+	}
 
-            if (firstQuote == -1 || lastQuote == -1 || lastQuote <= firstQuote)
-            {
-                throw new Exception($"Invalid using statement: {line}");
-            }
+	public void AddFile(int callerLine, int callerColumn, string filePath)
+	{
+		// Skip circular imports
+		if (ImportedFilePaths.Contains(filePath))
+		{
+			return;
+		}
 
-            string path = trimmed.Substring(firstQuote + 1, lastQuote - firstQuote - 1);
-            string fullPath = Path.GetFullPath(Path.Combine(baseDirectory, path));
+		string fileContent = "";
+		try
+		{
+			fileContent = File.ReadAllText(filePath);
+		}
+		catch
+		{
+			throw new LexicalException(callerLine, callerColumn, $"Could not find file: {filePath}");
+		}
 
-            if (visitedFiles.Contains(fullPath))
-            {
-                throw new Exception($"Circular using detected: {fullPath}");
-            }
-
-            if (!File.Exists(fullPath))
-            {
-                throw new Exception($"Could not find file: {fullPath}");
-            }
-
-            visitedFiles.Add(fullPath);
-
-            string fileContent = File.ReadAllText(fullPath);
-            string includedBaseDirectory = Path.GetDirectoryName(fullPath)!;
-            string expandedContent = ExpandUsingStatements(fileContent, includedBaseDirectory, visitedFiles);
-
-            result.Add(expandedContent);
-        }
-        else
-        {
-            result.Add(line);
-        }
-    }
-
-    return string.Join("\n", result);
-}
+		ImportedFilePaths.Add(filePath);
+		_inputText = _inputText.Insert(Cursor.Position, fileContent);
+	}
+	
 	private void LexInput()
 	{
 		// TODO: Add max size to e.g. float and string
@@ -106,6 +99,7 @@ private static string ExpandUsingStatements(string text, string baseDirectory, H
 	private bool TryTokenizeChar()
 	{
 		return Tokenizer.TryTokenize<WhitespaceStrategy>(this)
+			|| Tokenizer.TryTokenize<ImportStrategy>(this)
 			|| Tokenizer.TryTokenize<CommentStrategy>(this)
 			|| Tokenizer.TryTokenize<StringStrategy>(this)
 			|| Tokenizer.TryTokenize<LeftParenthesesStrategy>(this)

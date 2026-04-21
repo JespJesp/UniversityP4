@@ -1,11 +1,10 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using Phases.Annotation;
+using Phases.Evaluation.AudioRendering.SampleProviders;
 using Runtime.Objects;
 using Runtime.Objects.Timelines;
-using AST;
 
-namespace Phases.Evaluation;
+namespace Phases.Evaluation.AudioRendering;
 
 public class AudioRenderer
 {
@@ -98,7 +97,7 @@ public class AudioRenderer
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(panProvider)
 		{
-    	PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
+    		PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
 		var envelopeProvider = new AdsrEnvelopeSampleProvider(

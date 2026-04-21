@@ -9,6 +9,8 @@ public class Validator
 
 	public void Validate(ProgramNode programNode)
 	{
+		_errors.Clear();
+
 		CascadeValidate(programNode);
 
 		if (_errors.Any())
