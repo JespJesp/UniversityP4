@@ -1,3 +1,5 @@
+using Ast;
+using Ast.Nodes.Timelines;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Runtime.AudioRendering.Loops;
@@ -11,8 +13,13 @@ public class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public void RenderToFile(Timeline timeline, List<Loop> loops, string inputFileFolderPath)
+	public void RenderToFile(TimelineNode timelineNode, string inputFileFolderPath)
 	{
+		Timeline timeline = timelineNode.Timeline;
+		SymbolTable globalSymbols = timelineNode.SymbolTable;
+
+		var loops = new LoopBuilder().Build(timeline, globalSymbols);
+
 		List<ISampleProvider> sounds = CreateSounds(timeline, loops, inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
@@ -98,7 +105,7 @@ public class AudioRenderer
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(panProvider)
 		{
-    		PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
+			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
 		var envelopeProvider = new AdsrEnvelopeSampleProvider(
