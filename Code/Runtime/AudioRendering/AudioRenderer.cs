@@ -1,10 +1,10 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using Phases.Evaluation.AudioRendering.SampleProviders;
+using Runtime.AudioRendering.SampleProviders;
 using Runtime.Objects;
 using Runtime.Objects.Timelines;
 
-namespace Phases.Evaluation.AudioRendering;
+namespace Runtime.AudioRendering;
 
 public class AudioRenderer
 {
