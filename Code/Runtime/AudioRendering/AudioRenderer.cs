@@ -1,29 +1,37 @@
+using Ast;
+using Ast.Nodes.Timelines;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using Phases.Evaluation.AudioRendering.SampleProviders;
+using Runtime.AudioRendering.Loops;
+using Runtime.AudioRendering.SampleProviders;
 using Runtime.Objects;
 using Runtime.Objects.Timelines;
 
-namespace Phases.Evaluation.AudioRendering;
+namespace Runtime.AudioRendering;
 
 public class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public void RenderToFile(Timeline timeline, string inputFileFolderPath)
+	public void RenderToFile(TimelineNode timelineNode, string inputFileFolderPath)
 	{
-		List<ISampleProvider> sounds = CreateSounds(timeline, inputFileFolderPath);
+		Timeline timeline = timelineNode.Timeline;
+		SymbolTable globalSymbols = timelineNode.SymbolTable;
+
+		var loops = new LoopBuilder().Build(timeline, globalSymbols);
+
+		List<ISampleProvider> sounds = CreateSounds(timeline, loops, inputFileFolderPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 
 		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'");
 	}
 
-	private List<ISampleProvider> CreateSounds(Timeline timeline, string inputFileFolderPath)
+	private List<ISampleProvider> CreateSounds(Timeline timeline, List<Loop> loops, string inputFileFolderPath)
 	{
 		List<ISampleProvider> sounds = new();
 
-		foreach (Loop loop in timeline.Loops)
+		foreach (Loop loop in loops)
 		{
 			Melody melody = loop.Melody;
 
@@ -41,9 +49,9 @@ public class AudioRenderer
 
 				foreach (Sample sample in samplesToRender)
 				{
-					float loops = loop.LengthInBeats / melody.LengthInBeats;
+					float loopsAmount = loop.LengthInBeats / melody.LengthInBeats;
 
-					int wholeLoops = (int)Math.Floor(loops);
+					int wholeLoops = (int)Math.Floor(loopsAmount);
 					for (int i = 0; i < wholeLoops; i++)
 					{
 						float melodyStartBeat = loop.StartBeat + i * melody.LengthInBeats;
@@ -56,7 +64,7 @@ public class AudioRenderer
 						sounds.Add(sound);
 					}
 
-					float loopsRemainder = loops - wholeLoops;
+					float loopsRemainder = loopsAmount - wholeLoops;
 					if (loopsRemainder != 0)
 					{
 						float melodyStartBeat = loop.StartBeat + wholeLoops * melody.LengthInBeats;
@@ -97,7 +105,7 @@ public class AudioRenderer
 
 		var pitchShifter = new SmbPitchShiftingSampleProvider(panProvider)
 		{
-    		PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
+			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
 		var envelopeProvider = new AdsrEnvelopeSampleProvider(

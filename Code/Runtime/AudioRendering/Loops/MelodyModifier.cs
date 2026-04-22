@@ -1,6 +1,8 @@
-namespace Runtime.Objects.Timelines;
+using Runtime.Objects;
 
-internal static class TimelineMelodyTransformer
+namespace Runtime.AudioRendering.Loops;
+
+internal static class MelodyModifier
 {
 	public static Melody CreateAdjustedMelody(Melody source, float gainMultiplier, float pitchShiftHalfsteps)
 	{

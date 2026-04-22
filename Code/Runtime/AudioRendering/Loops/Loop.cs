@@ -1,6 +1,8 @@
-namespace Runtime.Objects;
+using Runtime.Objects;
 
-public class Loop : RuntimeObject
+namespace Runtime.AudioRendering.Loops;
+
+public class Loop
 {
 	public Melody Melody = new();
 	public float StartBeat;
