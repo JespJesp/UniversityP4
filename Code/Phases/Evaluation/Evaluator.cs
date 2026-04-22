@@ -1,6 +1,8 @@
 using Ast;
 using Ast.Nodes;
+using Ast.Nodes.Timelines;
 using Runtime.AudioRendering;
+using Runtime.AudioRendering.Loops;
 using Runtime.Objects.Timelines;
 
 namespace Phases.Evaluation;
@@ -13,12 +15,14 @@ public class Evaluator
 		{
 			CascadeEvaluate(programNode);
 
-			Timeline timeline = programNode.timelineNode.Timeline;
-			timeline.BuildLoopsFromCommands(programNode.timelineNode.SymbolTable);
+			TimelineNode timelineNode = programNode.timelineNode;
+			Timeline timeline = timelineNode.Timeline;
+			SymbolTable globalSymbols = timelineNode.SymbolTable;
 
-			new AudioRenderer().RenderToFile(timeline, inputFileFolderPath);
+			var loops = new LoopBuilder().Build(timeline, globalSymbols);
+			new AudioRenderer().RenderToFile(timeline, loops, inputFileFolderPath);
 
-			Printer.ExamplePrintToConsole(timeline);
+			Printer.ExamplePrintToConsole(loops);
 		}
 		catch (Exception exception)
 		{

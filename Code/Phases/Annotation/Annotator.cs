@@ -15,7 +15,7 @@ public class Annotator
 
 		if (_errors.Any())
 		{
-			throw new Exception("Annotation errors:\n- " + string.Join("\n- ", _errors));
+			throw new Exception("Semantic errors (from annotation phase):\n- " + string.Join("\n- ", _errors));
 		}
 	}
 

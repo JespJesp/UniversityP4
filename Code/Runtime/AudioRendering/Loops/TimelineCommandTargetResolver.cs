@@ -1,10 +1,11 @@
 using Ast;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
+using Runtime.Objects;
 
-namespace Runtime.Objects.Timelines;
+namespace Runtime.AudioRendering.Loops;
 
-internal static class TimelineTargetResolver
+internal static class TimelineCommandTargetResolver
 {
 	public static HashSet<Melody> ExpandTargetsToMelodies(List<string> targets, SymbolTable globalSymbols)
 	{

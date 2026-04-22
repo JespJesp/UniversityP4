@@ -15,7 +15,7 @@ public class Validator
 
 		if (_errors.Any())
 		{
-			throw new Exception("Semantic errors:\n- " + string.Join("\n- ", _errors));
+			throw new Exception("Semantic errors (from validation phase):\n- " + string.Join("\n- ", _errors));
 		}
 	}
 
