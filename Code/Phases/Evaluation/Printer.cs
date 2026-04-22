@@ -1,14 +1,14 @@
 using Runtime.Objects;
-using Runtime.Objects.Timelines;
+using Runtime.AudioRendering.Loops;
 
 namespace Phases.Evaluation;
 
 // TODO: Remove after debugging. It's just an example.
 public class Printer
 {
-	public static void ExamplePrintToConsole(Timeline timeline)
+	public static void ExamplePrintToConsole(List<Loop> loops)
 	{
-		foreach (Loop loop in timeline.Loops)
+		foreach (Loop loop in loops)
 		{
 			Melody melody = loop.Melody;
 
