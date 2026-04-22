@@ -1,6 +1,6 @@
 using NAudio.Wave;
 
-namespace Phases.Evaluation.AudioRendering.SampleProviders;
+namespace Runtime.AudioRendering.SampleProviders;
 
 internal sealed class AdsrEnvelopeSampleProvider : ISampleProvider
 {
