@@ -1,6 +1,8 @@
-﻿using Ast;
-using Ast.Nodes;
-using Lexing;
+﻿using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Lexing;
+using Phases.Parsing;
+using Phases.Validation;
 
 internal class Program
 {
@@ -8,8 +10,7 @@ internal class Program
 	{
 		if (args.Length != 1)
 		{
-			Console.WriteLine("Error in program argument: No file path provided to be interpreted.");
-			return;
+			throw new Exception("Program argument error: No file path provided to be interpreted");
 		}
 
 		string filePath = args[0];
@@ -18,8 +19,7 @@ internal class Program
 
 		if (fileFolderPath == null)
 		{
-			Console.WriteLine("Error in program argument: Input file does not exist.");
-			return;
+			throw new Exception("Program argument error: Input file does not exist");
 		}
 
 		try
@@ -28,15 +28,16 @@ internal class Program
 		}
 		catch (Exception exception)
 		{
-			Console.WriteLine($"Error interpreting file: {exception}");
+			throw new Exception($"Interpretation error: {exception}");
 		}
 	}
 
 	private static void InterpretText(string fileText, string fileFolderPath)
 	{
-		var tokens = Lexer.Lex(fileText);
-		ProgramNode astRoot = Parser.ParseTree(tokens);
-		Validator.ValidateTree(astRoot);
-		Evaluator.EvaluateTree(astRoot, fileFolderPath);
+		var tokens = new Lexer().Lex(fileText, fileFolderPath);
+		var astRoot = new Parser().Parse(tokens);
+		new Annotator().Annotate(astRoot);
+		new Validator().Validate(astRoot);
+		new Evaluator().Evaluate(astRoot, fileFolderPath);
 	}
 }
