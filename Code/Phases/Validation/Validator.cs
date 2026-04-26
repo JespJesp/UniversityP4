@@ -27,7 +27,7 @@ public class Validator
 		}
 		catch (Exception exception)
 		{
-			_errors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {exception.Message}");
+			_errors.Add($"{node.CursorInfo}. Node: '{node.GetType()}'. {exception.Message}");
 		}
 
 		foreach (Node child in node.Children)

@@ -18,6 +18,6 @@ public enum TokenType
 	Asterisk,
 	Newline,
 	Indent,
-	EndOfFile
+	EndOfTokens
 }
 

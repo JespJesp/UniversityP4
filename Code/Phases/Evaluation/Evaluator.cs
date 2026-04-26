@@ -10,6 +10,8 @@ public class Evaluator
 
 	public void Evaluate(ProgramNode programNode, string inputFileFolderPath)
 	{
+		_errors.Clear();
+
 		try
 		{
 			CascadeEvaluate(programNode);
@@ -35,7 +37,7 @@ public class Evaluator
 		}
 		catch (Exception exception)
 		{
-			_errors.Add($"Line: {node.Line}. Column: {node.Column}. Node type: {node.GetType()}. {exception.Message}");
+			_errors.Add($"{node.CursorInfo}. Node: '{node.GetType()}'. {exception.Message}");
 		}
 
 		foreach (Node child in node.Children)

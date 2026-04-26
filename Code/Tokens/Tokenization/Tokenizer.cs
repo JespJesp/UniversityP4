@@ -5,7 +5,7 @@ namespace Tokens.Tokenization;
 
 public static class Tokenizer
 {
-	public static bool TryTokenize<T>(Lexer lexer) where T : ITokenizationStrategy
+	public static bool TryTokenize<T>(FileLexer lexer) where T : ITokenizationStrategy
 	{
 		return T.TryTokenize(lexer);
 	}

@@ -28,7 +28,7 @@ public class TimelineNode : SymbolNode
 			}
 			else
 			{
-				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected timeline instruction");
+				throw new Exception($"Unexpected timeline instruction");
 			}
 		}
 	}
