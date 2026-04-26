@@ -4,5 +4,5 @@ namespace Tokens.Tokenization.Strategies;
 
 public interface ITokenizationStrategy
 {
-	public static abstract bool TryTokenize(Lexer lexer);
+	public static abstract bool TryTokenize(FileLexer lexer);
 }

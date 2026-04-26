@@ -4,6 +4,7 @@ using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
+using Phases.Lexing;
 using Phases.Parsing;
 using Tokens;
 
@@ -15,7 +16,7 @@ public class ProgramNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		while (parser.CursorToken.Type != TokenType.EndOfFile)
+		while (parser.CursorToken.Type != TokenType.EndOfTokens)
 		{
 			if (parser.TryConsumeToken(TokenType.Identifier, "timeline"))
 			{
@@ -47,7 +48,7 @@ public class ProgramNode : Node
 			}
 			else
 			{
-				throw new Exception($"Token: '{parser.CursorToken}'. Unexpected program instruction");
+				parser.AddErrorAndSkipLine(this, $"Unexpected program instruction");
 			}
 		}
 	}

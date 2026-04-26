@@ -1,6 +1,6 @@
 namespace Phases.Lexing;
 
-public class LexerCursor
+public class Cursor
 {
 	/// <summary>
 	/// This is the index position in the text.
