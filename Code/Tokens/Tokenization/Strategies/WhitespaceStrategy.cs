@@ -4,7 +4,7 @@ namespace Tokens.Tokenization.Strategies;
 
 public class WhitespaceStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		if (!char.IsWhiteSpace(lexer.CursorChar))
 		{
@@ -14,7 +14,7 @@ public class WhitespaceStrategy : ITokenizationStrategy
 		if (lexer.CursorChar == '\n')
 		{
 			// Add newline token
-			lexer.Tokens.Add(new Token(TokenType.Newline, "", lexer.Cursor.Line, lexer.Cursor.Column));
+			lexer.AddToken(TokenType.Newline, "", lexer.Cursor.Line, lexer.Cursor.Column);
 			lexer.Cursor.MoveToNewLine();
 
 			// Check for following indent token
@@ -26,7 +26,7 @@ public class WhitespaceStrategy : ITokenizationStrategy
 			}
 			if (indentSize != 0)
 			{
-				lexer.Tokens.Add(new Token(TokenType.Indent, indentSize.ToString(), lexer.Cursor.Line, lexer.Cursor.Column));
+				lexer.AddToken(TokenType.Indent, indentSize.ToString(), lexer.Cursor.Line, lexer.Cursor.Column);
 			}
 		}
 		else // Ignore whitespace if not a newline

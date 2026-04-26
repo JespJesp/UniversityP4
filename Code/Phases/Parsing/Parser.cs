@@ -33,8 +33,7 @@ public class Parser
 	{
 		// Assign child properties
 		newChild.CreatesNestedScope = createsNestedScope;
-		newChild.Column = CursorToken.Column;
-		newChild.Line = CursorToken.Line;
+		newChild.CursorInfo = CursorToken.CursorInfo.Clone();
 		if (parent.CreatesNestedScope)
 		{
 			newChild.ScopeDepth = parent.ScopeDepth + 1;
@@ -60,11 +59,11 @@ public class Parser
 
 	public void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
-		_errors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node type: '{node.GetType()}'. {errorMessage}");
+		_errors.Add($"{CursorToken.CursorInfo}. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node: '{node.GetType()}'. {errorMessage}");
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line
-		while (CursorToken.Type != TokenType.EndOfFile && CursorToken.Type != TokenType.Newline)
+		while (CursorToken.Type != TokenType.EndOfTokens && CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}

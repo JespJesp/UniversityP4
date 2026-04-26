@@ -29,7 +29,7 @@ public class Annotator
 		}
 		catch (Exception exception)
 		{
-			_errors.Add($"Line: '{node.Line}'. Column: '{node.Column}'. Node: '{node.GetType()}'. {exception.Message}");
+			_errors.Add($"{node.CursorInfo}. Node: '{node.GetType()}'. {exception.Message}");
 		}
 
 		SymbolTable childrensSymbols = node.SymbolTable;

@@ -4,7 +4,7 @@ namespace Tokens.Tokenization.Strategies;
 
 public class StringStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		if (lexer.CursorChar != '"')
 		{
@@ -26,14 +26,14 @@ public class StringStrategy : ITokenizationStrategy
 
 			if (lexer.AtEndOfFile || lexer.CursorChar == '\n')
 			{
-				throw new LexicalException(startLine, startColumn, "String is missing closing quote '\"'");
+				throw new LexicalError(startLine, startColumn, "String is missing closing quote '\"'");
 			}
 		}
 
 		// Skip closing quote
 		lexer.Cursor.MoveToNextColumn();
 
-		lexer.Tokens.Add(new Token(TokenType.String, value, lexer.Cursor.Line, startColumn));
+		lexer.AddToken(TokenType.String, value, lexer.Cursor.Line, startColumn);
 
 		return true;
 	}

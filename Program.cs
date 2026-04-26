@@ -15,6 +15,7 @@ internal class Program
 
 		string filePath = args[0];
 		string fileContent = File.ReadAllText(filePath);
+		string fileName = Path.GetFileName(filePath);
 		string? fileFolderPath = Path.GetDirectoryName(filePath);
 
 		if (fileFolderPath == null)
@@ -24,7 +25,7 @@ internal class Program
 
 		try
 		{
-			InterpretText(fileContent, fileFolderPath);
+			InterpretText(fileContent, fileName, fileFolderPath);
 		}
 		catch (Exception exception)
 		{
@@ -32,9 +33,9 @@ internal class Program
 		}
 	}
 
-	private static void InterpretText(string fileText, string fileFolderPath)
+	private static void InterpretText(string fileContent, string fileName, string fileFolderPath)
 	{
-		var tokens = new Lexer().Lex(fileText, fileFolderPath);
+		var tokens = new Lexer().Lex(fileContent, fileName, fileFolderPath);
 		var astRoot = new Parser().Parse(tokens);
 		new Annotator().Annotate(astRoot);
 		new Validator().Validate(astRoot);

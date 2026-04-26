@@ -4,7 +4,7 @@ namespace Tokens.Tokenization.Strategies;
 
 public class NumberOrMinusStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		if (lexer.CursorChar != '-' && !char.IsDigit(lexer.CursorChar))
 		{
@@ -30,7 +30,7 @@ public class NumberOrMinusStrategy : ITokenizationStrategy
 			{
 				if (hasDecimalSymbol)
 				{
-					throw new LexicalException(lexer.Cursor.Line, lexer.Cursor.Column, "Encountered multiple decimal symbols '.'");
+					throw new LexicalError(lexer.Cursor.Line, lexer.Cursor.Column, "Encountered multiple decimal symbols '.'");
 				}
 				hasDecimalSymbol = true;
 			}
@@ -41,15 +41,15 @@ public class NumberOrMinusStrategy : ITokenizationStrategy
 
 		if (value == "-") // If single minus symbol
 		{
-			lexer.Tokens.Add(new Token(TokenType.Minus, "", lexer.Cursor.Line, startColumn));
+			lexer.AddToken(TokenType.Minus, "", lexer.Cursor.Line, startColumn);
 		}
 		else if (hasDecimalSymbol) // If float
 		{
-			lexer.Tokens.Add(new Token(TokenType.Float, value, lexer.Cursor.Line, startColumn));
+			lexer.AddToken(TokenType.Float, value, lexer.Cursor.Line, startColumn);
 		}
 		else  // If integer
 		{
-			lexer.Tokens.Add(new Token(TokenType.Integer, value, lexer.Cursor.Line, startColumn));
+			lexer.AddToken(TokenType.Integer, value, lexer.Cursor.Line, startColumn);
 		}
 
 		return true;

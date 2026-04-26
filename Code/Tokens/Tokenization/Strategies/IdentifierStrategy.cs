@@ -4,7 +4,7 @@ namespace Tokens.Tokenization.Strategies;
 
 public class IdentifierStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		if (lexer.CursorChar != '_' && !char.IsLetter(lexer.CursorChar))
 		{
@@ -22,7 +22,7 @@ public class IdentifierStrategy : ITokenizationStrategy
 			lexer.Cursor.MoveToNextColumn();
 		}
 
-		lexer.Tokens.Add(new Token(TokenType.Identifier, id, lexer.Cursor.Line, startColumn));
+		lexer.AddToken(TokenType.Identifier, id, lexer.Cursor.Line, startColumn);
 
 		return true;
 	}
