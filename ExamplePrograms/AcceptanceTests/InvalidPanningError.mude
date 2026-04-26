@@ -1,0 +1,16 @@
+% Error test: pan should be between -1 and 1 %
+
+sample hihat "/../Samples/Drums/closed hihat.wav" f4
+
+melody 4_badPan
+	chords
+		0,1 hihat(gain 0.8, pan 2.0)
+
+timeline
+	settings
+		bpm 120
+		timesignature 4/4
+	badPan start 0
+		4_badPan
+	badPan stop 4
+		4_badPan
