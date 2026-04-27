@@ -1,21 +1,16 @@
-using Phases.Parsing;
+using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Samples;
 
-public class SampleReferencesNode : Node
+public class SampleReferencesNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
-	public MelodyNode MelodyNode;
-
-	public SampleReferencesNode(MelodyNode melodyNode)
+	protected override void Parse()
 	{
-		this.MelodyNode = melodyNode;
-	}
+		Parser.ConsumeToken(TokenType.SamplesKeyword);
 
-	public override void CascadeParse(Parser parser)
-	{
-		while (parser.TryConsumeIndent(2))
+		while (Parser.TryConsumeIndent(2))
 		{
-			parser.ParseChild(this, new SampleReferenceNode(this));
+			new SampleReferenceNode(this);
 		}
 	}
 }

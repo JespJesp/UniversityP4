@@ -1,41 +1,43 @@
-using System.Globalization;
-using Phases.Evaluation;
-using Phases.Parsing;
-using Phases.Validation;
+using Ast.Tables;
 using Runtime.Objects;
-using Tokens;
+using Lexing.Tokens;
+using System.Globalization;
 
 namespace Ast.Nodes.Patterns;
 
-public class PatternNode : SymbolNode
+public class PatternNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
 {
-	public Pattern Pattern = new();
 	public float LengthInBeats;
+	public List<string> PatternAndMelodyIds = new();
+	public Pattern Pattern0 = new();
 
-	public override void CascadeParse(Parser parser)
+	protected override void Parse()
 	{
-		parser.ConsumeToken(TokenType.Float, out string lengthValue);
-		this.LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
+		Parser.ConsumeToken(TokenType.PatternKeyword);
+		Parser.ConsumeToken(TokenType.Float, (value) => { LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture); });
+		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
 
-		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
-		this.Id = LengthInBeats + nameValue;
-
-		while (parser.TryConsumeIndent(1))
+		while (Parser.TryConsumeIndent(1))
 		{
-			parser.ParseChild(this, new ReferenceNode(this));
+			new ReferenceNode(this);
 		}
 	}
 
-	public override void Validate(Validator validator)
+	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
 		if (LengthInBeats <= 0)
 		{
-			throw new Exception($"Pattern: '{Id}'. Length cannot be <= 0");
+			Validator.AddError(this, $"Pattern: '{Id}'. Length cannot be <= 0");
 		}
 	}
 
-	public override void Evaluate(Evaluator evaluator)
+	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable localVariables)
 	{
-		this.Pattern.LengthInBeats = this.LengthInBeats;
+		this.Pattern0.LengthInBeats = this.LengthInBeats;
+	}
+
+	protected override RuntimeObject GetRuntimeObject()
+	{
+		return this.Pattern0;
 	}
 }
