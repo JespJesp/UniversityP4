@@ -34,7 +34,7 @@ public class Parser
 	{
 		// Assign child properties
 		newChild.CreatesNestedScope = createsNestedScope;
-		newChild.CursorInfo = CursorToken.CursorInfo.Clone();
+		newChild.Location = CursorToken.Location.Clone();
 		if (parent.CreatesNestedScope)
 		{
 			newChild.ScopeDepth = parent.ScopeDepth + 1;
@@ -60,7 +60,7 @@ public class Parser
 
 	public void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
-		_errors.Add($"{CursorToken.CursorInfo}. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node: '{node.GetType()}'. {errorMessage}");
+		_errors.Add($"{CursorToken.Location}. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node: '{node.GetType()}'. {errorMessage}");
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line

@@ -37,7 +37,7 @@ public class Evaluator
 		}
 		catch (Exception exception)
 		{
-			_errors.Add($"{node.CursorInfo}. Node: '{node.GetType()}'. {exception.Message}");
+			_errors.Add($"{node.Location}. Node: '{node.GetType()}'. {exception.Message}");
 		}
 
 		foreach (Node child in node.Children)
