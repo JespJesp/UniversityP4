@@ -18,6 +18,7 @@ public class Lexer
 		var baseFile = new FileLexer(this, baseFileName, baseFileContent);
 
 		baseFile.Lex();
+		Tokens.Add(new Token(TokenType.EndOfTokens, "", baseFileName, baseFile.Cursor.Line, baseFile.Cursor.Column));
 
 		if (Errors.Any())
 		{

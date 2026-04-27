@@ -11,7 +11,6 @@ public class Parser
 	private List<string> _errors = new();
 
 	public Token CursorToken => _tokens[_cursorPosition];
-	public bool AtEndOfTokens => _cursorPosition >= _tokens.Count;
 
 	public ProgramNode Parse(List<Token> inputTokens)
 	{
@@ -64,7 +63,7 @@ public class Parser
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line
-		while (!AtEndOfTokens && CursorToken.Type != TokenType.Newline)
+		while (CursorToken.Type != TokenType.EndOfTokens && CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}

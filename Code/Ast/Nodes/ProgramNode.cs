@@ -16,7 +16,7 @@ public class ProgramNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		while (!parser.AtEndOfTokens)
+		while (parser.CursorToken.Type != TokenType.EndOfTokens)
 		{
 			if (parser.TryConsumeToken(TokenType.Identifier, "timeline"))
 			{
