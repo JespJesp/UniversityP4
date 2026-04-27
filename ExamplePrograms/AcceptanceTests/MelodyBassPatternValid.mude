@@ -1,0 +1,62 @@
+% Valid test: long drum pattern with panning and gain %
+
+sample kick "/../Samples/Drums/kick A#.wav" a2
+sample snare "/../Samples/Drums/snare.wav" c3
+sample hihat "/../Samples/Drums/closed hihat.wav" f4
+sample clap "/../Samples/Drums/clap.wav" c2
+
+melody 8_intro
+	chords
+		0,1 kick(gain 2.2)
+		1,2 hihat(gain 0.5, pan -0.4)
+		2,3 snare(gain 1.8)
+		3,4 hihat(gain 0.5, pan 0.4)
+		4,5 kick(gain 2.2)
+		5,6 hihat(gain 0.5, pan -0.4)
+		6,7 snare(gain 1.8)
+		7,8 clap(gain 1.4)
+
+melody 8_main
+	chords
+		0,1 kick(gain 2.8)
+		0,1 hihat(gain 0.4, pan -0.5)
+		1,2 hihat(gain 0.4, pan 0.5)
+		2,3 snare(gain 2.2)
+		2,3 hihat(gain 0.4, pan -0.5)
+		3,4 clap(gain 1.2)
+		3,4 hihat(gain 0.4, pan 0.5)
+		4,5 kick(gain 2.8)
+		4,5 hihat(gain 0.4, pan -0.5)
+		5,6 hihat(gain 0.4, pan 0.5)
+		6,7 snare(gain 2.2)
+		6,7 hihat(gain 0.4, pan -0.5)
+		7,8 clap(gain 1.2)
+		7,8 hihat(gain 0.4, pan 0.5)
+
+melody 8_outro
+	chords
+		0,1 kick(gain 2.2)
+		1,2 hihat(gain 0.4, pan -0.6)
+		2,3 snare(gain 1.8)
+		3,4 hihat(gain 0.4, pan 0.6)
+		4,5 clap(gain 1.2)
+		5,6 hihat(gain 0.4, pan -0.6)
+		6,7 snare(gain 1.6)
+		7,8 kick(gain 2.4)
+
+timeline
+	settings
+		bpm 96
+		timesignature 4/4
+	intro start 0
+		8_intro
+	intro stop 8
+		8_intro
+	main start 8
+		8_main
+	main stop 24
+		8_main
+	outro start 24
+		8_outro
+	outro stop 32
+		8_outro
