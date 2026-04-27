@@ -14,18 +14,18 @@ internal class Program
 		}
 
 		string filePath = args[0];
-		string fileContent = File.ReadAllText(filePath);
-		string fileName = Path.GetFileName(filePath);
-		string? fileFolderPath = Path.GetDirectoryName(filePath);
+		FileInfo fileInfo = new FileInfo(filePath);
 
-		if (fileFolderPath == null)
+		if (!fileInfo.Exists)
 		{
 			throw new Exception("Program argument error: Input file does not exist");
 		}
 
+		string fileContent = File.ReadAllText(fileInfo.FullName);
+
 		try
 		{
-			InterpretText(fileContent, fileName, fileFolderPath);
+			InterpretFile(fileContent, fileInfo);
 		}
 		catch (Exception exception)
 		{
@@ -33,12 +33,12 @@ internal class Program
 		}
 	}
 
-	private static void InterpretText(string fileContent, string fileName, string fileFolderPath)
+	private static void InterpretFile(string fileContent, FileInfo fileInfo)
 	{
-		var tokens = new Lexer().Lex(fileContent, fileName, fileFolderPath);
+		var tokens = new Lexer().Lex(fileContent, fileInfo);
 		var astRoot = new Parser().Parse(tokens);
 		new Annotator().Annotate(astRoot);
 		new Validator().Validate(astRoot);
-		new Evaluator().Evaluate(astRoot, fileFolderPath);
+		new Evaluator().Evaluate(astRoot, fileInfo);
 	}
 }

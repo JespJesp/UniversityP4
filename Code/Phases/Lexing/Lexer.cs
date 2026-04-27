@@ -5,20 +5,17 @@ namespace Phases.Lexing;
 public class Lexer
 {
 	public List<Token> Tokens = new();
-	internal List<string> ImportedFilePaths = new();
-	internal string BaseDirectory = "";
+	internal List<string> ImportedFileFullPaths = new();
+	internal string InputFileFolderFullPath = "";
 	internal List<string> Errors = new();
 
-	public List<Token> Lex(string baseFileContent, string baseFileName, string baseDirectoryPath)
+	public List<Token> Lex(string fileContent, FileInfo fileInfo)
 	{
 		Errors.Clear();
 		Tokens.Clear();
 
-		BaseDirectory = baseDirectoryPath;
-		var baseFile = new FileLexer(this, baseFileName, baseFileContent);
-
-		baseFile.Lex();
-		Tokens.Add(new Token(TokenType.EndOfTokens, "", baseFileName, baseFile.Cursor.Line, baseFile.Cursor.Column));
+		InputFileFolderFullPath = fileInfo.DirectoryName ?? "";
+		new FileLexer(this, fileInfo.Name, fileContent).Lex(fileInfo.FullName);
 
 		if (Errors.Any())
 		{

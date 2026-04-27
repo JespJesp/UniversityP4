@@ -8,7 +8,7 @@ public class Evaluator
 {
 	private List<string> _errors = new();
 
-	public void Evaluate(ProgramNode programNode, string inputFileFolderPath)
+	public void Evaluate(ProgramNode programNode, FileInfo fileInfo)
 	{
 		_errors.Clear();
 
@@ -21,7 +21,7 @@ public class Evaluator
 				throw new Exception("\n- " + string.Join("\n- ", _errors));
 			}
 
-			new AudioRenderer().RenderToFile(programNode.timelineNode, inputFileFolderPath);
+			new AudioRenderer().RenderToFile(programNode.timelineNode, fileInfo);
 		}
 		catch (Exception exception)
 		{

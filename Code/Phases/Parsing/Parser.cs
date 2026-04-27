@@ -11,6 +11,7 @@ public class Parser
 	private List<string> _errors = new();
 
 	public Token CursorToken => _tokens[_cursorPosition];
+	public bool AtEndOfTokens => _cursorPosition >= _tokens.Count;
 
 	public ProgramNode Parse(List<Token> inputTokens)
 	{
@@ -63,7 +64,7 @@ public class Parser
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line
-		while (CursorToken.Type != TokenType.EndOfTokens && CursorToken.Type != TokenType.Newline)
+		while (!AtEndOfTokens && CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}
@@ -133,12 +134,21 @@ public class Parser
 		int lookahead = 0;
 		foreach (Token requiredToken in requiredTokens)
 		{
+			// Check for end of tokens
+			if (_cursorPosition + lookahead >= _tokens.Count)
+			{
+				isCorrectOrder = false;
+				break;
+			}
+
+			// Check for right token type and value
 			Token lookaheadToken = _tokens[_cursorPosition + lookahead];
 			if (!lookaheadToken.Type.IsSubtypeOf(requiredToken.Type) || lookaheadToken.Value != requiredToken.Value)
 			{
 				isCorrectOrder = false;
 				break;
 			}
+
 			lookahead++;
 		}
 

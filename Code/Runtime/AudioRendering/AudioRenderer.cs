@@ -13,21 +13,22 @@ public class AudioRenderer
 {
 	const string OutputFileName = "ProgramOutput.wav";
 
-	public void RenderToFile(TimelineNode timelineNode, string inputFileFolderPath)
+	public void RenderToFile(TimelineNode timelineNode, FileInfo fileInfo)
 	{
 		Timeline timeline = timelineNode.Timeline;
 		SymbolTable globalSymbols = timelineNode.SymbolTable;
 
 		var loops = new LoopBuilder().Build(timeline, globalSymbols);
+		string fileFolderFullPath = fileInfo.DirectoryName ?? "";
 
-		List<ISampleProvider> sounds = CreateSounds(timeline, loops, inputFileFolderPath);
+		List<ISampleProvider> sounds = CreateSounds(timeline, loops, fileFolderFullPath);
 		var mixer = new MixingSampleProvider(sounds);
 		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
 
 		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'");
 	}
 
-	private List<ISampleProvider> CreateSounds(Timeline timeline, List<Loop> loops, string inputFileFolderPath)
+	private List<ISampleProvider> CreateSounds(Timeline timeline, List<Loop> loops, string fileFolderFullPath)
 	{
 		List<ISampleProvider> sounds = new();
 
@@ -60,7 +61,7 @@ public class AudioRenderer
 
 						float durationInBeats = note.EndBeat - note.StartBeat;
 
-						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, fileFolderFullPath);
 						sounds.Add(sound);
 					}
 
@@ -79,7 +80,7 @@ public class AudioRenderer
 						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
 						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
-						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, inputFileFolderPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, fileFolderFullPath);
 						sounds.Add(sound);
 					}
 				}
@@ -89,9 +90,9 @@ public class AudioRenderer
 		return sounds;
 	}
 
-	private ISampleProvider CreateSound(Timeline timeline, Sample sample, Note note, float globalStartBeat, float durationInBeats, string inputFileFolderPath)
+	private ISampleProvider CreateSound(Timeline timeline, Sample sample, Note note, float globalStartBeat, float durationInBeats, string fileFolderFullPath)
 	{
-		var reader = new AudioFileReader(inputFileFolderPath + sample.FilePath);
+		var reader = new AudioFileReader(fileFolderFullPath + sample.FilePath);
 
 		// Resample the sound to ensure it uses the output's sample rate
 		var resampler = new WdlResamplingSampleProvider(reader, timeline.SampleRate);
