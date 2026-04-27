@@ -1,0 +1,14 @@
+% Error test: using a sample that has not been declared %
+
+melody 4_badSample
+	chords
+		0,1 missingSample(gain 1.0)
+
+timeline
+	settings
+		bpm 120
+		timesignature 4/4
+	badSample start 0
+		4_badSample
+	badSample stop 4
+		4_badSample
