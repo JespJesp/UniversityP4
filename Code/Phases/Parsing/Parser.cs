@@ -134,12 +134,21 @@ public class Parser
 		int lookahead = 0;
 		foreach (Token requiredToken in requiredTokens)
 		{
+			// Check for end of tokens
+			if (_cursorPosition + lookahead >= _tokens.Count)
+			{
+				isCorrectOrder = false;
+				break;
+			}
+
+			// Check for right token type and value
 			Token lookaheadToken = _tokens[_cursorPosition + lookahead];
 			if (!lookaheadToken.Type.IsSubtypeOf(requiredToken.Type) || lookaheadToken.Value != requiredToken.Value)
 			{
 				isCorrectOrder = false;
 				break;
 			}
+
 			lookahead++;
 		}
 
