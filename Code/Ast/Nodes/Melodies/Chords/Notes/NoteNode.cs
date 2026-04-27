@@ -1,100 +1,89 @@
-using Ast.Nodes.Samples;
-using Phases.Annotation;
-using Phases.Evaluation;
-using Phases.Parsing;
-using Phases.Validation;
+using Ast.Tables;
 using Runtime.Objects;
-using Tokens;
+using Ast.Nodes.Melodies.Chords.Notes.Modifiers;
+using Ast.Nodes.Samples;
+using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes;
 
-public class NoteNode : Node
+public class NoteNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
-	public ChordNode ChordNode;
-	public Note Note = new();
-	public string? PitchString;
-	private string? _sampleOverrideId;
+	public string SampleName = "";
+	public string Pitch = "";
+	public Note Note0 = new();
 
-	public NoteNode(ChordNode chordsNode)
+	protected override void Parse()
 	{
-		this.ChordNode = chordsNode;
-	}
+		string firstIdentifier = "";
+		Parser.ConsumeToken(TokenType.Identifier, (value) => firstIdentifier = value);
 
-	public override void CascadeParse(Parser parser)
-	{
-		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifier);
-
-		if (Pitch.IsPitch(firstIdentifier))
+		if (IsPitch(firstIdentifier))
 		{
-			PitchString = firstIdentifier;
+			Pitch = firstIdentifier;
 		}
 		else
 		{
-			_sampleOverrideId = firstIdentifier;
-			if (parser.TryConsumeToken(TokenType.Identifier, out string pitchStringValue))
+			SampleName = firstIdentifier;
+
+			if (Parser.CurrentToken.Type == TokenType.Identifier)
 			{
-				// Note: We cannot simply do "out PitchString", since the out would set its value to "", not null.
-				PitchString = pitchStringValue; 
-			};
-		}
-
-		if (parser.TryConsumeToken(TokenType.LeftParentheses))
-		{
-			parser.ParseChild(this, new ModifiersNode(this));
-		}
-	}
-
-	public override void Annotate(Annotator annotator)
-	{
-		List<string> errors = new();
-		if (_sampleOverrideId is not null && !SymbolTable.Contains<SampleNode>(_sampleOverrideId))
-		{
-			errors.Add($"Sample reference '{_sampleOverrideId}' is not declared");
-		}
-
-		if (errors.Count != 0)
-		{
-			throw new Exception($"Melody: '{ChordNode.ChordsNode.MelodyNode.Id}'. " + string.Join(" ", errors));
-		}
-	}
-
-	public override void Validate(Validator validator)
-	{
-		List<string> errors = new();
-		if (PitchString is not null)
-		{
-			try
-			{
-				Pitch.FromString(this.PitchString); // Throws exception if pitch string cannot be converted
-			}
-			catch (Exception exception)
-			{
-				errors.Add(exception.Message);
+				Parser.ConsumeToken(TokenType.Identifier, (value) => Pitch = value);
 			}
 		}
-		
-		if (errors.Count != 0)
+
+		if (Parser.CurrentToken.Type == TokenType.LeftParentheses)
 		{
-			throw new Exception($"Melody: '{ChordNode.ChordsNode.MelodyNode.Id}'. " + string.Join(" ", errors));
+			new ModifiersNode(this);
 		}
 	}
 
-	public override void Evaluate(Evaluator evaluator)
+	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		this.Note.StartBeat = ChordNode.StartBeat.Value;
-		this.Note.EndBeat = ChordNode.EndBeat.Value;
-		
-		if (PitchString is not null)
+		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+
+		if (!string.IsNullOrEmpty(SampleName) && !symbols.Contains(typeof(SampleNode), SampleName))
 		{
-			this.Note.Pitch = Pitch.FromString(this.PitchString);
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. The sample reference '{SampleName}' is not declared");
 		}
-		if (_sampleOverrideId is not null)
+	}
+
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
+	{
+		Melody melody = ancestors.Get<MelodyNode>().Melody0;
+		ChordNode chordNode = ancestors.Get<ChordNode>();
+
+		Note0.StartBeat = chordNode.StartBeat;
+		Note0.EndBeat = chordNode.EndBeat;
+		
+		if (!string.IsNullOrEmpty(Pitch))
 		{
-			this.Note.SampleOverride = SymbolTable.Get<SampleNode>(_sampleOverrideId).Sample;
+			Note0.Pitch0 = new(Pitch);
 		}
 
-		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;
-		melody.Notes.Add(Note);
+		if (!string.IsNullOrEmpty(SampleName))
+		{
+			Sample sample = variables.Get<Sample>(SampleName);
+			Note0.SampleOverride = sample;
+		}
+
+		melody.Notes.Add(Note0);
+	}
+
+	private static bool IsPitch(string value)
+	{
+		if (string.IsNullOrEmpty(value) || value.Length < 2)
+		{
+			return false;
+		}
+
+		char firstChar = char.ToLower(value[0]);
+		if (firstChar < 'a' || firstChar > 'g')
+		{
+			return false;
+		}
+
+		return value.Substring(1).Any(char.IsDigit);
 	}
 }
+
 

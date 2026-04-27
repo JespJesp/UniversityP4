@@ -1,41 +1,35 @@
-using Ast.Nodes.Floats;
-using Phases.Evaluation;
-using Phases.Parsing;
-using Phases.Validation;
+using System.Globalization;
+using Ast.Tables;
 using Runtime.Objects;
+using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 
-public class PanNode : Node
+public class PanNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
-	public ModifiersNode ModifiersNode;
-	private FloatExpressionNode _pan = new();
+	public float Pan = 0;
 
-	public PanNode(ModifiersNode modifiersNode)
+	protected override void Parse()
 	{
-		this.ModifiersNode = modifiersNode;
+		Parser.ConsumeToken(TokenType.PanKeyword);
+		Parser.ConsumeToken(TokenType.Float, (value) => Pan = float.Parse(value, CultureInfo.InvariantCulture));
 	}
 
-	public override void CascadeParse(Parser parser)
+	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		_pan = parser.ParseChild(this, new FloatExpressionNode());
-	}
+		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+		NoteNode noteNode = ancestors.Get<NoteNode>();
 
-	public override void Validate(Validator validator)
-	{
-		NoteNode noteNode = ModifiersNode.NoteNode;
-		MelodyNode melodyNode = noteNode.ChordNode.ChordsNode.MelodyNode;
-
-		if (_pan.Value < -1.0f || _pan.Value > 1.0f)
+		if (Pan < -1.0f || Pan > 1.0f)
 		{
-			throw new Exception($"Melody: '{melodyNode.Id}'. Note: '{noteNode.PitchString}'. Pan '{_pan.Value}' must be between -1 and 1");
+			Validator.AddError(this, $"Melody: '{melodyNode.Id}'. Note: '{noteNode.Pitch}'. Pan must be between -1 and 1, but was: {Pan}");
 		}
 	}
 
-	public override void Evaluate(Evaluator evaluator)
+	protected override void Evaluate(NodeTable ancestors, RuntimeVariableTable variables)
 	{
-		Note note = ModifiersNode.NoteNode.Note;
-		note.Pan = _pan.Value;
+		Note note = ancestors.Get<NoteNode>().Note0;
+		note.Pan = Pan;
 	}
 }
 

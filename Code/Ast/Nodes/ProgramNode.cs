@@ -1,54 +1,37 @@
-using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies;
 using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
-using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
-using Phases.Lexing;
-using Phases.Parsing;
-using Tokens;
+using Lexing.Tokens;
 
 namespace Ast.Nodes;
 
-public class ProgramNode : Node
+public class ProgramNode(Node? parent = null, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
-	public TimelineNode timelineNode = new();
-
-	public override void CascadeParse(Parser parser)
+	protected override void Parse()
 	{
-		while (!parser.AtEndOfTokens)
+		bool hasConsumedTimelineKeyword = false;
+
+		while (Parser.CurrentToken.Type != TokenType.EndOfFile)
 		{
-			if (parser.TryConsumeToken(TokenType.Identifier, "timeline"))
+			switch (Parser.CurrentToken.Type)
 			{
-				timelineNode = parser.ParseChild(this, new TimelineNode());
-			}
-			else if (parser.TryConsumeToken(TokenType.Identifier, "pattern"))
-			{
-				parser.ParseChild(this, new PatternNode());
-			}
-			else if (parser.TryConsumeToken(TokenType.Identifier, "melody"))
-			{
-				parser.ParseChild(this, new MelodyNode());
-			}
-			else if (parser.TryConsumeToken(TokenType.Identifier, "sample"))
-			{
-				parser.ParseChild(this, new SampleNode());
-			}
-			else if (parser.TryConsumeToken(TokenType.Identifier, "string"))
-			{
-				parser.ParseChild(this, new StringConstantNode());
-			}
-			else if (parser.TryConsumeToken(TokenType.Identifier, "float"))
-			{
-				parser.ParseChild(this, new FloatConstantNode());
-			}
-			else if (parser.TryConsumeToken(TokenType.Newline))
-			{
-				// Do nothing
-			}
-			else
-			{
-				parser.AddErrorAndSkipLine(this, $"Unexpected program instruction");
+				case TokenType.TimelineKeyword:
+					if (hasConsumedTimelineKeyword)
+					{
+						Parser.AddError($"Node type: {this.GetType()}. 'timeline' keyword appears multiple times.");
+					}
+					else
+					{
+						hasConsumedTimelineKeyword = true;
+						new TimelineNode(this);
+					}
+					break;
+				case TokenType.PatternKeyword: new PatternNode(this); break;
+				case TokenType.MelodyKeyword: new MelodyNode(this); break;
+				case TokenType.SampleKeyword: new SampleNode(this); break;
+				case TokenType.Newline: Parser.ConsumeToken(TokenType.Newline); break;
+				default: throw new ArgumentOutOfRangeException($"Unexpected token");
 			}
 		}
 	}

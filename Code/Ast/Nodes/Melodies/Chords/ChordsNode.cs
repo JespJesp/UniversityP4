@@ -1,21 +1,16 @@
-using Phases.Parsing;
+using Lexing.Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
 
-public class ChordsNode : Node
+public class ChordsNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
 {
-	public MelodyNode MelodyNode;
-
-	public ChordsNode(MelodyNode melodyNode)
+	protected override void Parse()
 	{
-		this.MelodyNode = melodyNode;
-	}
+		Parser.ConsumeToken(TokenType.ChordsKeyword);
 
-	public override void CascadeParse(Parser parser)
-	{
-		while (parser.TryConsumeIndent(2))
+		while (Parser.TryConsumeIndent(2))
 		{
-			parser.ParseChild(this, new ChordNode(this));
+			new ChordNode(this);
 		}
 	}
 }
