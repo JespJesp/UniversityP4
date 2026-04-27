@@ -31,18 +31,7 @@ public class FileLexer
 		{
 			try
 			{
-				if (!Tokenizer.TryTokenize<WhitespaceStrategy>(this)
-					&& !Tokenizer.TryTokenize<ImportStrategy>(this)
-					&& !Tokenizer.TryTokenize<CommentStrategy>(this)
-					&& !Tokenizer.TryTokenize<StringStrategy>(this)
-					&& !Tokenizer.TryTokenize<LeftParenthesesStrategy>(this)
-					&& !Tokenizer.TryTokenize<RightParenthesesStrategy>(this)
-					&& !Tokenizer.TryTokenize<CommaStrategy>(this)
-					&& !Tokenizer.TryTokenize<PlusStrategy>(this)
-					&& !Tokenizer.TryTokenize<AsteriskStrategy>(this)
-					&& !Tokenizer.TryTokenize<SlashStrategy>(this)
-					&& !Tokenizer.TryTokenize<NumberOrMinusStrategy>(this)
-					&& !Tokenizer.TryTokenize<IdentifierStrategy>(this))
+				if (!Tokenizer.TryTokenize(this))
 				{
 					Cursor.MoveToNextColumn();
 					throw new LexicalError(Cursor.Line, Cursor.Column - 1, $"Unknown token type for character: '{CursorChar}'");
