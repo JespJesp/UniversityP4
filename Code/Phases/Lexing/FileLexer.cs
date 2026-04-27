@@ -40,8 +40,8 @@ public class FileLexer
 			}
 			catch (LexicalError exception)
 			{
-				CursorInfo cursorInfo = new(_fileName, exception.Line, exception.Column);
-				_lexer.Errors.Add($"{cursorInfo}. {exception.Message}");
+				Location location = new(_fileName, exception.Line, exception.Column);
+				_lexer.Errors.Add($"{location}. {exception.Message}");
 			}
 		}
 	}

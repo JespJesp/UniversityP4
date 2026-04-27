@@ -8,7 +8,7 @@ namespace Ast;
 public abstract class Node
 {
 	public int ScopeDepth;
-	public CursorInfo CursorInfo = new();
+	public Location Location = new();
 	public List<Node> Children = new();
 	public SymbolTable SymbolTable = new();
 	public bool CreatesNestedScope;

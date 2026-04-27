@@ -1,21 +1,21 @@
 
 
-public class CursorInfo
+public class Location
 {
 	private string _fileName = "";
 	private int _line = -1;
 	private int _column = -1;
 
-	public CursorInfo() { }
+	public Location() { }
 
-	public CursorInfo(string fileName, int line, int column)
+	public Location(string fileName, int line, int column)
 	{
 		_fileName = fileName;
 		_line = line;
 		_column = column;
 	}
 
-	public CursorInfo Clone()
+	public Location Clone()
 	{
 		return new()
 		{

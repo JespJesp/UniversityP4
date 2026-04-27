@@ -4,7 +4,7 @@ public class Token
 {
 	public TokenType Type { get; }
 	public string Value { get; }
-	public CursorInfo CursorInfo = new();
+	public Location Location = new();
 
 	public Token(TokenType type, string value = "")
 	{
@@ -16,6 +16,6 @@ public class Token
 	{
 		Type = type;
 		Value = value;
-		CursorInfo = new(fileName, line, column);
+		Location = new(fileName, line, column);
 	}
 }
