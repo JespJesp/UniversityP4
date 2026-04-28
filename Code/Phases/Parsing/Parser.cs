@@ -86,7 +86,17 @@ public class Parser
 	}
 	public bool TryConsumeToken(TokenType requiredType, string requiredValue, out string tokenValue)
 	{
-		if (CursorToken.Value != requiredValue)
+		bool isValueMatch;
+		if (requiredType == TokenType.Identifier)
+		{
+			isValueMatch = string.Equals(CursorToken.Value, requiredValue, StringComparison.OrdinalIgnoreCase);
+		}
+		else
+		{
+			isValueMatch = CursorToken.Value == requiredValue;
+		}
+
+		if (!isValueMatch)
 		{
 			tokenValue = "";
 			return false;

@@ -1,4 +1,4 @@
-using Lexing.Tokens;
+using Tokens;
 
 namespace UniversityP4.Tests;
 

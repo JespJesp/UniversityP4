@@ -52,7 +52,7 @@ public class LoopBuilder
 				activeMelodies.Add(melody, starts);
 			}
 
-			starts.Add(new ActiveLoopState(startBeat, command.GainMultiplier, command.PitchShiftHalfsteps));
+			starts.Add(new ActiveLoopState(startBeat, command.GainMultiplier, command.PitchShiftHalfsteps, command.PanOffset));
 		}
 
 		if (!string.IsNullOrWhiteSpace(command.Id))
@@ -90,7 +90,7 @@ public class LoopBuilder
 					continue;
 				}
 
-				Melody adjustedMelody = MelodyModifier.CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps);
+				Melody adjustedMelody = MelodyModifier.CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps, start.PanOffset);
 				loops.Add(new Loop
 				{
 					Melody = adjustedMelody,
@@ -165,7 +165,7 @@ public class LoopBuilder
 				float endBeat = Math.Max(timelineEndBeat, start.StartBeat + melody.LengthInBeats);
 				if (endBeat > start.StartBeat)
 				{
-					Melody adjustedMelody = MelodyModifier.CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps);
+					Melody adjustedMelody = MelodyModifier.CreateAdjustedMelody(melody, start.GainMultiplier, start.PitchShiftHalfsteps, start.PanOffset);
 					Loops.Add(new Loop
 					{
 						Melody = adjustedMelody,
@@ -182,12 +182,14 @@ public class LoopBuilder
 		public float StartBeat { get; }
 		public float GainMultiplier { get; }
 		public float PitchShiftHalfsteps { get; }
+		public float PanOffset { get; }
 
-		public ActiveLoopState(float startBeat, float gainMultiplier, float pitchShiftHalfsteps)
+		public ActiveLoopState(float startBeat, float gainMultiplier, float pitchShiftHalfsteps, float panOffset)
 		{
 			StartBeat = startBeat;
 			GainMultiplier = gainMultiplier;
 			PitchShiftHalfsteps = pitchShiftHalfsteps;
+			PanOffset = panOffset;
 		}
 	}
 }

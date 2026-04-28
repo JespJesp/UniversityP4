@@ -1,6 +1,6 @@
 using System.Reflection;
-using Ast;
-using Lexing.Tokens;
+using Phases.Parsing;
+using Tokens;
 
 namespace UniversityP4.Tests;
 
@@ -9,65 +9,62 @@ public class ParserTests
     [Fact]
     public void TryConsumeToken_Should_Accept_Integer_When_Expecting_Float()
     {
-        InitializeParserState(
+        var parser = CreateParser(
             new Token(TokenType.Integer, "7"),
             new Token(TokenType.EndOfFile));
 
-        string? consumedValue = null;
-
-        var consumed = Parser.TryConsumeToken(TokenType.Float, value => consumedValue = value);
+        var consumed = parser.TryConsumeToken(TokenType.Float, out string consumedValue);
 
         consumed.ShouldBeTrue();
         consumedValue.ShouldBe("7");
-        Parser.CurrentToken.Type.ShouldBe(TokenType.EndOfFile);
+        parser.CursorToken.Type.ShouldBe(TokenType.EndOfFile);
     }
 
     [Fact]
     public void ConsumeToken_Should_Throw_When_CurrentToken_Does_Not_Match()
     {
-        InitializeParserState(
+        var parser = CreateParser(
             new Token(TokenType.Identifier, "_abc"),
             new Token(TokenType.EndOfFile));
 
-        Action act = () => Parser.ConsumeToken(TokenType.String);
+        Action act = () => parser.ConsumeToken(TokenType.String);
 
         var exception = Should.Throw<Exception>(act);
-
         exception.Message.ShouldContain("Expected token of type 'String'");
     }
 
     [Fact]
     public void TryConsumeIndent_Should_Return_True_And_Advance_When_Newline_And_Indent_Match()
     {
-        InitializeParserState(
+        var parser = CreateParser(
             new Token(TokenType.Newline),
             new Token(TokenType.Indent, "2"),
             new Token(TokenType.EndOfFile));
 
-        var consumed = Parser.TryConsumeIndent(2);
+        var consumed = parser.TryConsumeIndent(2);
 
         consumed.ShouldBeTrue();
-        Parser.CurrentToken.Type.ShouldBe(TokenType.EndOfFile);
+        parser.CursorToken.Type.ShouldBe(TokenType.EndOfFile);
     }
 
     [Fact]
     public void TryConsumeTokens_Should_Return_False_And_Not_Advance_When_Value_Does_Not_Match()
     {
-        InitializeParserState(
+        var parser = CreateParser(
             new Token(TokenType.Integer, "8"),
             new Token(TokenType.EndOfFile));
 
-        var consumed = Parser.TryConsumeTokens(new[] { new Token(TokenType.Float, "7") });
+        var consumed = parser.TryConsumeTokens(new[] { new Token(TokenType.Float, "7") });
 
         consumed.ShouldBeFalse();
-        Parser.CurrentToken.Type.ShouldBe(TokenType.Integer);
-        Parser.CurrentToken.Value.ShouldBe("8");
+        parser.CursorToken.Type.ShouldBe(TokenType.Integer);
+        parser.CursorToken.Value.ShouldBe("8");
     }
 
     [Fact]
-    public void HandleUniqueOptions_Should_Consume_Options_In_Any_Order_When_Separated()
+    public void TryConsumeOptions_Should_Consume_Options_In_Any_Order_When_Separated()
     {
-        InitializeParserState(
+        var parser = CreateParser(
             new Token(TokenType.Identifier, "_lead"),
             new Token(TokenType.Comma),
             new Token(TokenType.Integer, "42"),
@@ -76,51 +73,94 @@ public class ParserTests
         string? parsedId = null;
         string? parsedNumber = null;
 
-        Parser.HandleUniqueOptions(
-            new Dictionary<TokenType, Action>
+        parser.TryConsumeOptions(
+            new()
             {
-                [TokenType.Identifier] = () => Parser.ConsumeToken(TokenType.Identifier, value => parsedId = value),
-                [TokenType.Integer] = () => Parser.ConsumeToken(TokenType.Integer, value => parsedNumber = value)
+                (
+                    () =>
+                    {
+                        if (parser.TryConsumeToken(TokenType.Identifier, out string value))
+                        {
+                            parsedId = value;
+                            return true;
+                        }
+
+                        return false;
+                    },
+                    () => { }
+                ),
+                (
+                    () =>
+                    {
+                        if (parser.TryConsumeToken(TokenType.Integer, out string value))
+                        {
+                            parsedNumber = value;
+                            return true;
+                        }
+
+                        return false;
+                    },
+                    () => { }
+                ),
             },
-            new[] { new Token(TokenType.Comma) });
+            [new Token(TokenType.Comma)]);
 
         parsedId.ShouldBe("_lead");
         parsedNumber.ShouldBe("42");
-        Parser.CurrentToken.Type.ShouldBe(TokenType.EndOfFile);
+        parser.CursorToken.Type.ShouldBe(TokenType.EndOfFile);
     }
 
     [Fact]
-    public void HandleUniqueOptions_Should_Throw_When_Option_Is_Duplicated()
+    public void TryConsumeOptions_Should_Stop_When_Encountering_Duplicate_Option()
     {
-        InitializeParserState(
+        var parser = CreateParser(
             new Token(TokenType.Integer, "1"),
             new Token(TokenType.Comma),
             new Token(TokenType.Integer, "2"),
             new Token(TokenType.EndOfFile));
 
-        Action act = () => Parser.HandleUniqueOptions(
-            new Dictionary<TokenType, Action>
-            {
-                [TokenType.Integer] = () => Parser.ConsumeToken(TokenType.Integer)
-            },
-            new[] { new Token(TokenType.Comma) });
+        string? parsedNumber = null;
 
-        var exception = Should.Throw<Exception>(act);
-        exception.Message.ShouldContain("Duplicate optional token 'Integer'");
+        parser.TryConsumeOptions(
+            new()
+            {
+                (
+                    () =>
+                    {
+                        if (parser.TryConsumeToken(TokenType.Integer, out string value))
+                        {
+                            parsedNumber = value;
+                            return true;
+                        }
+
+                        return false;
+                    },
+                    () => { }
+                ),
+            },
+            [new Token(TokenType.Comma)]);
+
+        parsedNumber.ShouldBe("1");
+        parser.CursorToken.Type.ShouldBe(TokenType.Integer);
+        parser.CursorToken.Value.ShouldBe("2");
     }
 
-    private static void InitializeParserState(params Token[] tokens)
+    private static Parser CreateParser(params Token[] tokens)
     {
-        typeof(Parser)
-            .GetField("_tokens", BindingFlags.NonPublic | BindingFlags.Static)!
-            .SetValue(null, tokens.ToList());
+        var parser = new Parser();
 
         typeof(Parser)
-            .GetField("_cursorPosition", BindingFlags.NonPublic | BindingFlags.Static)!
-            .SetValue(null, 0);
+            .GetField("_tokens", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(parser, tokens.ToList());
 
         typeof(Parser)
-            .GetField("_syntaxErrors", BindingFlags.NonPublic | BindingFlags.Static)!
-            .SetValue(null, new List<string>());
+            .GetField("_cursorPosition", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(parser, 0);
+
+        typeof(Parser)
+            .GetField("_errors", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(parser, new List<string>());
+
+        return parser;
     }
 }
