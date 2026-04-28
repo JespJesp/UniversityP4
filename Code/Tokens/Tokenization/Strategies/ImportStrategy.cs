@@ -4,7 +4,7 @@ namespace Tokens.Tokenization.Strategies;
 
 public class ImportStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		// Check for import statement
 		string importStatementStart = "import \"";
@@ -19,25 +19,24 @@ public class ImportStrategy : ITokenizationStrategy
 
 		int startLine = lexer.Cursor.Line;
 		int startColumn = lexer.Cursor.Column;
-		string localFilePath = "";
+		string fileLocalPath = "";
 
 		// Chain characters together until closing quote
 		while (lexer.CursorChar != '"')
 		{
-			localFilePath += lexer.CursorChar;
+			fileLocalPath += lexer.CursorChar;
 			lexer.Cursor.MoveToNextColumn();
 
 			if (lexer.AtEndOfFile || lexer.CursorChar == '\n')
 			{
-				throw new LexicalException(startLine, startColumn, "Import statement string is missing closing quote '\"'");
+				throw new LexicalError(startLine, startColumn, "Import statement string is missing closing quote '\"'");
 			}
 		}
 
 		// Skip closing quote
 		lexer.Cursor.MoveToNextColumn();
 
-		string fullFilePath = Path.GetFullPath(Path.Combine(lexer.BaseDirectory, localFilePath));
-		lexer.AddFile(startLine, startColumn, fullFilePath);
+		lexer.LexNewFile(startLine, startColumn, fileLocalPath);
 
 		return true;
 	}

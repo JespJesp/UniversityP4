@@ -4,14 +4,14 @@ namespace Tokens.Tokenization.Strategies;
 
 public class RightParenthesesStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		if (lexer.CursorChar != ')')
 		{
 			return false;
 		}
 
-		lexer.Tokens.Add(new Token(TokenType.RightParentheses, "", lexer.Cursor.Line, lexer.Cursor.Column));
+		lexer.AddToken(TokenType.RightParentheses, "", lexer.Cursor.Line, lexer.Cursor.Column);
 		lexer.Cursor.MoveToNextColumn();
 
 		return true;

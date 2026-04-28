@@ -17,7 +17,6 @@ public enum TokenType
 	Minus,
 	Asterisk,
 	Newline,
-	Indent,
-	EndOfFile
+	Indent
 }
 

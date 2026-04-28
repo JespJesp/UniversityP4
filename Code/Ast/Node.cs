@@ -8,11 +8,10 @@ namespace Ast;
 public abstract class Node
 {
 	public int ScopeDepth;
-	public int Column;
-	public int Line;
+	public Location Location = new();
 	public List<Node> Children = new();
 	public SymbolTable SymbolTable = new();
-	public bool CreatesNestedScope;		
+	public bool CreatesNestedScope;
 
 	public abstract void CascadeParse(Parser parser);
 	public virtual void Annotate(Annotator annotator) { }

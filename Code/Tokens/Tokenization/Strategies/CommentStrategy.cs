@@ -4,7 +4,7 @@ namespace Tokens.Tokenization.Strategies;
 
 public class CommentStrategy : ITokenizationStrategy
 {
-	public static bool TryTokenize(Lexer lexer)
+	public static bool TryTokenize(FileLexer lexer)
 	{
 		if (lexer.CursorChar != '%')
 		{
@@ -31,7 +31,7 @@ public class CommentStrategy : ITokenizationStrategy
 
 			if (lexer.AtEndOfFile)
 			{
-				throw new LexicalException(startLine, startColumn, "Comment is missing closing percentage '%'");
+				throw new LexicalError(startLine, startColumn, "Comment is missing closing percentage '%'");
 			}
 		}
 

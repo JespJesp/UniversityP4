@@ -11,6 +11,7 @@ public class Parser
 	private List<string> _errors = new();
 
 	public Token CursorToken => _tokens[_cursorPosition];
+	public bool AtEndOfTokens => _cursorPosition >= _tokens.Count;
 
 	public ProgramNode Parse(List<Token> inputTokens)
 	{
@@ -33,8 +34,7 @@ public class Parser
 	{
 		// Assign child properties
 		newChild.CreatesNestedScope = createsNestedScope;
-		newChild.Column = CursorToken.Column;
-		newChild.Line = CursorToken.Line;
+		newChild.Location = CursorToken.Location.Clone();
 		if (parent.CreatesNestedScope)
 		{
 			newChild.ScopeDepth = parent.ScopeDepth + 1;
@@ -60,11 +60,11 @@ public class Parser
 
 	public void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
-		_errors.Add($"Line: '{CursorToken.Line}'. Column: '{CursorToken.Column}'. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node type: '{node.GetType()}'. {errorMessage}");
+		_errors.Add($"{CursorToken.Location}. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node: '{node.GetType()}'. {errorMessage}");
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line
-		while (CursorToken.Type != TokenType.EndOfFile && CursorToken.Type != TokenType.Newline)
+		while (!AtEndOfTokens && CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}
@@ -144,12 +144,21 @@ public class Parser
 		int lookahead = 0;
 		foreach (Token requiredToken in requiredTokens)
 		{
+			// Check for end of tokens
+			if (_cursorPosition + lookahead >= _tokens.Count)
+			{
+				isCorrectOrder = false;
+				break;
+			}
+
+			// Check for right token type and value
 			Token lookaheadToken = _tokens[_cursorPosition + lookahead];
 			if (!lookaheadToken.Type.IsSubtypeOf(requiredToken.Type) || lookaheadToken.Value != requiredToken.Value)
 			{
 				isCorrectOrder = false;
 				break;
 			}
+
 			lookahead++;
 		}
 

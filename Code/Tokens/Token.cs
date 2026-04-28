@@ -4,19 +4,18 @@ public class Token
 {
 	public TokenType Type { get; }
 	public string Value { get; }
-	public int Line { get; }
-	public int Column { get; }
+	public Location Location = new();
 
-	public Token(TokenType type, string value = "", int line = -1, int column = -1)
+	public Token(TokenType type, string value = "")
 	{
 		Type = type;
 		Value = value;
-		Line = line;
-		Column = column;
 	}
 
-	public override string ToString()
+	public Token(TokenType type, string value, string fileName, int line, int column)
 	{
-		return $"Token(Type: {Type}, Value: '{Value}', Line: {Line}, Column: {Column})";
+		Type = type;
+		Value = value;
+		Location = new(fileName, line, column);
 	}
 }
