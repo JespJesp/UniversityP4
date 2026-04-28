@@ -12,6 +12,8 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 	public float LengthInBeats;
 	public Melody Melody0 = new();
 
+	public string? ScaleReferenceId = null;
+
 	protected override void Parse()
 	{
 		Parser.ConsumeToken(TokenType.MelodyKeyword);
@@ -21,6 +23,10 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 		Parser.TryConsumeIndent(1);
 		Dictionary<TokenType, Action> options = new()
 		{
+			{
+				TokenType.ScaleKeyword,
+				() => { new ScaleReferenceNode(this); }
+			},
 			{
 				TokenType.SamplesKeyword,
 				() => { new SampleReferencesNode(this); }
@@ -42,10 +48,28 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 		}
 	}
 
-	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
+	protected override void AdditionalEvaluation(
+	NodeTable ancestors,
+	RuntimeVariableTable variables)
+{
+	this.Melody0.LengthInBeats =
+		this.LengthInBeats;
+
+	if (ScaleReferenceId != null)
 	{
-		this.Melody0.LengthInBeats = this.LengthInBeats;
+		if (variables.TryGet(
+			ScaleReferenceId,
+			out Scale scale))
+		{
+			this.Melody0.Scale = scale;
+		}
+		else
+		{
+			throw new Exception(
+				$"Scale '{ScaleReferenceId}' not found at runtime");
+		}
 	}
+}
 
 	protected override RuntimeObject GetRuntimeObject()
 	{

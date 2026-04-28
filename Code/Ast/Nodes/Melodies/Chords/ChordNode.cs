@@ -37,6 +37,13 @@ public class ChordNode(Node parent, bool createsNestedScope = false) : Node(pare
 		{
 			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat}-{EndBeat}");
 		}
+		if (melodyNode.ScaleReferenceId == null)
+		{
+			Validator.AddError(
+				this,
+				$"Melody '{melodyNode.Id}' uses chords but no scale is assigned"
+			);
+		}
 	}
 }
 
