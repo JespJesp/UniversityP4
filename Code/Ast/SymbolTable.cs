@@ -2,7 +2,7 @@ namespace Ast;
 
 public class SymbolTable
 {
-	private Dictionary<string, Node> _symbols = new();
+	private Dictionary<string, SymbolNode> _symbols = new();
 
 	public SymbolTable Clone()
 	{
@@ -12,7 +12,7 @@ public class SymbolTable
 		};
 	}
 
-	public bool Contains<T>(string id) where T : Node
+	public bool Contains<T>(string id) where T : SymbolNode
 	{
 		if (_symbols.TryGetValue(id, out var symbol))
 		{
@@ -21,7 +21,7 @@ public class SymbolTable
 		return false;
 	}
 
-	public T Get<T>(string id) where T : Node
+	public T Get<T>(string id) where T : SymbolNode
 	{
 		if (_symbols.TryGetValue(id, out var symbol))
 		{
@@ -36,7 +36,7 @@ public class SymbolTable
 		throw new Exception($"Internal error: Cannot get symbol of type '{typeof(T)}' and ID '{id}' from symbol table because the ID does not exist - this should have been checked in the annotation phase");
 	}
 
-	public bool TryGet<T>(string id, out T value) where T : Node
+	public bool TryGet<T>(string id, out T value) where T : SymbolNode
 	{
 		if (_symbols.TryGetValue(id, out var symbol))
 		{
@@ -52,7 +52,7 @@ public class SymbolTable
 		return false;
 	}
 
-	public void Upsert(Node node, string id, int scopeDepth = 0)
+	public void Upsert(SymbolNode node, string id, int scopeDepth = 0)
 	{
 		if (_symbols.TryGetValue(id, out var oldEntry))
 		{
