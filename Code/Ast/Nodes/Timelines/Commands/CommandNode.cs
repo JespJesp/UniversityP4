@@ -67,6 +67,12 @@ public class CommandNode : Node
 
 	public override void Annotate(Annotator annotator)
 	{
+		// Add start commands with an identifier to the symbol table
+		if (Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true) == TimelineCommandType.Start && CommandId != "")
+		{
+			SymbolTable.Upsert(this, CommandId);
+		}
+
 		foreach (string targetId in _commandTargetIds)
 		{
 			if (targetId != "EVERYTHING"
