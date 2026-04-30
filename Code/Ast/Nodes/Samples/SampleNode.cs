@@ -15,9 +15,9 @@ public class SampleNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, out this.Id);
+		parser.ConsumeToken(TokenType.Identifier, out Id);
 		_filePath = parser.ParseChild(this, new StringExpressionNode());
-		parser.TryConsumeToken(TokenType.Identifier, out this._referencePitch);
+		parser.TryConsumeToken(TokenType.Identifier, out _referencePitch);
 	}
 
 	public override void Validate(Validator validator)
@@ -34,8 +34,8 @@ public class SampleNode : SymbolNode
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Sample.FilePath = this._filePath.Value;
-		this.Sample.ReferencePitch = Pitch.FromString(this._referencePitch);
+		Sample.FilePath = _filePath.Value;
+		Sample.ReferencePitch = Pitch.FromString(_referencePitch);
 	}
 }
 

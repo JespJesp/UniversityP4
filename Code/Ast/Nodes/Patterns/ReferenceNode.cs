@@ -21,7 +21,7 @@ public class ReferenceNode : Node
 	{
 		parser.ConsumeToken(TokenType.Float, out string length);
 		parser.ConsumeToken(TokenType.Identifier, out string name);
-		this.ReferenceId = length + name;
+		ReferenceId = length + name;
 	}
 
 	public override void Annotate(Annotator annotator)
@@ -37,17 +37,17 @@ public class ReferenceNode : Node
 	{
 		Pattern pattern = SymbolTable.Get<PatternNode>(PatternNode.Id).Pattern;
 
-		if (SymbolTable.TryGet(this.ReferenceId, out PatternNode childPatternNode))
+		if (SymbolTable.TryGet(ReferenceId, out PatternNode childPatternNode))
 		{
 			pattern.Patterns.Add(childPatternNode.Pattern);
 		}
-		else if (SymbolTable.TryGet(this.ReferenceId, out MelodyNode childMelodyNode))
+		else if (SymbolTable.TryGet(ReferenceId, out MelodyNode childMelodyNode))
 		{
 			pattern.Melodies.Add(childMelodyNode.Melody);
 		}
 		else
 		{
-			throw new Exception($"Pattern references undefined ID '{this.ReferenceId}'");
+			throw new Exception($"Pattern references undefined ID '{ReferenceId}'");
 		}
 	}
 }

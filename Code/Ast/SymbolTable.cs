@@ -2,45 +2,66 @@ namespace Ast;
 
 public class SymbolTable
 {
-	public Dictionary<(Type type, string id), SymbolNode> Symbols = new();
+	private Dictionary<string, Node> _symbols = new();
 
 	public SymbolTable Clone()
 	{
 		return new()
 		{
-			Symbols = new(this.Symbols)
+			_symbols = new(this._symbols)
 		};
 	}
 
 	public bool Contains<T>(string id) where T : Node
 	{
-		return Symbols.ContainsKey((typeof(T), id));
+		if (_symbols.TryGetValue(id, out var symbol))
+		{
+			return symbol is T;
+		}
+		return false;
 	}
 
-	public T Get<T>(string id) where T : SymbolNode
+	public T Get<T>(string id) where T : Node
 	{
-		T result = (T)Symbols[(typeof(T), id)];
-
-		if (result == null)
+		if (_symbols.TryGetValue(id, out var symbol))
 		{
-			throw new Exception($"Internal error: Cannot get symbol of type '{typeof(T)}' and id '{id}' from symbol table because the symbol does not exist - this should have been checked in the annotation phase");
+			if (symbol is T)
+			{
+				return (T)symbol;
+			}
+
+			throw new Exception($"Internal error: The symbol at the symbol table ID '{id}' is not of the expected type '{typeof(T)}', but instead of the type '{symbol.GetType()}' - this should have been checked in the annotation phase");
 		}
 
-		return result;
+		throw new Exception($"Internal error: Cannot get symbol of type '{typeof(T)}' and ID '{id}' from symbol table because the ID does not exist - this should have been checked in the annotation phase");
 	}
 
-	public bool TryGet<T>(string id, out T value) where T : SymbolNode
+	public bool TryGet<T>(string id, out T value) where T : Node
 	{
-		if (Symbols.TryGetValue((typeof(T), id), out SymbolNode? output))
+		if (_symbols.TryGetValue(id, out var symbol))
 		{
-			value = (T)output;
-			return true;
+			if (symbol is T)
+			{
+				value = (T)symbol;
+				return true;
+			}
 		}
-		else
+
+		// The "!" (null-forgiving operator) hides the warning "cannot convert null literal to non-nullable reference type". We can safely do this because you should never use the out parameter value if this method returns false.
+		value = default!;
+		return false;
+	}
+
+	public void Upsert(Node node, string id, int scopeDepth = 0)
+	{
+		if (_symbols.TryGetValue(id, out var oldEntry))
 		{
-			// The "!" (null-forgiving operator) hides the warning "cannot convert null literal to non-nullable reference type". We can safely do this because you should never use the out parameter value if this method returns false.
-			value = default!;
-			return false;
+			if (scopeDepth <= oldEntry.ScopeDepth)
+			{
+				throw new Exception($"ID: '{id}'. Scope depth: '{scopeDepth}'. Double declaration within the same scope depth level");
+			}
 		}
+
+		_symbols[id] = node;
 	}
 }
