@@ -65,7 +65,7 @@ public class NoteNode : Node
 		{
 			try
 			{
-				Pitch.FromString(this.PitchString); // Throws exception if pitch string cannot be converted
+				Pitch.FromString(PitchString); // Throws exception if pitch string cannot be converted
 			}
 			catch (Exception exception)
 			{
@@ -81,16 +81,16 @@ public class NoteNode : Node
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Note.StartBeat = ChordNode.StartBeat.Value;
-		this.Note.EndBeat = ChordNode.EndBeat.Value;
+		Note.StartBeat = ChordNode.StartBeat.Value;
+		Note.EndBeat = ChordNode.EndBeat.Value;
 		
 		if (PitchString is not null)
 		{
-			this.Note.Pitch = Pitch.FromString(this.PitchString);
+			Note.Pitch = Pitch.FromString(PitchString);
 		}
 		if (_sampleOverrideId is not null)
 		{
-			this.Note.SampleOverride = SymbolTable.Get<SampleNode>(_sampleOverrideId).Sample;
+			Note.SampleOverride = SymbolTable.Get<SampleNode>(_sampleOverrideId).Sample;
 		}
 
 		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;

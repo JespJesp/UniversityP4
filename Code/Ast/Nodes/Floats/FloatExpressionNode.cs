@@ -111,13 +111,13 @@ public class FloatExpressionNode : Node
 			switch (term.Operation)
 			{
 				case Operation.Addition:
-					this.Value += term.Value;
+					Value += term.Value;
 					break;
 				case Operation.Subtraction:
-					this.Value -= term.Value;
+					Value -= term.Value;
 					break;
 				case Operation.Multiplication:
-					this.Value *= term.Value;
+					Value *= term.Value;
 					break;
 				case Operation.Division:
 					float divisor = term.Value;
@@ -125,7 +125,7 @@ public class FloatExpressionNode : Node
 					{
 						throw new Exception("Illegal operation: Cannot divide with 0");
 					}
-					this.Value /= divisor;
+					Value /= divisor;
 					break;
 			}
 		}

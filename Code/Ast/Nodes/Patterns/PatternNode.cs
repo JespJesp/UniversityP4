@@ -15,10 +15,10 @@ public class PatternNode : SymbolNode
 	public override void CascadeParse(Parser parser)
 	{
 		parser.ConsumeToken(TokenType.Float, out string lengthValue);
-		this.LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
+		LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
 
 		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
-		this.Id = LengthInBeats + nameValue;
+		Id = LengthInBeats + nameValue;
 
 		while (parser.TryConsumeIndent(1))
 		{
@@ -36,6 +36,6 @@ public class PatternNode : SymbolNode
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Pattern.LengthInBeats = this.LengthInBeats;
+		Pattern.LengthInBeats = LengthInBeats;
 	}
 }

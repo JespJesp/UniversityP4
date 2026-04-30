@@ -48,7 +48,7 @@ public class StringExpressionNode : Node
 				segment.Value = segment.RawValue;
 			}
 
-			this.Value += segment.Value;
+			Value += segment.Value;
 		}
 	}
 }
