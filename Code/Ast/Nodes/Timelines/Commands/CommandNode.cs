@@ -10,11 +10,10 @@ using Tokens;
 
 namespace Ast.Nodes.Timelines.Commands;
 
-public class CommandNode : Node
+public class CommandNode : SymbolNode
 {
 	public TimelineNode TimelineNode;
 	public TimelineCommand Command = new();
-	public string CommandId = "";
 	public string CommandType = "";
 	private FloatExpressionNode _commandBeat = new();
 	private List<string> _commandTargetIds = new();
@@ -30,12 +29,12 @@ public class CommandNode : Node
 		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifierValue);
 		if (Enum.TryParse(firstIdentifierValue, ignoreCase: true, out TimelineCommandType result))
 		{
-			CommandId = "";
+			Id = "";
 			CommandType = firstIdentifierValue.ToLowerInvariant();
 		}
 		else
 		{
-			CommandId = firstIdentifierValue;
+			Id = firstIdentifierValue;
 			parser.ConsumeToken(TokenType.Identifier, out string typeValue);
 			CommandType = typeValue.ToLowerInvariant();
 		}
@@ -65,14 +64,17 @@ public class CommandNode : Node
 		}
 	}
 
-	public override void Annotate(Annotator annotator)
+	public override void UpsertSymbol(Annotator annotator)
 	{
-		// Add start commands with an identifier to the symbol table
-		if (Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true) == TimelineCommandType.Start && CommandId != "")
+		// Only add start commands with an identifier to the symbol table
+		if (Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true) == TimelineCommandType.Start && Id != "")
 		{
-			SymbolTable.Upsert(this, CommandId);
+			SymbolTable.Upsert(this, Id);
 		}
+	}
 
+	public override void AfterSymbolUpsert(Annotator annotator)
+	{
 		foreach (string targetId in _commandTargetIds)
 		{
 			if (targetId != "EVERYTHING"
@@ -110,7 +112,7 @@ public class CommandNode : Node
 			{
 				errors.Add("Stop commands must specify a beat value");
 			}
-			if (_commandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(CommandId))
+			if (_commandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(Id))
 			{
 				errors.Add("Stop commands must specify targets, EVERYTHING, or a command ID");
 			}
@@ -123,7 +125,7 @@ public class CommandNode : Node
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		Command.Id = CommandId;
+		Command.Id = Id;
 		Command.Type = Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true);
 		if (_commandBeat.HasValue)
 		{

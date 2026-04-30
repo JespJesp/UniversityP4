@@ -8,10 +8,18 @@ public abstract class SymbolNode : Node
 
 	public sealed override void Annotate(Annotator annotator)
 	{
-		SymbolTable.Upsert(this, Id, ScopeDepth);
-		AdditionalAnnotation(annotator);
+		UpsertSymbol(annotator);
+		AfterSymbolUpsert(annotator);
 	}
 
-	public virtual void AdditionalAnnotation(Annotator annotator) {}
+	public virtual void UpsertSymbol(Annotator annotator)
+	{
+		SymbolTable.Upsert(this, Id, ScopeDepth);
+	}
+
+	public virtual void AfterSymbolUpsert(Annotator annotator)
+	{
+		// No behavior
+	}
 }
 
