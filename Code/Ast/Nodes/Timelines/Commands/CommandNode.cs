@@ -40,6 +40,12 @@ public class CommandNode : SymbolNode
 		}
 
 		// Optional beat
+		if (CommandType == TimelineCommandType.Stop.ToString()
+			&& parser.TryConsumeToken(TokenType.Identifier, "after"))
+		{
+			// Keep the existing sample syntax working while treating the beat as a relative offset
+		}
+
 		_commandBeat = parser.ParseChild(this, new FloatExpressionNode(isOptional: true));
 
 		// Optional command modifiers

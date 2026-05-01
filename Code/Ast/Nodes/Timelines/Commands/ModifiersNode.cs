@@ -27,6 +27,10 @@ public class ModifiersNode : Node
 					() => parser.TryConsumeToken(TokenType.Identifier, "pitch"),
 					() => parser.ParseChild(this, new PitchNode(this))
 				),
+				(
+					() => parser.TryConsumeToken(TokenType.Identifier, "pan"),
+					() => parser.ParseChild(this, new PanNode(this))
+				),
 			},
 			[
 				new(TokenType.Comma)
