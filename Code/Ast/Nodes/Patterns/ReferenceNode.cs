@@ -18,7 +18,15 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 
 	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		if (!symbols.Contains(typeof(PatternNode), ReferenceId) && !symbols.Contains(typeof(MelodyNode), ReferenceId))
+		parser.ConsumeToken(TokenType.Float, out string length);
+		parser.ConsumeToken(TokenType.Identifier, out string name);
+		ReferenceId = length + name;
+	}
+
+	public override void Annotate(Annotator annotator)
+	{
+		if (!SymbolTable.Contains<PatternNode>(ReferenceId)
+			&& !SymbolTable.Contains<MelodyNode>(ReferenceId))
 		{
 			Validator.AddError(this, $"Pattern: '{ReferenceId}'. The pattern or melody reference '{ReferenceId}' is not declared");
 		}
@@ -28,17 +36,17 @@ public class ReferenceNode(Node parent, bool createsNestedScope = false) : Node(
 	{
 		Pattern pattern = localVariables.Get<Pattern>(ancestors.Get<PatternNode>().Id);
 
-		if (localVariables.TryGet(this.ReferenceId, out Pattern childPattern))
+		if (SymbolTable.TryGet(ReferenceId, out PatternNode childPatternNode))
 		{
 			pattern.Patterns.Add(childPattern);
 		}
-		else if (localVariables.TryGet(this.ReferenceId, out Melody childMelody))
+		else if (SymbolTable.TryGet(ReferenceId, out MelodyNode childMelodyNode))
 		{
 			pattern.Melodies.Add(childMelody);
 		}
 		else
 		{
-			throw new Exception($"Pattern references undefined ID '{this.ReferenceId}'");
+			throw new Exception($"Pattern references undefined ID '{ReferenceId}'");
 		}
 	}
 }

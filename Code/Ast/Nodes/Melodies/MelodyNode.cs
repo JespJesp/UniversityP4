@@ -16,12 +16,13 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 
 	protected override void Parse()
 	{
-		Parser.ConsumeToken(TokenType.MelodyKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
-		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
+		parser.ConsumeToken(TokenType.Float, out string lengthValue);
+		LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
 
-		Parser.TryConsumeIndent(1);
-		Dictionary<TokenType, Action> options = new()
+		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
+		Id = LengthInBeats + nameValue;
+
+		if (parser.TryConsumeIndent(1))
 		{
 			{
 				TokenType.ScaleKeyword,
@@ -74,6 +75,7 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 	protected override RuntimeObject GetRuntimeObject()
 	{
 		return this.Melody0;
+		Melody.LengthInBeats = LengthInBeats;
 	}
 }
 

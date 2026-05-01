@@ -13,11 +13,13 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 
 	protected override void Parse()
 	{
-		Parser.ConsumeToken(TokenType.PatternKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => { LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture); });
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = LengthInBeats + value; });
+		parser.ConsumeToken(TokenType.Float, out string lengthValue);
+		LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
 
-		while (Parser.TryConsumeIndent(1))
+		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
+		Id = LengthInBeats + nameValue;
+
+		while (parser.TryConsumeIndent(1))
 		{
 			new ReferenceNode(this);
 		}
@@ -33,11 +35,6 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 
 	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable localVariables)
 	{
-		this.Pattern0.LengthInBeats = this.LengthInBeats;
-	}
-
-	protected override RuntimeObject GetRuntimeObject()
-	{
-		return this.Pattern0;
+		Pattern.LengthInBeats = LengthInBeats;
 	}
 }

@@ -1,27 +1,37 @@
-using Ast.Tables;
-using Runtime.Objects;
-using Ast.Nodes.Melodies.Chords.Notes.Modifiers;
 using Ast.Nodes.Samples;
-using Lexing.Tokens;
+using Phases.Annotation;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
+using Runtime.Objects;
+using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords.Notes;
 
-public class NoteNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class NoteNode : Node
 {
+	public ChordNode ChordNode;
+	public Note Note = new();
+	public string? PitchString;
+	private string? _sampleOverrideId;
 	public string SampleName = "";
 	public string Pitch = "";
 	public bool IsRoman = false;
 	public string RomanValue = "";
 	public Note Note0 = new();
 
-	protected override void Parse()
+	public NoteNode(ChordNode chordsNode)
 	{
-		string firstIdentifier = "";
-		Parser.ConsumeToken(TokenType.Identifier, (value) => firstIdentifier = value);
+		this.ChordNode = chordsNode;
+	}
 
-		if (IsPitch(firstIdentifier))
+	public override void CascadeParse(Parser parser)
+	{
+		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifier);
+
+		if (Pitch.IsPitch(firstIdentifier))
 		{
-			Pitch = firstIdentifier;
+			PitchString = firstIdentifier;
 		}
 		else if (IsRomanNumeral(firstIdentifier))
 		{
@@ -30,9 +40,8 @@ public class NoteNode(Node parent, bool createsNestedScope = false) : Node(paren
 		}
 		else
 		{
-			SampleName = firstIdentifier;
-
-			if (Parser.CurrentToken.Type == TokenType.Identifier)
+			_sampleOverrideId = firstIdentifier;
+			if (parser.TryConsumeToken(TokenType.Identifier, out string pitchStringValue))
 			{
 				Parser.ConsumeToken(
 					TokenType.Identifier,
@@ -87,32 +96,26 @@ public class NoteNode(Node parent, bool createsNestedScope = false) : Node(paren
 		}
 		else if (!string.IsNullOrEmpty(Pitch))
 		{
-			Note0.Pitch0 = new(Pitch);
+			throw new Exception($"Melody: '{ChordNode.ChordsNode.MelodyNode.Id}'. " + string.Join(" ", errors));
 		}
-
-		if (!string.IsNullOrEmpty(SampleName))
-		{
-			Sample sample = variables.Get<Sample>(SampleName);
-			Note0.SampleOverride = sample;
-		}
-
-		melody.Notes.Add(Note0);
 	}
 
-	private static bool IsPitch(string value)
+	public override void Evaluate(Evaluator evaluator)
 	{
-		if (string.IsNullOrEmpty(value) || value.Length < 2)
+		this.Note.StartBeat = ChordNode.StartBeat.Value;
+		this.Note.EndBeat = ChordNode.EndBeat.Value;
+		
+		if (PitchString is not null)
 		{
-			return false;
+			this.Note.Pitch = Pitch.FromString(this.PitchString);
+		}
+		if (_sampleOverrideId is not null)
+		{
+			this.Note.SampleOverride = SymbolTable.Get<SampleNode>(_sampleOverrideId).Sample;
 		}
 
-		char firstChar = char.ToLower(value[0]);
-		if (firstChar < 'a' || firstChar > 'g')
-		{
-			return false;
-		}
-
-		return value.Substring(1).Any(char.IsDigit);
+		Melody melody = ChordNode.ChordsNode.MelodyNode.Melody;
+		melody.Notes.Add(Note);
 	}
 
 	private static bool IsRomanNumeral(string value)
@@ -180,5 +183,4 @@ public class NoteNode(Node parent, bool createsNestedScope = false) : Node(paren
 		};
 }
 }
-
 

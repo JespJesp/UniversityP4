@@ -71,7 +71,7 @@ public class SampleReferenceNode(Node parent, bool createsNestedScope = false) :
 
 	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+		parser.ConsumeToken(TokenType.Identifier, out ReferenceId);
 
 		if (!symbols.Contains(typeof(SampleNode), Id))
 		{

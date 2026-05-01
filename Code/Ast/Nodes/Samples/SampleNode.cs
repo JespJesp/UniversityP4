@@ -12,10 +12,9 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Variable
 
 	protected override void Parse()
 	{
-		Parser.ConsumeToken(TokenType.SampleKeyword);
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		Parser.ConsumeToken(TokenType.String, (value) => { FilePath = value; });
-		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
+		parser.ConsumeToken(TokenType.Identifier, out Id);
+		_filePath = parser.ParseChild(this, new StringExpressionNode());
+		parser.TryConsumeToken(TokenType.Identifier, out _referencePitch);
 	}
 
 	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
@@ -31,13 +30,8 @@ public class SampleNode(Node parent, bool createsNestedScope = false) : Variable
 
 	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
 	{
-		this.Sample0.FilePath = this.FilePath;
-		this.Sample0.ReferencePitch = new(this.ReferencePitch);
-	}
-
-	protected override RuntimeObject GetRuntimeObject()
-	{
-		return this.Sample0;
+		Sample.FilePath = _filePath.Value;
+		Sample.ReferencePitch = Pitch.FromString(_referencePitch);
 	}
 }
 
