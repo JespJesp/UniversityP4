@@ -13,8 +13,8 @@ public class EvaluatorTests
         var childNode = new TrackingEvaluationNode();
         programNode.Children.Add(childNode);
 
-        var evaluator = new EvaluatorTestHelper();
-        evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        evaluator.Evaluate(programNode, CreateFileInfo());
 
         childNode.EvaluateWasCalled.ShouldBeTrue();
     }
@@ -31,8 +31,8 @@ public class EvaluatorTests
         programNode.Children.Add(child2);
         child1.Children.Add(grandChild);
 
-        var evaluator = new EvaluatorTestHelper();
-        evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        evaluator.Evaluate(programNode, CreateFileInfo());
 
         child1.EvaluateWasCalled.ShouldBeTrue();
         child2.EvaluateWasCalled.ShouldBeTrue();
@@ -46,10 +46,11 @@ public class EvaluatorTests
         var errorNode = new ErrorThrowingEvaluationNode();
         programNode.Children.Add(errorNode);
 
-        var evaluator = new EvaluatorTestHelper();
-        Action act = () => evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        Action act = () => evaluator.Evaluate(programNode, CreateFileInfo());
 
         var exception = Should.Throw<Exception>(act);
+        exception.Message.ShouldContain("Evaluation errors");
         exception.Message.ShouldContain("Evaluation failed");
     }
 
@@ -60,8 +61,8 @@ public class EvaluatorTests
         var errorNode = new ErrorThrowingEvaluationNode();
         programNode.Children.Add(errorNode);
 
-        var evaluator = new EvaluatorTestHelper();
-        Action act = () => evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        Action act = () => evaluator.Evaluate(programNode, CreateFileInfo());
 
         var exception = Should.Throw<Exception>(act);
         exception.Message.ShouldContain(nameof(ErrorThrowingEvaluationNode));
@@ -71,11 +72,11 @@ public class EvaluatorTests
     public void CascadeEvaluate_Should_Report_Line_And_Column_In_Error()
     {
         var programNode = CreateProgramNode();
-        var errorNode = new ErrorThrowingEvaluationNode { Line = 25, Column = 12 };
+        var errorNode = new ErrorThrowingEvaluationNode { Location = new Location("file.mude", 25, 12) };
         programNode.Children.Add(errorNode);
 
-        var evaluator = new EvaluatorTestHelper();
-        Action act = () => evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        Action act = () => evaluator.Evaluate(programNode, CreateFileInfo());
 
         var exception = Should.Throw<Exception>(act);
         exception.Message.ShouldContain("25");
@@ -83,7 +84,7 @@ public class EvaluatorTests
     }
 
     [Fact]
-    public void CascadeEvaluate_Should_Stop_On_First_Error()
+    public void CascadeEvaluate_Should_Accumulate_Multiple_Errors()
     {
         var programNode = CreateProgramNode();
         var errorNode1 = new ErrorThrowingEvaluationNode();
@@ -91,10 +92,11 @@ public class EvaluatorTests
         programNode.Children.Add(errorNode1);
         programNode.Children.Add(errorNode2);
 
-        var evaluator = new EvaluatorTestHelper();
-        Action act = () => evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        Action act = () => evaluator.Evaluate(programNode, CreateFileInfo());
 
-        Should.Throw<Exception>(act);
+        var exception = Should.Throw<Exception>(act);
+        (exception.Message.Split("Evaluation failed").Length - 1).ShouldBe(2);
     }
 
     [Fact]
@@ -113,8 +115,8 @@ public class EvaluatorTests
         parent.Children.Add(child1);
         parent.Children.Add(child2);
 
-        var evaluator = new EvaluatorTestHelper();
-        evaluator.TestCascadeEvaluate(programNode);
+        var evaluator = new Evaluator();
+        evaluator.Evaluate(programNode, CreateFileInfo());
 
         callOrder.IndexOf("parent").ShouldBeLessThan(callOrder.IndexOf("child1"));
         callOrder.IndexOf("parent").ShouldBeLessThan(callOrder.IndexOf("child2"));
@@ -123,11 +125,52 @@ public class EvaluatorTests
 
     private ProgramNode CreateProgramNode()
     {
-        return new ProgramNode
+        var programNode = new ProgramNode { Location = new Location("file.mude", 1, 1) };
+        var melodyNode = new Ast.Nodes.Melodies.MelodyNode
         {
-            Line = 1,
-            Column = 1
+            Id = "_lead",
+            Melody = new Runtime.Objects.Melody
+            {
+                LengthInBeats = 1f,
+                Notes =
+                {
+                    new Runtime.Objects.Note
+                    {
+                        StartBeat = 0f,
+                        EndBeat = 1f,
+                        Pitch = Runtime.Objects.Pitch.FromString("C4")
+                    }
+                },
+                Samples =
+                {
+                    new Runtime.Objects.Sample
+                    {
+                        FilePath = "/ExamplePrograms/Samples/Drums/snare.wav"
+                    }
+                }
+            }
         };
+
+        programNode.timelineNode.SymbolTable.Upsert(melodyNode, melodyNode.Id);
+        programNode.timelineNode.Timeline.Commands.Add(new Runtime.Objects.Timelines.TimelineCommand
+        {
+            Type = Runtime.Objects.Timelines.TimelineCommandType.Start,
+            Beat = 0,
+            TargetIds = new List<string> { "_lead" }
+        });
+        programNode.timelineNode.Timeline.Commands.Add(new Runtime.Objects.Timelines.TimelineCommand
+        {
+            Type = Runtime.Objects.Timelines.TimelineCommandType.Stop,
+            Beat = 1,
+            TargetIds = new List<string> { "_lead" }
+        });
+
+        return programNode;
+    }
+
+    private FileInfo CreateFileInfo()
+    {
+        return new FileInfo(Path.Combine("/Users/chriller/Documents/GitHub/UniversityP4", "UniversityP4.EvaluatorTests.wav"));
     }
 
     private class TrackingEvaluationNode : Node
@@ -177,28 +220,4 @@ public class EvaluatorTests
         }
     }
 
-    private class EvaluatorTestHelper : Evaluator
-    {
-        public void TestCascadeEvaluate(Node node)
-        {
-            var method = typeof(Evaluator).GetMethod("CascadeEvaluate", 
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            
-            if (method != null)
-            {
-                try
-                {
-                    method.Invoke(this, new object[] { node });
-                }
-                catch (System.Reflection.TargetInvocationException ex)
-                {
-                    throw ex.InnerException ?? ex;
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("CascadeEvaluate method not found");
-            }
-        }
-    }
 }

@@ -89,7 +89,7 @@ public class ValidatorTests
     public void Validate_Should_Report_Line_And_Column_In_Errors()
     {
         var programNode = CreateProgramNode();
-        var errorNode = new ErrorThrowingValidationNode { Line = 15, Column = 8 };
+        var errorNode = new ErrorThrowingValidationNode { Location = new Location("file.mude", 15, 8) };
         programNode.Children.Add(errorNode);
 
         var validator = new Validator();
@@ -118,11 +118,7 @@ public class ValidatorTests
 
     private ProgramNode CreateProgramNode()
     {
-        return new ProgramNode
-        {
-            Line = 1,
-            Column = 1
-        };
+        return new ProgramNode { Location = new Location("file.mude", 1, 1) };
     }
 
     private class TrackingValidationNode : Node

@@ -96,7 +96,7 @@ public class TimelineTargetResolverTests
 
         foreach (var (type, id, node) in entries)
         {
-            table.Symbols[(type, id)] = node;
+            table.Upsert(node, id);
         }
 
         return table;

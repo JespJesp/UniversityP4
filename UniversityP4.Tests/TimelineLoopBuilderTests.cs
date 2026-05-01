@@ -152,7 +152,7 @@ public class TimelineLoopBuilderTests
 
         loops.Count.ShouldBe(1);
         loops[0].StartBeat.ShouldBe(4f);
-        loops[0].EndBeat.ShouldBe(8f);
+        loops[0].EndBeat.ShouldBe(12f);
     }
 
     [Fact]
@@ -185,6 +185,45 @@ public class TimelineLoopBuilderTests
         loops.All(loop => loop.EndBeat == 4f).ShouldBeTrue();
     }
 
+    [Fact]
+    public void Build_Should_Start_At_The_Previous_Stop_Beat()
+    {
+        var melody = new Melody { LengthInBeats = 1f };
+        var symbols = CreateSymbols((typeof(MelodyNode), "_lead", CreateMelodyNode("_lead", melody)));
+
+        var timeline = new Timeline();
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Start,
+            TargetIds = new List<string> { "_lead" }
+        });
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Stop,
+            Beat = 16,
+            TargetIds = new List<string> { "_lead" }
+        });
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Start,
+            TargetIds = new List<string> { "_lead" }
+        });
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Stop,
+            Beat = 32,
+            TargetIds = new List<string> { "_lead" }
+        });
+
+        var loops = new LoopBuilder().Build(timeline, symbols);
+
+        loops.Count.ShouldBe(2);
+        loops[0].StartBeat.ShouldBe(0f);
+        loops[0].EndBeat.ShouldBe(16f);
+        loops[1].StartBeat.ShouldBe(16f);
+        loops[1].EndBeat.ShouldBe(48f);
+    }
+
     private static MelodyNode CreateMelodyNode(string id, Melody melody)
     {
         return new MelodyNode
@@ -200,7 +239,7 @@ public class TimelineLoopBuilderTests
 
         foreach (var (type, id, node) in entries)
         {
-            table.Symbols[(type, id)] = node;
+            table.Upsert(node, id);
         }
 
         return table;

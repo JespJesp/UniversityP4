@@ -15,37 +15,22 @@ public class NoteTests
     }
 
     [Fact]
-    public void Note_Should_Store_StartBeat_And_EndBeat()
+    public void Note_Should_Store_Key_Properties()
     {
-        var note = new Note { StartBeat = 0.0f, EndBeat = 2.0f };
+        var note = new Note
+        {
+            StartBeat = 0.0f,
+            EndBeat = 2.0f,
+            Pitch = Pitch.FromString("C4"),
+            Volume = 0.8f,
+            Pan = -0.5f
+        };
 
         note.StartBeat.ShouldBe(0.0f);
         note.EndBeat.ShouldBe(2.0f);
-    }
-
-    [Fact]
-    public void Note_Should_Store_Pitch()
-    {
-        var pitch = Pitch.FromString("C4");
-        var note = new Note { Pitch = pitch };
-
-        note.Pitch.PitchClass.ShouldBe(pitch.PitchClass);
-        note.Pitch.Octave.ShouldBe(pitch.Octave);
-    }
-
-    [Fact]
-    public void Note_Should_Store_Volume()
-    {
-        var note = new Note { Volume = 0.8f };
-
+        note.Pitch.PitchClass.ShouldBe(0);
+        note.Pitch.Octave.ShouldBe(4);
         note.Volume.ShouldBe(0.8f);
-    }
-
-    [Fact]
-    public void Note_Should_Store_Pan()
-    {
-        var note = new Note { Pan = -0.5f };
-
         note.Pan.ShouldBe(-0.5f);
     }
 

@@ -63,7 +63,7 @@ public class AnnotatorTests
     public void Annotate_Should_Report_Line_And_Column_In_Errors()
     {
         var programNode = CreateProgramNode();
-        var errorNode = new ErrorThrowingTestNode { Line = 42, Column = 10 };
+        var errorNode = new ErrorThrowingTestNode { Location = new Location("file.mude", 42, 10) };
         programNode.Children.Add(errorNode);
 
         var annotator = new Annotator();
@@ -91,11 +91,7 @@ public class AnnotatorTests
 
     private ProgramNode CreateProgramNode()
     {
-        return new ProgramNode
-        {
-            Line = 1,
-            Column = 1
-        };
+        return new ProgramNode { Location = new Location("file.mude", 1, 1) };
     }
 
     private class TestNode : Node

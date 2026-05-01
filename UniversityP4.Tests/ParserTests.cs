@@ -10,22 +10,20 @@ public class ParserTests
     public void TryConsumeToken_Should_Accept_Integer_When_Expecting_Float()
     {
         var parser = CreateParser(
-            new Token(TokenType.Integer, "7"),
-            new Token(TokenType.EndOfFile));
+            new Token(TokenType.Integer, "7"));
 
         var consumed = parser.TryConsumeToken(TokenType.Float, out string consumedValue);
 
         consumed.ShouldBeTrue();
         consumedValue.ShouldBe("7");
-        parser.CursorToken.Type.ShouldBe(TokenType.EndOfFile);
+        parser.AtEndOfTokens.ShouldBeTrue();
     }
 
     [Fact]
     public void ConsumeToken_Should_Throw_When_CurrentToken_Does_Not_Match()
     {
         var parser = CreateParser(
-            new Token(TokenType.Identifier, "_abc"),
-            new Token(TokenType.EndOfFile));
+            new Token(TokenType.Identifier, "_abc"));
 
         Action act = () => parser.ConsumeToken(TokenType.String);
 
@@ -38,21 +36,19 @@ public class ParserTests
     {
         var parser = CreateParser(
             new Token(TokenType.Newline),
-            new Token(TokenType.Indent, "2"),
-            new Token(TokenType.EndOfFile));
+            new Token(TokenType.Indent, "2"));
 
         var consumed = parser.TryConsumeIndent(2);
 
         consumed.ShouldBeTrue();
-        parser.CursorToken.Type.ShouldBe(TokenType.EndOfFile);
+        parser.AtEndOfTokens.ShouldBeTrue();
     }
 
     [Fact]
     public void TryConsumeTokens_Should_Return_False_And_Not_Advance_When_Value_Does_Not_Match()
     {
         var parser = CreateParser(
-            new Token(TokenType.Integer, "8"),
-            new Token(TokenType.EndOfFile));
+            new Token(TokenType.Integer, "8"));
 
         var consumed = parser.TryConsumeTokens(new[] { new Token(TokenType.Float, "7") });
 
@@ -67,8 +63,7 @@ public class ParserTests
         var parser = CreateParser(
             new Token(TokenType.Identifier, "_lead"),
             new Token(TokenType.Comma),
-            new Token(TokenType.Integer, "42"),
-            new Token(TokenType.EndOfFile));
+            new Token(TokenType.Integer, "42"));
 
         string? parsedId = null;
         string? parsedNumber = null;
@@ -107,7 +102,7 @@ public class ParserTests
 
         parsedId.ShouldBe("_lead");
         parsedNumber.ShouldBe("42");
-        parser.CursorToken.Type.ShouldBe(TokenType.EndOfFile);
+        parser.AtEndOfTokens.ShouldBeTrue();
     }
 
     [Fact]
@@ -116,8 +111,7 @@ public class ParserTests
         var parser = CreateParser(
             new Token(TokenType.Integer, "1"),
             new Token(TokenType.Comma),
-            new Token(TokenType.Integer, "2"),
-            new Token(TokenType.EndOfFile));
+            new Token(TokenType.Integer, "2"));
 
         string? parsedNumber = null;
 

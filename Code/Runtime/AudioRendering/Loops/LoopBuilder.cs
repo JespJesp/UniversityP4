@@ -14,23 +14,24 @@ public class LoopBuilder
 
 		var activeMelodies = new Dictionary<Melody, List<ActiveLoopState>>();
 		var commandTargets = new Dictionary<string, List<Melody>>();
+		float currentBeat = 0;
 
 		foreach (TimelineCommand command in timeline.Commands)
 		{
 			switch (command.Type)
 			{
 				case TimelineCommandType.Start:
-					ExecuteStartCommand(command, activeMelodies, commandTargets, globalSymbols);
+					ExecuteStartCommand(command, activeMelodies, commandTargets, globalSymbols, ref currentBeat);
 					break;
 				case TimelineCommandType.Stop:
-					ExecuteStopCommand(command, Loops, activeMelodies, commandTargets, globalSymbols);
+					ExecuteStopCommand(command, Loops, activeMelodies, commandTargets, globalSymbols, ref currentBeat);
 					break;
 				default:
 					throw new Exception($"Unexpected timeline command type: {command.Type}");
 			}
 		}
 
-		CloseOpenLoops(timeline, activeMelodies);
+		CloseOpenLoops(timeline, activeMelodies, currentBeat);
 
 		return Loops;
 	}
@@ -39,9 +40,10 @@ public class LoopBuilder
 			TimelineCommand command,
 			Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
 			Dictionary<string, List<Melody>> commandTargets,
-			SymbolTable globalSymbols)
+			SymbolTable globalSymbols,
+			ref float currentBeat)
 	{
-		float startBeat = command.Beat ?? 0;
+		float startBeat = command.Beat ?? currentBeat;
 		HashSet<Melody> melodies = TimelineCommandTargetResolver.ExpandTargetsToMelodies(command.TargetIds, globalSymbols);
 
 		foreach (Melody melody in melodies)
@@ -59,6 +61,8 @@ public class LoopBuilder
 		{
 			commandTargets[command.Id] = melodies.ToList();
 		}
+
+		currentBeat = startBeat;
 	}
 
 	private void ExecuteStopCommand(
@@ -66,14 +70,15 @@ public class LoopBuilder
 			List<Loop> loops,
 			Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
 			Dictionary<string, List<Melody>> commandTargets,
-			SymbolTable globalSymbols)
+			SymbolTable globalSymbols,
+			ref float currentBeat)
 	{
 		if (!command.Beat.HasValue)
 		{
 			throw new Exception("Timeline stop command is missing a beat value");
 		}
 
-		float stopBeat = command.Beat.Value;
+		float stopBeat = currentBeat + command.Beat.Value;
 		HashSet<Melody> targetsToStop = ResolveStopTargets(command, activeMelodies, commandTargets, globalSymbols);
 
 		foreach (Melody melody in targetsToStop)
@@ -85,7 +90,8 @@ public class LoopBuilder
 
 			foreach (ActiveLoopState start in starts.ToList())
 			{
-				if (start.StartBeat >= stopBeat)
+				float endBeat = stopBeat;
+				if (endBeat <= start.StartBeat)
 				{
 					continue;
 				}
@@ -95,7 +101,7 @@ public class LoopBuilder
 				{
 					Melody = adjustedMelody,
 					StartBeat = start.StartBeat,
-					EndBeat = stopBeat
+					EndBeat = endBeat
 				});
 				starts.Remove(start);
 			}
@@ -110,6 +116,8 @@ public class LoopBuilder
 		{
 			commandTargets.Remove(command.Id);
 		}
+
+		currentBeat = stopBeat;
 	}
 
 	private HashSet<Melody> ResolveStopTargets(
@@ -145,13 +153,9 @@ public class LoopBuilder
 		return targetsToStop;
 	}
 
-	private void CloseOpenLoops(Timeline timeline, Dictionary<Melody, List<ActiveLoopState>> activeMelodies)
+	private void CloseOpenLoops(Timeline timeline, Dictionary<Melody, List<ActiveLoopState>> activeMelodies, float currentBeat)
 	{
-		float timelineEndBeat = timeline.Commands
-				.Where(command => command.Beat.HasValue)
-				.Select(command => command.Beat!.Value)
-				.DefaultIfEmpty(0)
-				.Max();
+		float timelineEndBeat = currentBeat;
 
 		if (timeline.BeatsPerBar > 0)
 		{

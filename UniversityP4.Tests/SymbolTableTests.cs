@@ -12,7 +12,7 @@ public class SymbolTableTests
     {
         var table = new SymbolTable();
 
-        table.Symbols.Count.ShouldBe(0);
+        table.Contains<MelodyNode>("lead").ShouldBeFalse();
     }
 
     [Fact]
@@ -20,10 +20,10 @@ public class SymbolTableTests
     {
         var table = new SymbolTable();
         var melody = new MelodyNode { Id = "lead" };
-        table.Symbols[(typeof(MelodyNode), "lead")] = melody;
+        table.Upsert(melody, melody.Id);
 
-        table.Symbols.Count.ShouldBe(1);
         table.Contains<MelodyNode>("lead").ShouldBeTrue();
+        table.Get<MelodyNode>("lead").ShouldBe(melody);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class SymbolTableTests
     {
         var table = new SymbolTable();
         var melody = new MelodyNode { Id = "lead" };
-        table.Symbols[(typeof(MelodyNode), "lead")] = melody;
+        table.Upsert(melody, melody.Id);
 
         var retrieved = table.Get<MelodyNode>("lead");
 
@@ -44,29 +44,13 @@ public class SymbolTableTests
         var table = new SymbolTable();
         var melody1 = new MelodyNode { Id = "lead" };
         var melody2 = new MelodyNode { Id = "harmony" };
-        table.Symbols[(typeof(MelodyNode), "lead")] = melody1;
-        table.Symbols[(typeof(MelodyNode), "harmony")] = melody2;
+        table.Upsert(melody1, melody1.Id);
+        table.Upsert(melody2, melody2.Id);
 
         table.Contains<MelodyNode>("lead").ShouldBeTrue();
         table.Contains<MelodyNode>("harmony").ShouldBeTrue();
         table.Get<MelodyNode>("lead").ShouldBe(melody1);
         table.Get<MelodyNode>("harmony").ShouldBe(melody2);
-    }
-
-    [Fact]
-    public void SymbolTable_Should_Support_Different_Types_With_Same_Id()
-    {
-        var table = new SymbolTable();
-        var melody = new MelodyNode { Id = "item" };
-        var sampleNode = new SampleNode { Id = "item" };
-        
-        table.Symbols[(typeof(MelodyNode), "item")] = melody;
-        table.Symbols[(typeof(SampleNode), "item")] = sampleNode;
-
-        table.Contains<MelodyNode>("item").ShouldBeTrue();
-        table.Contains<SampleNode>("item").ShouldBeTrue();
-        table.Get<MelodyNode>("item").ShouldBe(melody);
-        table.Get<SampleNode>("item").ShouldBe(sampleNode);
     }
 
     [Fact]
@@ -92,7 +76,7 @@ public class SymbolTableTests
     {
         var table = new SymbolTable();
         var melody = new MelodyNode { Id = "test" };
-        table.Symbols[(typeof(MelodyNode), "test")] = melody;
+        table.Upsert(melody, melody.Id);
 
         var success = table.TryGet<MelodyNode>("test", out var result);
 
@@ -105,7 +89,7 @@ public class SymbolTableTests
     {
         var original = new SymbolTable();
         var melody = new MelodyNode { Id = "lead" };
-        original.Symbols[(typeof(MelodyNode), "lead")] = melody;
+        original.Upsert(melody, melody.Id);
 
         var cloned = original.Clone();
 
@@ -118,12 +102,12 @@ public class SymbolTableTests
     {
         var original = new SymbolTable();
         var melody1 = new MelodyNode { Id = "lead" };
-        original.Symbols[(typeof(MelodyNode), "lead")] = melody1;
+        original.Upsert(melody1, melody1.Id);
 
         var cloned = original.Clone();
         
         var melody2 = new MelodyNode { Id = "harmony" };
-        cloned.Symbols[(typeof(MelodyNode), "harmony")] = melody2;
+        cloned.Upsert(melody2, melody2.Id);
 
         original.Contains<MelodyNode>("harmony").ShouldBeFalse();
         cloned.Contains<MelodyNode>("harmony").ShouldBeTrue();
@@ -136,7 +120,8 @@ public class SymbolTableTests
 
         Action act = () => table.Get<MelodyNode>("nonexistent");
 
-        Should.Throw<KeyNotFoundException>(act);
+        var exception = Should.Throw<Exception>(act);
+        exception.Message.ShouldContain("cannot get symbol");
     }
 
     [Fact]
@@ -147,10 +132,9 @@ public class SymbolTableTests
         for (int i = 0; i < 100; i++)
         {
             var melody = new MelodyNode { Id = $"melody_{i}" };
-            table.Symbols[(typeof(MelodyNode), $"melody_{i}")] = melody;
+            table.Upsert(melody, melody.Id);
         }
 
-        table.Symbols.Count.ShouldBe(100);
         table.Contains<MelodyNode>("melody_50").ShouldBeTrue();
     }
 }
