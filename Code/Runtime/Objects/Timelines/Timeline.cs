@@ -1,6 +1,6 @@
 namespace Runtime.Objects.Timelines;
 
-public class Timeline : RuntimeObject
+public class Timeline : IRuntimeObject
 {
 	public int SampleRate = 48000;
 	public float BeatsPerMinute = 120;

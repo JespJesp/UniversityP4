@@ -26,7 +26,7 @@ public class SettingsNode : Node
 	{
 		SettingsNodeInstances++;
 
-		if (parser.TryConsumeIndent(2))
+		if (parser.TryConsumeNewlineIndent(2))
 		{
 			parser.TryConsumeOptions
 			(
