@@ -20,7 +20,7 @@ public class PatternNode : SymbolNode
 		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
 		Id = LengthInBeats + nameValue;
 
-		while (parser.TryConsumeIndent(1))
+		while (parser.TryConsumeNewlineIndent(1))
 		{
 			parser.ParseChild(this, new ReferenceNode(this));
 		}

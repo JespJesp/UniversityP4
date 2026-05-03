@@ -173,7 +173,7 @@ public class Parser
 		}
 	}
 
-	public bool TryConsumeIndent(int indentSize)
+	public bool TryConsumeNewlineIndent(int indentSize)
 	{
 		Token[] newlineAndIndent =
 		{
