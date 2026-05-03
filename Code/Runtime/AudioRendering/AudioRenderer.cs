@@ -109,7 +109,7 @@ public class AudioRenderer
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
-		var envelopeProvider = new AdsrEnvelopeSampleProvider(
+		var envelopeProvider = new Runtime.AudioRendering.SampleProviders.AdsrEnvelopeSampleProvider(
 				pitchShifter,
 				noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),
 				attackSeconds: ConvertBeatsToSeconds(timeline, sample.AttackBeats),

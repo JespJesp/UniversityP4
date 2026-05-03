@@ -4,9 +4,9 @@ namespace Runtime.AudioRendering.Loops;
 
 internal static class MelodyModifier
 {
-	public static Melody CreateAdjustedMelody(Melody source, float gainMultiplier, float pitchShiftHalfsteps)
+	public static Melody CreateAdjustedMelody(Melody source, float gainMultiplier, float pitchShiftHalfsteps, float panOffset)
 	{
-		if (gainMultiplier == 1.0f && pitchShiftHalfsteps == 0.0f)
+		if (gainMultiplier == 1.0f && pitchShiftHalfsteps == 0.0f && panOffset == 0.0f)
 		{
 			return source;
 		}
