@@ -1,6 +1,6 @@
 namespace Runtime.Objects;
 
-public class Pattern : RuntimeObject
+public class Pattern : IRuntimeObject
 {
 	public float LengthInBeats;
 	public List<Pattern> Patterns = new();
