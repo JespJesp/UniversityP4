@@ -1,41 +1,54 @@
-using System.Globalization;
-using Ast.Tables;
+using Ast.Nodes.Floats;
 using Ast.Nodes.Melodies.Chords.Notes;
-using Lexing.Tokens;
+using Phases.Parsing;
+using Phases.Validation;
+using Tokens;
 
 namespace Ast.Nodes.Melodies.Chords;
 
-public class ChordNode(Node parent, bool createsNestedScope = false) : Node(parent, createsNestedScope)
+public class ChordNode : Node
 {
-	public float StartBeat;
-	public float EndBeat;
+	public ChordsNode ChordsNode;
+	public FloatExpressionNode StartBeat = new();
+	public FloatExpressionNode EndBeat = new();
 
-	protected override void Parse()
+	public ChordNode(ChordsNode chordsNode)
 	{
-		Parser.ConsumeToken(TokenType.Float, (value) => StartBeat = float.Parse(value, CultureInfo.InvariantCulture));
-		Parser.ConsumeToken(TokenType.Float, (value) => EndBeat = float.Parse(value, CultureInfo.InvariantCulture));
+		this.ChordsNode = chordsNode;
+	}
 
-		while (Parser.CurrentToken.Type == TokenType.Identifier)
+	public override void CascadeParse(Parser parser)
+	{
+		StartBeat = parser.ParseChild(this, new FloatExpressionNode());
+		parser.ConsumeToken(TokenType.Comma);
+		EndBeat = parser.ParseChild(this, new FloatExpressionNode());
+
+		while (parser.CursorToken.Type == TokenType.Identifier)
 		{
-			new NoteNode(this);
+			parser.ParseChild(this, new NoteNode(this));
 		}
 	}
 
-	protected override void Validate(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void Validate(Validator validator)
 	{
-		MelodyNode melodyNode = ancestors.Get<MelodyNode>();
+		MelodyNode melodyNode = ChordsNode.MelodyNode;
 
-		if (EndBeat > melodyNode.LengthInBeats)
+		List<string> errors = new();
+		if (EndBeat.Value > melodyNode.LengthInBeats)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Note end time {EndBeat} exceeds melody length {melodyNode.LengthInBeats}");
+			errors.Add($"Note end time '{EndBeat.Value}' exceeds melody length '{melodyNode.LengthInBeats}'");
 		}
-		if (StartBeat < 0 || EndBeat < 0)
+		if (StartBeat.Value < 0 || EndBeat.Value < 0)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time and end time must be positive: {StartBeat}-{EndBeat}");
+			errors.Add($"Start time and end time must be positive: '{StartBeat.Value},{EndBeat.Value}'");
 		}
-		if (StartBeat >= EndBeat)
+		if (StartBeat.Value >= EndBeat.Value)
 		{
-			Validator.AddError(this, $"Melody: {melodyNode.Id}. Start time must be less than end time: {StartBeat}-{EndBeat}");
+			errors.Add($"Start time must be less than end time: '{StartBeat.Value},{EndBeat.Value}'");
+		}
+		if (errors.Count != 0)
+		{
+			throw new Exception($"Melody: {melodyNode.Id}." + string.Join(" ", errors));
 		}
 	}
 }

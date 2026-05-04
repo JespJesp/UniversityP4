@@ -1,0 +1,9 @@
+{
+	"profiles": {
+		"MyProjectProfile": {
+			"commandName": "Project",
+			"commandLineArgs": "ExamplePrograms/Development.mude",
+			"workingDirectory": "."
+		}
+	}
+}

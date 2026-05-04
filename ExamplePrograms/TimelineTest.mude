@@ -1,24 +1,3 @@
-timeline
-	settings
-		timeSignature 4/4
-		bpm 140
-	intro start 0
-		16_introLeadGuitar
-	intro stop 16
-		EVERYTHING
-	verse start 16
-		16_verseLeadGuitar
-		32_verseRhythmGuitar
-		32_versePianoDrops
-	drums start 16
-		4_fourOnTheFloorKick
-		4_fourOnTheFloorSnare
-		4_fourOnTheFloorClosedHihat
-	snare stop 32
-		4_fourOnTheFloorSnare
-	verse stop 48
-		EVERYTHING
-
 sample leadGuitar "/ExampleSamples/Instruments/electric guitar E4.wav" e4
 sample softPiano "/ExampleSamples/Instruments/synth C.wav" c4
 sample raindrop "/ExampleSamples/Instruments/flute E.wav" e5
@@ -89,3 +68,23 @@ melody 4_fourOnTheFloorClosedHihat
 		2 3 a5(gain 0.5)
 		3 4 d5(gain 1)
 
+timeline
+	settings
+		timeSignature 4/4
+		bpm 140
+	intro start
+		16_introLeadGuitar
+	intro stop 16
+		EVERYTHING
+	verse start
+		16_verseLeadGuitar
+		32_verseRhythmGuitar
+		32_versePianoDrops
+	drums start
+		4_fourOnTheFloorKick
+		4_fourOnTheFloorSnare
+		4_fourOnTheFloorClosedHihat
+	snare stop after 16
+		4_fourOnTheFloorSnare
+	verse stop after 32
+		EVERYTHING

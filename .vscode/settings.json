@@ -4,6 +4,16 @@
   "editor.insertSpaces": false,
   "editor.detectIndentation": false,
 
+  "files.associations": {
+		"*.mude": "mude",
+	},
+	"[mude]": {
+		"files.autoSave": "off",
+	},
+	"[plaintext]": {
+		"files.autoSave": "off",
+	},
+
   // Requires extension: emeraldwalk.runonsave
   "emeraldwalk.runonsave": {
     "commands": [

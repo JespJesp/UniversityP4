@@ -1,55 +1,61 @@
 using System.Globalization;
-using Ast.Tables;
-using Runtime.Objects;
 using Ast.Nodes.Melodies.Chords;
 using Ast.Nodes.Melodies.Samples;
-using Lexing.Tokens;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
+using Runtime.Objects;
+using Tokens;
 
 namespace Ast.Nodes.Melodies;
 
-public class MelodyNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
+public class MelodyNode : SymbolNode
 {
+	public Melody Melody = new();
 	public float LengthInBeats;
-	public Melody Melody0 = new();
 
-	protected override void Parse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.MelodyKeyword);
-		Parser.ConsumeToken(TokenType.Float, (value) => LengthInBeats = float.Parse(value, CultureInfo.InvariantCulture));
-		Parser.ConsumeToken(TokenType.Identifier, (value) => Id = LengthInBeats + value);
+		parser.ConsumeToken(TokenType.Float, out string lengthValue);
+		LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
 
-		Parser.TryConsumeIndent(1);
-		Dictionary<TokenType, Action> options = new()
-		{
-			{
-				TokenType.SamplesKeyword,
-				() => { new SampleReferencesNode(this); }
-			},
-			{
-				TokenType.ChordsKeyword,
-				() => { new ChordsNode(this); }
-			}
-		};
-		Token[] optionSeparator = { new(TokenType.Newline), new(TokenType.Indent, "1") };
-		Parser.HandleUniqueOptions(options, optionSeparator);
-	}
+		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
+		Id = LengthInBeats + nameValue;
 
-	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
-	{
-		if (LengthInBeats <= 0)
+		if (parser.TryConsumeNewlineIndent(1))
 		{
-			Validator.AddError(this, $"Melody: '{Id}'. Length cannot be <= 0");
+			parser.TryConsumeOptions
+			(
+				new()
+				{
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "samples"),
+						() => parser.ParseChild(this, new SampleReferencesNode(this))
+					),
+					(
+						() => parser.TryConsumeToken(TokenType.Identifier, "chords"),
+						() => parser.ParseChild(this, new ChordsNode(this))
+					),
+				},
+				[
+					new(TokenType.Newline),
+					new(TokenType.Indent, "1"),
+				]
+			);
 		}
 	}
 
-	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
+	public override void Validate(Validator validator)
 	{
-		this.Melody0.LengthInBeats = this.LengthInBeats;
+		if (LengthInBeats <= 0)
+		{
+			throw new Exception($"Melody: '{Id}'. Length cannot be <= 0");
+		}
 	}
 
-	protected override RuntimeObject GetRuntimeObject()
+	public override void Evaluate(Evaluator evaluator)
 	{
-		return this.Melody0;
+		Melody.LengthInBeats = LengthInBeats;
 	}
 }
 

@@ -1,0 +1,3 @@
+string instrumentsFolder "/Samples/Instruments"
+string drumsFolder "/Samples/Drums"
+string electricGuitarSample "/electric guitar E4.wav"

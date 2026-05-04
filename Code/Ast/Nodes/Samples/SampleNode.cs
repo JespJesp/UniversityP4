@@ -1,43 +1,41 @@
-using Ast.Tables;
+using Ast.Nodes.Strings;
+using Phases.Evaluation;
+using Phases.Parsing;
+using Phases.Validation;
 using Runtime.Objects;
-using Lexing.Tokens;
+using Tokens;
 
 namespace Ast.Nodes.Samples;
 
-public class SampleNode(Node parent, bool createsNestedScope = false) : VariableNode(parent, createsNestedScope)
+public class SampleNode : SymbolNode
 {
-	public string FilePath = "";
-	public string ReferencePitch = "";
-	Sample Sample0 = new();
+	public Sample Sample = new();
+	private StringExpressionNode _filePath = new();
+	private string _referencePitch = "";
 
-	protected override void Parse()
+	public override void CascadeParse(Parser parser)
 	{
-		Parser.ConsumeToken(TokenType.SampleKeyword);
-		Parser.ConsumeToken(TokenType.Identifier, (value) => { Id = value; });
-		Parser.ConsumeToken(TokenType.String, (value) => { FilePath = value; });
-		Parser.TryConsumeToken(TokenType.Identifier, (value) => { ReferencePitch = value; });
+		parser.ConsumeToken(TokenType.Identifier, out Id);
+		_filePath = parser.ParseChild(this, new StringExpressionNode());
+		parser.TryConsumeToken(TokenType.Identifier, out _referencePitch);
 	}
 
-	protected override void AdditionalValidation(NodeTable ancestors, SemanticSymbolTable symbols)
+	public override void Validate(Validator validator)
 	{
-		if (!FilePath.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
-			&& !FilePath.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
-			&& !FilePath.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
-			&& !FilePath.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
+		string filePathValue = _filePath.Value;
+		if (!filePathValue.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+			&& !filePathValue.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
+			&& !filePathValue.EndsWith(".aif", StringComparison.OrdinalIgnoreCase)
+			&& !filePathValue.EndsWith(".aiff", StringComparison.OrdinalIgnoreCase))
 		{
-			Validator.AddError(this, $"Sample: '{Id}'. File path '{FilePath}' must be file of type .wav, .mp3, .aif, or .aiff");
+			throw new Exception($"Sample: '{Id}'. File path '{filePathValue}' must be file of type .wav, .mp3, .aif, or .aiff");
 		}
 	}
 
-	protected override void AdditionalEvaluation(NodeTable ancestors, RuntimeVariableTable variables)
+	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Sample0.FilePath = this.FilePath;
-		this.Sample0.ReferencePitch = new(this.ReferencePitch);
-	}
-
-	protected override RuntimeObject GetRuntimeObject()
-	{
-		return this.Sample0;
+		Sample.FilePath = _filePath.Value;
+		Sample.ReferencePitch = Pitch.FromString(_referencePitch);
 	}
 }
 
