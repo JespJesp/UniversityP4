@@ -25,9 +25,17 @@ public class ChordNode : Node
 
 		while (parser.CursorToken.Type == TokenType.Identifier)
 		{
-			parser.ParseChild(this, new NoteNode(this));
+			string value = parser.CursorToken.Value;
+
+			if (RomanNumeralHelper.IsRomanNumeral(value))
+			{
+				parser.ParseChild(this, new RomanNumeralNode(this));
+			}
+			else
+			{
+				parser.ParseChild(this, new NoteNode(this));
+			}
 		}
-	}
 
 	public override void Validate(Validator validator)
 	{
