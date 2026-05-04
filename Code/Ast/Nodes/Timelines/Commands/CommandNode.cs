@@ -55,7 +55,7 @@ public class CommandNode : SymbolNode
 		}
 
 		// Command targets
-		while (parser.TryConsumeIndent(2))
+		while (parser.TryConsumeNewlineIndent(2))
 		{
 			if (parser.TryConsumeToken(TokenType.Float, out string lengthPart)) // Check for patterns and melody IDs
 			{

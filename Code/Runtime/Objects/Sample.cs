@@ -1,6 +1,6 @@
 namespace Runtime.Objects;
 
-public class Sample : RuntimeObject
+public class Sample : IRuntimeObject
 {
 	public string FilePath = "";
 	public Pitch ReferencePitch = new("c5"); // Default value

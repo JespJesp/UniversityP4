@@ -22,7 +22,7 @@ public class MelodyNode(Node parent, bool createsNestedScope = false) : Variable
 		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
 		Id = LengthInBeats + nameValue;
 
-		if (parser.TryConsumeIndent(1))
+		if (parser.TryConsumeNewlineIndent(1))
 		{
 			{
 				TokenType.ScaleKeyword,

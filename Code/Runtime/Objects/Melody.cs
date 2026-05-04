@@ -1,6 +1,6 @@
 namespace Runtime.Objects;
 
-public class Melody : RuntimeObject
+public class Melody : IRuntimeObject
 {
 	public float LengthInBeats;
 	public List<Sample> Samples = new();

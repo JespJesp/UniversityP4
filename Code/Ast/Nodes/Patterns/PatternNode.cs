@@ -19,7 +19,7 @@ public class PatternNode(Node parent, bool createsNestedScope = false) : Variabl
 		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
 		Id = LengthInBeats + nameValue;
 
-		while (parser.TryConsumeIndent(1))
+		while (parser.TryConsumeNewlineIndent(1))
 		{
 			new ReferenceNode(this);
 		}

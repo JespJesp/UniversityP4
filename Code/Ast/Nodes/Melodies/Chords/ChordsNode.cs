@@ -8,7 +8,9 @@ public class ChordsNode(Node parent, bool createsNestedScope = false) : Node(par
 	{
 		Parser.ConsumeToken(TokenType.ChordsKeyword);
 
-		while (Parser.TryConsumeIndent(2))
+	public override void CascadeParse(Parser parser)
+	{
+		while (parser.TryConsumeNewlineIndent(2))
 		{
 			new ChordNode(this);
 		}

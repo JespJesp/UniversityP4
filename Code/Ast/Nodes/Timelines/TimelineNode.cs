@@ -17,7 +17,7 @@ public class TimelineNode(Node parent, bool createsNestedScope = false) : Variab
 		Parser.ConsumeToken(TokenType.TimelineKeyword);
 		Id = "timeline";
 
-		while (Parser.TryConsumeIndent(1))
+		while (parser.TryConsumeNewlineIndent(1))
 		{
 			string firstIdentifier = Parser.CurrentToken.Value;
 			if (string.Equals(firstIdentifier, "settings", StringComparison.OrdinalIgnoreCase))

@@ -8,7 +8,9 @@ public class SampleReferencesNode(Node parent, bool createsNestedScope = false) 
 	{
 		Parser.ConsumeToken(TokenType.SamplesKeyword);
 
-		while (Parser.TryConsumeIndent(2))
+	public override void CascadeParse(Parser parser)
+	{
+		while (parser.TryConsumeNewlineIndent(2))
 		{
 			new SampleReferenceNode(this);
 		}
