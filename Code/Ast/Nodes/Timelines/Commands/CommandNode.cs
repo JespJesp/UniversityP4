@@ -40,7 +40,7 @@ public class CommandNode : SymbolNode
 		}
 
 		// Optional beat
-		if (CommandType == TimelineCommandType.Stop.ToString()
+		if (CommandType == nameof(TimelineCommandType.Stop).ToLower()
 			&& parser.TryConsumeToken(TokenType.Identifier, "after"))
 		{
 			// Keep the existing sample syntax working while treating the beat as a relative offset
@@ -105,14 +105,14 @@ public class CommandNode : SymbolNode
 		{
 			errors.Add($"Command type '{CommandType}' is undefined");
 		}
-		if (CommandType == TimelineCommandType.Start.ToString())
+		if (CommandType == nameof(TimelineCommandType.Start).ToLower())
 		{
 			if (_commandTargetIds.Count == 0)
 			{
 				errors.Add("Start commands must specify at least one target melody or pattern");
 			}
 		}
-		else if (CommandType == TimelineCommandType.Stop.ToString())
+		else if (CommandType == nameof(TimelineCommandType.Stop).ToLower())
 		{
 			if (!_commandBeat.HasValue)
 			{

@@ -25,7 +25,7 @@ public class GainNode : Node
 	{
 		CommandNode commandNode = ModifiersNode.CommandNode;
 
-		if (commandNode.CommandType != TimelineCommandType.Stop.ToString())
+		if (commandNode.CommandType != nameof(TimelineCommandType.Stop).ToLower())
 		{
 			throw new Exception($"Timeline command: '{commandNode.CommandType}'. Command cannot use gain modifiers");
 		}
