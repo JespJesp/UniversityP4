@@ -21,7 +21,7 @@ public class Annotator
 
 	private void CascadeAnnotate(Node node, SymbolTable availableSymbols)
 	{
-		node.SymbolTable = availableSymbols.Clone();
+		node.SymbolTable = availableSymbols;
 
 		try
 		{
@@ -33,10 +33,16 @@ public class Annotator
 		}
 
 		SymbolTable childrensSymbols = node.SymbolTable;
+
+		// Ensure that nested children do not affect the symbol tables of higher levels
+		if (node.CreatesNestedScope)
+		{
+			childrensSymbols = childrensSymbols.Clone();
+		}
+
 		foreach (Node child in node.Children)
 		{
 			CascadeAnnotate(child, childrensSymbols);
-			childrensSymbols = child.SymbolTable; // Inherit symbols from older sibling
 		}
 	}
 }
