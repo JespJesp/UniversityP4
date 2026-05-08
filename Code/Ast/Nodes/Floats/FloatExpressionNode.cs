@@ -69,7 +69,7 @@ public class FloatExpressionNode : Node
 			// NOTE: For example, "2 - 1" and "2-1" are both allowed expressions, but it's important to note that they must be handled differently, since "2 - 1" consists of 3 tokens (a float "2", a minus "-", and float "1"), while "2-1" consists of 2 tokens (a float "2", and a float "-1").
 			newTerm = null;
 			if (parser.TryConsumeToken(TokenType.Plus)
-					|| TokenTypeExtensions.IsSubtypeOf(parser.CursorToken.Type, TokenType.Float) && parser.CursorToken.Value[0] == '-')
+					|| parser.CursorToken.Type == TokenType.Float && parser.CursorToken.Value[0] == '-')
 			{
 				newTerm = new() { Operation = Operation.Addition };
 			}
