@@ -1,4 +1,5 @@
 using System.Globalization;
+using Ast.Nodes.Floats;
 using Phases.Evaluation;
 using Phases.Parsing;
 using Phases.Validation;
@@ -12,10 +13,10 @@ public class SettingsNode : Node
 	public static int SettingsNodeInstances = 0;
 
 	public TimelineNode timelineNode;
-	private float? _bpm;
-	private int? _sampleRate;
-	private int? _timeSignatureNumerator;
-	private int? _timeSignatureDenominator;
+	private FloatExpressionNode? _bpm;
+	private FloatExpressionNode? _sampleRate;
+	private FloatExpressionNode? _timeSignatureNumerator;
+	private FloatExpressionNode? _timeSignatureDenominator;
 
 	public SettingsNode(TimelineNode timelineNode)
 	{
@@ -36,29 +37,23 @@ public class SettingsNode : Node
 						() => parser.TryConsumeToken(TokenType.Identifier, "bpm"),
 						() =>
 						{
-							parser.ConsumeToken(TokenType.Float, out string bpmValue);
-							_bpm = float.Parse(bpmValue, CultureInfo.InvariantCulture);
+							_bpm = parser.ParseChild(this, new FloatExpressionNode());
 						}
 					),
 					(
 						() => parser.TryConsumeToken(TokenType.Identifier, "samplerate"),
 						() =>
 						{
-							parser.ConsumeToken(TokenType.Integer, out string sampleRateValue);
-							_sampleRate = int.Parse(sampleRateValue);
+							_sampleRate = parser.ParseChild(this, new FloatExpressionNode());
 						}
 					),
 					(
 						() => parser.TryConsumeToken(TokenType.Identifier, "timesignature"),
 						() =>
 						{
-							parser.ConsumeToken(TokenType.Integer, out string numeratorValue);
-							_timeSignatureNumerator = int.Parse(numeratorValue, CultureInfo.InvariantCulture);
-
-							parser.ConsumeToken(TokenType.Slash);
-
-							parser.ConsumeToken(TokenType.Integer, out string denominatorValue);
-							_timeSignatureDenominator = int.Parse(denominatorValue, CultureInfo.InvariantCulture);
+							_timeSignatureNumerator = parser.ParseChild(this, new FloatExpressionNode());
+							parser.ConsumeToken(TokenType.Comma);
+							_timeSignatureDenominator = parser.ParseChild(this, new FloatExpressionNode());
 						}
 					),
 				},
@@ -78,16 +73,16 @@ public class SettingsNode : Node
 		}
 
 		List<string> errors = new();
-		if (_bpm is not null && _bpm <= 0)
+		if (_bpm is not null && _bpm.Value <= 0)
 		{
 			errors.Add($"BPM '{_bpm}' must be positive");
 		}
-		if (_bpm is not null && _sampleRate <= 0)
+		if (_sampleRate is not null && _sampleRate.Value <= 0)
 		{
-			errors.Add($"Sample rate '{_bpm}' must be positive");
+			errors.Add($"Sample rate '{_sampleRate}' must be positive");
 		}
-		if (_timeSignatureNumerator is not null && _timeSignatureNumerator <= 0
-				&& _timeSignatureDenominator is not null && _timeSignatureDenominator <= 0)
+		if (_timeSignatureNumerator is not null && _timeSignatureNumerator.Value <= 0
+				&& _timeSignatureDenominator is not null && _timeSignatureDenominator.Value <= 0)
 		{
 			errors.Add($"Time signature values '{_timeSignatureNumerator}/{_timeSignatureDenominator}' must both be positive");
 		}
@@ -107,7 +102,7 @@ public class SettingsNode : Node
 		}
 		if (_sampleRate is not null)
 		{
-			timeline.SampleRate = _sampleRate.Value;
+			timeline.SampleRate = (int)_sampleRate.Value;
 		}
 		if (_timeSignatureNumerator is not null)
 		{

@@ -72,7 +72,7 @@ public class Parser
 
 	public bool TryConsumeToken(TokenType requiredType, out string tokenValue)
 	{
-		if (!CursorToken.Type.IsSubtypeOf(requiredType))
+		if (CursorToken.Type != requiredType)
 		{
 			tokenValue = "";
 			return false;
@@ -153,7 +153,7 @@ public class Parser
 
 			// Check for right token type and value
 			Token lookaheadToken = _tokens[_cursorPosition + lookahead];
-			if (!lookaheadToken.Type.IsSubtypeOf(requiredToken.Type) || lookaheadToken.Value != requiredToken.Value)
+			if (lookaheadToken.Type != requiredToken.Type || lookaheadToken.Value != requiredToken.Value)
 			{
 				isCorrectOrder = false;
 				break;

@@ -72,7 +72,7 @@ melody 4_fourOnTheFloorClosedHihat
 
 timeline
 	settings
-		timeSignature 4/4
+		timeSignature 4,4
 		bpm 140
 	intro start
 		16_introLeadGuitar

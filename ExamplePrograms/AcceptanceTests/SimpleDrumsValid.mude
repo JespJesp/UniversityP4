@@ -14,7 +14,7 @@ melody 4_drums
 timeline
 	settings
 		bpm 120
-		timesignature 4/4
+		timesignature 4,4
 	drums start 0
 		4_drums
 	drums stop 4
