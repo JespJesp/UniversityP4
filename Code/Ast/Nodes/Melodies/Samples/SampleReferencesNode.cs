@@ -13,7 +13,7 @@ public class SampleReferencesNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		while (parser.TryConsumeIndent(2))
+		while (parser.TryConsumeNewlineIndent(2))
 		{
 			parser.ParseChild(this, new SampleReferenceNode(this));
 		}

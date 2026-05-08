@@ -1,6 +1,6 @@
 namespace Runtime.Objects;
 
-public class Note : RuntimeObject
+public class Note : IRuntimeObject
 {
 	public float StartBeat;
 	public float EndBeat;

@@ -27,7 +27,7 @@ public class FloatExpressionNode : Node
 
 	private enum Operation
 	{
-		Addition, // Works for both addition and subtraction
+		Addition,
 		Subtraction,
 		Multiplication,
 		Division
@@ -69,7 +69,7 @@ public class FloatExpressionNode : Node
 			// NOTE: For example, "2 - 1" and "2-1" are both allowed expressions, but it's important to note that they must be handled differently, since "2 - 1" consists of 3 tokens (a float "2", a minus "-", and float "1"), while "2-1" consists of 2 tokens (a float "2", and a float "-1").
 			newTerm = null;
 			if (parser.TryConsumeToken(TokenType.Plus)
-					|| TokenTypeExtensions.IsSubtypeOf(parser.CursorToken.Type, TokenType.Float) && parser.CursorToken.Value[0] == '-')
+					|| parser.CursorToken.Type == TokenType.Float && parser.CursorToken.Value[0] == '-')
 			{
 				newTerm = new() { Operation = Operation.Addition };
 			}
@@ -90,9 +90,9 @@ public class FloatExpressionNode : Node
 
 	public override void Annotate(Annotator annotator)
 	{
+		// Assign term values
 		foreach (Term term in _terms)
 		{
-			// Get term value
 			if (term.IsIdentifier)
 			{
 				if (!SymbolTable.Contains<FloatConstantNode>(term.RawValue))
@@ -106,28 +106,42 @@ public class FloatExpressionNode : Node
 			{
 				term.Value = float.Parse(term.RawValue, CultureInfo.InvariantCulture);
 			}
+		}
 
-			// Apply term to final result
+		Value = CombineTerms(_terms);
+	}
+
+	private float CombineTerms(List<Term> terms)
+	{
+		if (terms.Count == 0)
+		{
+			return 0;
+		}
+
+		Stack<float> stack = new Stack<float>();
+		stack.Push(terms[0].Value);
+
+		for (int i = 1; i < terms.Count; i++)
+		{
+			var term = terms[i];
+
 			switch (term.Operation)
 			{
-				case Operation.Addition:
-					Value += term.Value;
-					break;
-				case Operation.Subtraction:
-					Value -= term.Value;
-					break;
 				case Operation.Multiplication:
-					Value *= term.Value;
+					stack.Push(stack.Pop() * term.Value);
 					break;
 				case Operation.Division:
-					float divisor = term.Value;
-					if (divisor == 0)
-					{
-						throw new Exception("Illegal operation: Cannot divide with 0");
-					}
-					Value /= divisor;
+					stack.Push(stack.Pop() / term.Value);
+					break;
+				case Operation.Addition:
+					stack.Push(term.Value);
+					break;
+				case Operation.Subtraction:
+					stack.Push(-term.Value);
 					break;
 			}
 		}
+
+		return stack.Sum();
 	}
 }

@@ -4,7 +4,6 @@ public enum TokenType
 {
 	// Values
 	Identifier,
-	Integer,
 	Float,
 	String,
 

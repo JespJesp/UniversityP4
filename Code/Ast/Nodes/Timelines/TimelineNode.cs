@@ -16,7 +16,7 @@ public class TimelineNode : SymbolNode
 	{
 		TimelineNodeInstances++;
 
-		while (parser.TryConsumeIndent(1))
+		while (parser.TryConsumeNewlineIndent(1))
 		{
 			if (parser.TryConsumeToken(TokenType.Identifier, "settings"))
 			{

@@ -47,7 +47,7 @@ melody 8_outro
 timeline
 	settings
 		bpm 96
-		timesignature 4/4
+		timesignature 4,4
 	intro start 0
 		8_intro
 	intro stop 8

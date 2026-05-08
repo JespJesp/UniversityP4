@@ -43,13 +43,9 @@ public class NumberOrMinusStrategy : ITokenizationStrategy
 		{
 			lexer.AddToken(TokenType.Minus, "", lexer.Cursor.Line, startColumn);
 		}
-		else if (hasDecimalSymbol) // If float
+		else // If float
 		{
 			lexer.AddToken(TokenType.Float, value, lexer.Cursor.Line, startColumn);
-		}
-		else  // If integer
-		{
-			lexer.AddToken(TokenType.Integer, value, lexer.Cursor.Line, startColumn);
 		}
 
 		return true;

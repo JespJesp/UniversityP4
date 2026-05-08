@@ -34,6 +34,11 @@ public class AudioRenderer
 
 		foreach (Loop loop in loops)
 		{
+			if (ConvertBeatsToSeconds(timeline, loop.EndBeat) > 3600)
+			{
+				throw new Exception("Cannot render audio file that is longer than 1 hour.");
+			}
+
 			Melody melody = loop.Melody;
 
 			foreach (Note note in melody.Notes)
