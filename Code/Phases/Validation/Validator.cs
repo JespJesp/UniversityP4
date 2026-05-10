@@ -7,11 +7,11 @@ public class Validator
 {
 	private List<string> _errors = new();
 
-	public void Validate(ProgramNode programNode)
+	public void Validate(FileNode rootNode)
 	{
 		_errors.Clear();
 
-		CascadeValidate(programNode);
+		CascadeValidate(rootNode);
 
 		if (_errors.Any())
 		{

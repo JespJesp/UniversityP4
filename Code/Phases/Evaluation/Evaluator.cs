@@ -1,5 +1,6 @@
 using Ast;
 using Ast.Nodes;
+using Ast.Nodes.Timelines;
 using Runtime.AudioRendering;
 
 namespace Phases.Evaluation;
@@ -8,20 +9,20 @@ public class Evaluator
 {
 	private List<string> _errors = new();
 
-	public void Evaluate(ProgramNode programNode, FileInfo fileInfo)
+	public void Evaluate(FileNode rootNode, FileInfo fileInfo)
 	{
 		_errors.Clear();
 
 		try
 		{
-			CascadeEvaluate(programNode);
+			CascadeEvaluate(rootNode);
 
 			if (_errors.Any())
 			{
 				throw new Exception("\n- " + string.Join("\n- ", _errors));
 			}
 
-			new AudioRenderer().RenderToFile(programNode.timelineNode, fileInfo);
+			new AudioRenderer().RenderToFile(TimelineNode.instance, fileInfo);
 		}
 		catch (Exception exception)
 		{
