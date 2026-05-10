@@ -22,7 +22,7 @@ public class Evaluator
 				throw new Exception("\n- " + string.Join("\n- ", _errors));
 			}
 
-			new AudioRenderer().RenderToFile(TimelineNode.instance, fileInfo);
+			new AudioRenderer().RenderToFile(TimelineNode.Instance, fileInfo);
 		}
 		catch (Exception exception)
 		{
