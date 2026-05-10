@@ -37,6 +37,7 @@ public class ImportStrategy : ITokenizationStrategy
 		lexer.Cursor.MoveToNextColumn();
 
 		lexer.LexNewFile(startLine, startColumn, fileLocalPath);
+		lexer.AddToken(TokenType.EndOfImportedFile, "", lexer.Cursor.Line, lexer.Cursor.Column);
 
 		return true;
 	}

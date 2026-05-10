@@ -4,23 +4,20 @@ using Ast.Nodes.Patterns;
 using Ast.Nodes.Samples;
 using Ast.Nodes.Strings;
 using Ast.Nodes.Timelines;
-using Phases.Lexing;
 using Phases.Parsing;
 using Tokens;
 
 namespace Ast.Nodes;
 
-public class ProgramNode : Node
+public class FileNode : Node
 {
-	public TimelineNode timelineNode = new();
-
 	public override void CascadeParse(Parser parser)
 	{
 		while (!parser.AtEndOfTokens)
 		{
 			if (parser.TryConsumeToken(TokenType.Identifier, "timeline"))
 			{
-				timelineNode = parser.ParseChild(this, new TimelineNode());
+				parser.ParseChild(this, new TimelineNode());
 			}
 			else if (parser.TryConsumeToken(TokenType.Identifier, "pattern"))
 			{
@@ -45,6 +42,10 @@ public class ProgramNode : Node
 			else if (parser.TryConsumeToken(TokenType.Newline))
 			{
 				// Do nothing
+			}
+			else if (parser.TryConsumeToken(TokenType.EndOfImportedFile))
+			{
+				parser.ParseChild(this, new FileNode(), createsNestedScope: true);
 			}
 			else
 			{
