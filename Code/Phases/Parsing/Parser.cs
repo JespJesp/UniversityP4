@@ -13,21 +13,21 @@ public class Parser
 	public Token CursorToken => _tokens[_cursorPosition];
 	public bool AtEndOfTokens => _cursorPosition >= _tokens.Count;
 
-	public ProgramNode Parse(List<Token> inputTokens)
+	public FileNode Parse(List<Token> inputTokens)
 	{
 		_cursorPosition = 0;
 		_errors.Clear();
 		_tokens = inputTokens;
 
-		ProgramNode astRoot = new ProgramNode();
-		astRoot.CascadeParse(this);
+		FileNode rootNode = new FileNode();
+		rootNode.CascadeParse(this);
 
 		if (_errors.Any())
 		{
 			throw new Exception("Syntax errors:\n- " + string.Join("\n- ", _errors));
 		}
 
-		return astRoot;
+		return rootNode;
 	}
 
 	public T ParseChild<T>(Node parent, T newChild, bool createsNestedScope = false) where T : Node

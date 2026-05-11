@@ -7,11 +7,11 @@ public class Annotator
 {
 	private List<string> _errors = new();
 
-	public void Annotate(ProgramNode programNode)
+	public void Annotate(FileNode rootNode)
 	{
 		_errors.Clear();
 
-		CascadeAnnotate(programNode, new());
+		CascadeAnnotate(rootNode, new());
 
 		if (_errors.Any())
 		{
