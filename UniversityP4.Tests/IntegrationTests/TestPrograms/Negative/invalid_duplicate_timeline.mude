@@ -1,0 +1,11 @@
+% Invalid: duplicate timeline declarations (validation should error) %
+
+timeline
+	settings
+		bpm 120
+		timesignature 4,4
+
+timeline
+	settings
+		bpm 100
+		timesignature 3,4

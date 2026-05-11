@@ -28,7 +28,7 @@ public class AnnotatorTests
         annotator.Annotate(programNode);
 
         childNode.SymbolTable.ShouldNotBeNull();
-        childNode.SymbolTable.ShouldNotBeSameAs(programNode.SymbolTable);
+        childNode.SymbolTable.ShouldBeSameAs(programNode.SymbolTable);
     }
 
     [Fact]

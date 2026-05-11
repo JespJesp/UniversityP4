@@ -25,19 +25,13 @@ public class CommandNode : SymbolNode
 
 	public override void CascadeParse(Parser parser)
 	{
-		// Identifier and command, or just command
 		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifierValue);
-		if (Enum.TryParse(firstIdentifierValue, ignoreCase: true, out TimelineCommandType result))
+		if (!Enum.TryParse(firstIdentifierValue, ignoreCase: true, out TimelineCommandType result))
 		{
-			Id = "";
-			CommandType = firstIdentifierValue.ToLowerInvariant();
+			throw new Exception($"Timeline commands must start with 'start' or 'stop', not '{firstIdentifierValue}'");
 		}
-		else
-		{
-			Id = firstIdentifierValue;
-			parser.ConsumeToken(TokenType.Identifier, out string typeValue);
-			CommandType = typeValue.ToLowerInvariant();
-		}
+		Id = "";
+		CommandType = firstIdentifierValue.ToLowerInvariant();
 
 		// Optional beat
 		if (CommandType == nameof(TimelineCommandType.Stop).ToLower()
@@ -72,11 +66,6 @@ public class CommandNode : SymbolNode
 
 	public override void UpsertSymbol(Annotator annotator)
 	{
-		// Only add start commands with an identifier to the symbol table
-		if (Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true) == TimelineCommandType.Start && Id != "")
-		{
-			SymbolTable.Upsert(this, Id);
-		}
 	}
 
 	public override void AfterSymbolUpsert(Annotator annotator)
@@ -118,9 +107,9 @@ public class CommandNode : SymbolNode
 			{
 				errors.Add("Stop commands must specify a beat value");
 			}
-			if (_commandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(Id))
+			if (_commandTargetIds.Count == 0)
 			{
-				errors.Add("Stop commands must specify targets, EVERYTHING, or a command ID");
+				errors.Add("Stop commands must specify targets or EVERYTHING");
 			}
 		}
 		if (errors.Count != 0)

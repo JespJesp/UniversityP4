@@ -14,24 +14,90 @@ public class LoopBuilder
 
 		var activeMelodies = new Dictionary<Melody, List<ActiveLoopState>>();
 		var commandTargets = new Dictionary<string, List<Melody>>();
-		float currentBeat = 0;
+
+		// Track global beats
+		float lastStartComputedBeat = 0f;
+		float lastStopComputedBeat = 0f;
+		float startChainOrigin = 0f;
+		float stopChainOrigin = 0f;
+		TimelineCommandType? prevCommandType = null;
+		bool hasSeenStart = false;
+		bool hasSeenStop = false;
 
 		foreach (TimelineCommand command in timeline.Commands)
 		{
 			switch (command.Type)
 			{
 				case TimelineCommandType.Start:
-					ExecuteStartCommand(command, activeMelodies, commandTargets, globalSymbols, ref currentBeat);
+				{
+					// Start beats are relative to the last stop
+					float baseline;
+					if (hasSeenStop)
+					{
+						baseline = (prevCommandType == TimelineCommandType.Stop) ? stopChainOrigin : lastStopComputedBeat;
+					}
+					else
+					{
+						baseline = 0f;
+					}
+
+					float startBeat = baseline + (command.Beat ?? 0f);
+
+					if (prevCommandType != TimelineCommandType.Start)
+					{
+						startChainOrigin = startBeat;
+					}
+					hasSeenStart = true;
+					lastStartComputedBeat = startBeat;
+
+					ExecuteStartCommand(command, activeMelodies, commandTargets, globalSymbols, startBeat);
+					prevCommandType = TimelineCommandType.Start;
 					break;
+				}
 				case TimelineCommandType.Stop:
-					ExecuteStopCommand(command, Loops, activeMelodies, commandTargets, globalSymbols, ref currentBeat);
+				{
+					if (!command.Beat.HasValue)
+					{
+						throw new Exception("Timeline stop command is missing a beat value");
+					}
+
+					// Stop beats are relative to the last start
+					float baseline;
+					if (hasSeenStart)
+					{
+						baseline = (prevCommandType == TimelineCommandType.Start) ? startChainOrigin : lastStartComputedBeat;
+					}
+					else
+					{
+						baseline = 0f;
+					}
+
+					float stopBeat = baseline + command.Beat.Value;
+					
+					if (prevCommandType != TimelineCommandType.Stop)
+					{
+						stopChainOrigin = stopBeat;
+					}
+					hasSeenStop = true;
+					lastStopComputedBeat = stopBeat;
+
+					ExecuteStopCommand(command, Loops, activeMelodies, commandTargets, globalSymbols, stopBeat);
+					prevCommandType = TimelineCommandType.Stop;
 					break;
+				}
 				default:
 					throw new Exception($"Unexpected timeline command type: {command.Type}");
 			}
 		}
 
-		CloseOpenLoops(timeline, activeMelodies, currentBeat);
+		// Determine final cursor for closing open loops
+		float finalCursor = 0f;
+		if (prevCommandType == TimelineCommandType.Start)
+			finalCursor = lastStartComputedBeat;
+		else if (prevCommandType == TimelineCommandType.Stop)
+			finalCursor = lastStopComputedBeat;
+
+		CloseOpenLoops(timeline, activeMelodies, finalCursor);
 
 		return Loops;
 	}
@@ -41,9 +107,8 @@ public class LoopBuilder
 			Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
 			Dictionary<string, List<Melody>> commandTargets,
 			SymbolTable globalSymbols,
-			ref float currentBeat)
+			float startBeat)
 	{
-		float startBeat = command.Beat ?? currentBeat;
 		HashSet<Melody> melodies = TimelineCommandTargetResolver.ExpandTargetsToMelodies(command.TargetIds, globalSymbols);
 
 		foreach (Melody melody in melodies)
@@ -61,8 +126,6 @@ public class LoopBuilder
 		{
 			commandTargets[command.Id] = melodies.ToList();
 		}
-
-		currentBeat = startBeat;
 	}
 
 	private void ExecuteStopCommand(
@@ -71,14 +134,8 @@ public class LoopBuilder
 			Dictionary<Melody, List<ActiveLoopState>> activeMelodies,
 			Dictionary<string, List<Melody>> commandTargets,
 			SymbolTable globalSymbols,
-			ref float currentBeat)
+			float stopBeat)
 	{
-		if (!command.Beat.HasValue)
-		{
-			throw new Exception("Timeline stop command is missing a beat value");
-		}
-
-		float stopBeat = currentBeat + command.Beat.Value;
 		HashSet<Melody> targetsToStop = ResolveStopTargets(command, activeMelodies, commandTargets, globalSymbols);
 
 		foreach (Melody melody in targetsToStop)
@@ -116,8 +173,6 @@ public class LoopBuilder
 		{
 			commandTargets.Remove(command.Id);
 		}
-
-		currentBeat = stopBeat;
 	}
 
 	private HashSet<Melody> ResolveStopTargets(

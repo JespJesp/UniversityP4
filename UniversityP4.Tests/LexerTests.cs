@@ -15,8 +15,8 @@ public class LexerTests
                 tokens.Count.ShouldBe(3);
         tokens.Select(t => t.Type).ShouldBe(new[]
         {
-            TokenType.Integer,
-            TokenType.Integer,
+            TokenType.Float,
+            TokenType.Float,
             TokenType.Float
         });
         tokens[0].Value.ShouldBe("42");
@@ -33,7 +33,7 @@ public class LexerTests
         {
             TokenType.Newline,
             TokenType.Indent,
-            TokenType.Integer
+            TokenType.Float
         });
         tokens[1].Value.ShouldBe("2");
     }
@@ -56,7 +56,7 @@ public class LexerTests
 
         var tokens = new Lexer().Lex("42", BaseFile);
 
-        tokens.Select(t => t.Type).ShouldBe(new[] { TokenType.Integer });
+        tokens.Select(t => t.Type).ShouldBe(new[] { TokenType.Float });
         tokens[0].Value.ShouldBe("42");
     }
 }
