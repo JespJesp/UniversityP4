@@ -21,8 +21,9 @@ public class FileLexer
 		_lexer = lexer;
 	}
 
-	public void Lex()
+	public void Lex(string fileFullPath)
 	{
+		_lexer.ImportedFileFullPaths.Add(fileFullPath);
 		Cursor = new();
 
 		// TODO: Add max size to e.g. float and string
@@ -31,18 +32,7 @@ public class FileLexer
 		{
 			try
 			{
-				if (!Tokenizer.TryTokenize<WhitespaceStrategy>(this)
-					&& !Tokenizer.TryTokenize<ImportStrategy>(this)
-					&& !Tokenizer.TryTokenize<CommentStrategy>(this)
-					&& !Tokenizer.TryTokenize<StringStrategy>(this)
-					&& !Tokenizer.TryTokenize<LeftParenthesesStrategy>(this)
-					&& !Tokenizer.TryTokenize<RightParenthesesStrategy>(this)
-					&& !Tokenizer.TryTokenize<CommaStrategy>(this)
-					&& !Tokenizer.TryTokenize<PlusStrategy>(this)
-					&& !Tokenizer.TryTokenize<AsteriskStrategy>(this)
-					&& !Tokenizer.TryTokenize<SlashStrategy>(this)
-					&& !Tokenizer.TryTokenize<NumberOrMinusStrategy>(this)
-					&& !Tokenizer.TryTokenize<IdentifierStrategy>(this))
+				if (!Tokenizer.TryTokenize(this))
 				{
 					Cursor.MoveToNextColumn();
 					throw new LexicalError(Cursor.Line, Cursor.Column - 1, $"Unknown token type for character: '{CursorChar}'");
@@ -50,8 +40,8 @@ public class FileLexer
 			}
 			catch (LexicalError exception)
 			{
-				CursorInfo cursorInfo = new(_fileName, exception.Line, exception.Column);
-				_lexer.Errors.Add($"{cursorInfo}. {exception.Message}");
+				Location location = new(_fileName, exception.Line, exception.Column);
+				_lexer.Errors.Add($"{location}. {exception.Message}");
 			}
 		}
 	}
@@ -79,40 +69,38 @@ public class FileLexer
 		return lookaheadCharacters == expected;
 	}
 
-	public void LexNewFile(int callerLine, int callerColumn, string localFilePath)
+	public void LexNewFile(int callerLine, int callerColumn, string fileLocalPath)
 	{
 		// Get full path
-		string fullFilePath;
+		string fileFullPath;
 		try
 		{
-			fullFilePath = Path.GetFullPath(Path.Combine(_lexer.BaseDirectory, localFilePath));
+			fileFullPath = Path.GetFullPath(Path.Combine(_lexer.InputFileFolderFullPath, fileLocalPath));
 		}
 		catch
 		{
-			throw new LexicalError(callerLine, callerColumn, $"Could not find file from local file path: {localFilePath}");
+			throw new LexicalError(callerLine, callerColumn, $"Could not find file from local file path: {fileLocalPath}");
 		}
 
 		// Skip circular imports
-		if (_lexer.ImportedFilePaths.Contains(fullFilePath))
+		if (_lexer.ImportedFileFullPaths.Contains(fileFullPath))
 		{
 			return;
 		}
 
-		// Read file
+		// Find file
 		string fileContent = "";
 		string fileName = "";
 		try
 		{
-			fileContent = File.ReadAllText(fullFilePath);
-			fileName = Path.GetFileName(fullFilePath);
+			fileContent = File.ReadAllText(fileFullPath);
+			fileName = Path.GetFileName(fileFullPath);
 		}
 		catch
 		{
-			throw new LexicalError(callerLine, callerColumn, $"Could not find file from full path: {fullFilePath}");
+			throw new LexicalError(callerLine, callerColumn, $"Could not find file from full path: {fileFullPath}");
 		}
 
-		// Remember file and lex it
-		_lexer.ImportedFilePaths.Add(fullFilePath);
-		new FileLexer(_lexer, fileName, fileContent).Lex();
+		new FileLexer(_lexer, fileName, fileContent).Lex(fileFullPath);
 	}
 }

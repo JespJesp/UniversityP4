@@ -10,11 +10,10 @@ using Tokens;
 
 namespace Ast.Nodes.Timelines.Commands;
 
-public class CommandNode : Node
+public class CommandNode : SymbolNode
 {
 	public TimelineNode TimelineNode;
 	public TimelineCommand Command = new();
-	public string CommandId = "";
 	public string CommandType = "";
 	private FloatExpressionNode _commandBeat = new();
 	private List<string> _commandTargetIds = new();
@@ -30,17 +29,23 @@ public class CommandNode : Node
 		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifierValue);
 		if (Enum.TryParse(firstIdentifierValue, ignoreCase: true, out TimelineCommandType result))
 		{
-			CommandId = "";
+			Id = "";
 			CommandType = firstIdentifierValue.ToLowerInvariant();
 		}
 		else
 		{
-			CommandId = firstIdentifierValue;
+			Id = firstIdentifierValue;
 			parser.ConsumeToken(TokenType.Identifier, out string typeValue);
 			CommandType = typeValue.ToLowerInvariant();
 		}
 
 		// Optional beat
+		if (CommandType == nameof(TimelineCommandType.Stop).ToLower()
+			&& parser.TryConsumeToken(TokenType.Identifier, "after"))
+		{
+			// Keep the existing sample syntax working while treating the beat as a relative offset
+		}
+
 		_commandBeat = parser.ParseChild(this, new FloatExpressionNode(isOptional: true));
 
 		// Optional command modifiers
@@ -50,7 +55,7 @@ public class CommandNode : Node
 		}
 
 		// Command targets
-		while (parser.TryConsumeIndent(2))
+		while (parser.TryConsumeNewlineIndent(2))
 		{
 			if (parser.TryConsumeToken(TokenType.Float, out string lengthPart)) // Check for patterns and melody IDs
 			{
@@ -65,7 +70,16 @@ public class CommandNode : Node
 		}
 	}
 
-	public override void Annotate(Annotator annotator)
+	public override void UpsertSymbol(Annotator annotator)
+	{
+		// Only add start commands with an identifier to the symbol table
+		if (Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true) == TimelineCommandType.Start && Id != "")
+		{
+			SymbolTable.Upsert(this, Id);
+		}
+	}
+
+	public override void AfterSymbolUpsert(Annotator annotator)
 	{
 		foreach (string targetId in _commandTargetIds)
 		{
@@ -91,20 +105,20 @@ public class CommandNode : Node
 		{
 			errors.Add($"Command type '{CommandType}' is undefined");
 		}
-		if (CommandType == TimelineCommandType.Start.ToString())
+		if (CommandType == nameof(TimelineCommandType.Start).ToLower())
 		{
 			if (_commandTargetIds.Count == 0)
 			{
 				errors.Add("Start commands must specify at least one target melody or pattern");
 			}
 		}
-		else if (CommandType == TimelineCommandType.Stop.ToString())
+		else if (CommandType == nameof(TimelineCommandType.Stop).ToLower())
 		{
 			if (!_commandBeat.HasValue)
 			{
 				errors.Add("Stop commands must specify a beat value");
 			}
-			if (_commandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(CommandId))
+			if (_commandTargetIds.Count == 0 && string.IsNullOrWhiteSpace(Id))
 			{
 				errors.Add("Stop commands must specify targets, EVERYTHING, or a command ID");
 			}
@@ -117,7 +131,7 @@ public class CommandNode : Node
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		Command.Id = CommandId;
+		Command.Id = Id;
 		Command.Type = Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true);
 		if (_commandBeat.HasValue)
 		{

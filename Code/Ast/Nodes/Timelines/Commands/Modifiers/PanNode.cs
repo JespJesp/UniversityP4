@@ -6,19 +6,19 @@ using Runtime.Objects.Timelines;
 
 namespace Ast.Nodes.Timelines.Commands.Modifiers;
 
-public class PitchNode : Node
+public class PanNode : Node
 {
 	public ModifiersNode ModifiersNode;
-	private FloatExpressionNode _pitchShiftHalfsteps = new();
+	private FloatExpressionNode _panOffset = new();
 
-	public PitchNode(ModifiersNode modifiersNode)
+	public PanNode(ModifiersNode modifiersNode)
 	{
 		this.ModifiersNode = modifiersNode;
 	}
 
 	public override void CascadeParse(Parser parser)
 	{
-		_pitchShiftHalfsteps = parser.ParseChild(this, new FloatExpressionNode());
+		_panOffset = parser.ParseChild(this, new FloatExpressionNode());
 	}
 
 	public override void Validate(Validator validator)
@@ -27,14 +27,18 @@ public class PitchNode : Node
 
 		if (commandNode.CommandType != nameof(TimelineCommandType.Stop).ToLower())
 		{
-			throw new Exception($"Timeline command: '{commandNode.CommandType}'. Command cannot use pitch modifiers");
+			throw new Exception($"Timeline command: '{commandNode.CommandType}'. Command cannot use pan modifiers");
+		}
+
+		if (_panOffset.Value < -1.0f || _panOffset.Value > 1.0f)
+		{
+			throw new Exception($"Timeline command: '{commandNode.CommandType}'. Pan '{_panOffset.Value}' must be between -1 and 1");
 		}
 	}
 
 	public override void Evaluate(Evaluator evaluator)
 	{
 		TimelineCommand command = ModifiersNode.CommandNode.Command;
-		command.PitchShiftHalfsteps = _pitchShiftHalfsteps.Value;
+		command.PanOffset = _panOffset.Value;
 	}
 }
-

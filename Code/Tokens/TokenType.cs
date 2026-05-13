@@ -4,7 +4,6 @@ public enum TokenType
 {
 	// Values
 	Identifier,
-	Integer,
 	Float,
 	String,
 
@@ -18,6 +17,6 @@ public enum TokenType
 	Asterisk,
 	Newline,
 	Indent,
-	EndOfTokens
+	EndOfImportedFile,
 }
 

@@ -17,12 +17,12 @@ public class MelodyNode : SymbolNode
 	public override void CascadeParse(Parser parser)
 	{
 		parser.ConsumeToken(TokenType.Float, out string lengthValue);
-		this.LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
+		LengthInBeats = float.Parse(lengthValue, CultureInfo.InvariantCulture);
 
 		parser.ConsumeToken(TokenType.Identifier, out string nameValue);
-		this.Id = LengthInBeats + nameValue;
+		Id = LengthInBeats + nameValue;
 
-		if (parser.TryConsumeIndent(1))
+		if (parser.TryConsumeNewlineIndent(1))
 		{
 			parser.TryConsumeOptions
 			(
@@ -55,7 +55,7 @@ public class MelodyNode : SymbolNode
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		this.Melody.LengthInBeats = this.LengthInBeats;
+		Melody.LengthInBeats = LengthInBeats;
 	}
 }
 

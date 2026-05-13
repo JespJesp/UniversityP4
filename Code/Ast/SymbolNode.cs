@@ -8,25 +8,18 @@ public abstract class SymbolNode : Node
 
 	public sealed override void Annotate(Annotator annotator)
 	{
-		UpsertToSymbolTable();
-		AdditionalAnnotation(annotator);
+		UpsertSymbol(annotator);
+		AfterSymbolUpsert(annotator);
 	}
 
-	public virtual void AdditionalAnnotation(Annotator annotator) {}
-
-	private void UpsertToSymbolTable()
+	public virtual void UpsertSymbol(Annotator annotator)
 	{
-		(Type type, string id) key = (this.GetType(), this.Id);
+		SymbolTable.Upsert(this, Id, ScopeDepth);
+	}
 
-		if (SymbolTable.Symbols.TryGetValue(key, out SymbolNode? oldEntry))
-		{
-			if (this.ScopeDepth <= oldEntry.ScopeDepth)
-			{
-				throw new Exception($"ID: '{this.Id}'. Scope depth: '{this.ScopeDepth}'. Double declaration within the same scope depth level");
-			}
-		}
-
-		SymbolTable.Symbols[key] = this;
+	public virtual void AfterSymbolUpsert(Annotator annotator)
+	{
+		// No behavior
 	}
 }
 

@@ -20,7 +20,7 @@ public class SampleReferenceNode : Node
 
 	public override void CascadeParse(Parser parser)
 	{
-		parser.ConsumeToken(TokenType.Identifier, out this.ReferenceId);
+		parser.ConsumeToken(TokenType.Identifier, out ReferenceId);
 
 		if (parser.TryConsumeToken(TokenType.LeftParentheses))
 		{

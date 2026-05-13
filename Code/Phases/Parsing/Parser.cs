@@ -11,29 +11,30 @@ public class Parser
 	private List<string> _errors = new();
 
 	public Token CursorToken => _tokens[_cursorPosition];
+	public bool AtEndOfTokens => _cursorPosition >= _tokens.Count;
 
-	public ProgramNode Parse(List<Token> inputTokens)
+	public FileNode Parse(List<Token> inputTokens)
 	{
 		_cursorPosition = 0;
 		_errors.Clear();
 		_tokens = inputTokens;
 
-		ProgramNode astRoot = new ProgramNode();
-		astRoot.CascadeParse(this);
+		FileNode rootNode = new FileNode();
+		rootNode.CascadeParse(this);
 
 		if (_errors.Any())
 		{
 			throw new Exception("Syntax errors:\n- " + string.Join("\n- ", _errors));
 		}
 
-		return astRoot;
+		return rootNode;
 	}
 
 	public T ParseChild<T>(Node parent, T newChild, bool createsNestedScope = false) where T : Node
 	{
 		// Assign child properties
 		newChild.CreatesNestedScope = createsNestedScope;
-		newChild.CursorInfo = CursorToken.CursorInfo.Clone();
+		newChild.Location = CursorToken.Location.Clone();
 		if (parent.CreatesNestedScope)
 		{
 			newChild.ScopeDepth = parent.ScopeDepth + 1;
@@ -59,11 +60,11 @@ public class Parser
 
 	public void AddErrorAndSkipLine(Node node, string errorMessage)
 	{
-		_errors.Add($"{CursorToken.CursorInfo}. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node: '{node.GetType()}'. {errorMessage}");
+		_errors.Add($"{CursorToken.Location}. Token type: '{CursorToken.Type}'. Token value: '{CursorToken.Value}'. Node: '{node.GetType()}'. {errorMessage}");
 
 		// Skip everything on the line where the syntax error occurred
 		// because the error will likely impact the whole line
-		while (CursorToken.Type != TokenType.EndOfTokens && CursorToken.Type != TokenType.Newline)
+		while (!AtEndOfTokens && CursorToken.Type != TokenType.Newline)
 		{
 			_cursorPosition++;
 		}
@@ -71,7 +72,7 @@ public class Parser
 
 	public bool TryConsumeToken(TokenType requiredType, out string tokenValue)
 	{
-		if (!CursorToken.Type.IsSubtypeOf(requiredType))
+		if (CursorToken.Type != requiredType)
 		{
 			tokenValue = "";
 			return false;
@@ -85,7 +86,17 @@ public class Parser
 	}
 	public bool TryConsumeToken(TokenType requiredType, string requiredValue, out string tokenValue)
 	{
-		if (CursorToken.Value != requiredValue)
+		bool isValueMatch;
+		if (requiredType == TokenType.Identifier)
+		{
+			isValueMatch = string.Equals(CursorToken.Value, requiredValue, StringComparison.OrdinalIgnoreCase);
+		}
+		else
+		{
+			isValueMatch = CursorToken.Value == requiredValue;
+		}
+
+		if (!isValueMatch)
 		{
 			tokenValue = "";
 			return false;
@@ -133,12 +144,21 @@ public class Parser
 		int lookahead = 0;
 		foreach (Token requiredToken in requiredTokens)
 		{
-			Token lookaheadToken = _tokens[_cursorPosition + lookahead];
-			if (!lookaheadToken.Type.IsSubtypeOf(requiredToken.Type) || lookaheadToken.Value != requiredToken.Value)
+			// Check for end of tokens
+			if (_cursorPosition + lookahead >= _tokens.Count)
 			{
 				isCorrectOrder = false;
 				break;
 			}
+
+			// Check for right token type and value
+			Token lookaheadToken = _tokens[_cursorPosition + lookahead];
+			if (lookaheadToken.Type != requiredToken.Type || lookaheadToken.Value != requiredToken.Value)
+			{
+				isCorrectOrder = false;
+				break;
+			}
+
 			lookahead++;
 		}
 
@@ -153,7 +173,7 @@ public class Parser
 		}
 	}
 
-	public bool TryConsumeIndent(int indentSize)
+	public bool TryConsumeNewlineIndent(int indentSize)
 	{
 		Token[] newlineAndIndent =
 		{

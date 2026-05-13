@@ -7,11 +7,11 @@ public class Annotator
 {
 	private List<string> _errors = new();
 
-	public void Annotate(ProgramNode programNode)
+	public void Annotate(FileNode rootNode)
 	{
 		_errors.Clear();
 
-		CascadeAnnotate(programNode, new());
+		CascadeAnnotate(rootNode, new());
 
 		if (_errors.Any())
 		{
@@ -21,7 +21,7 @@ public class Annotator
 
 	private void CascadeAnnotate(Node node, SymbolTable availableSymbols)
 	{
-		node.SymbolTable = availableSymbols.Clone();
+		node.SymbolTable = availableSymbols;
 
 		try
 		{
@@ -29,14 +29,20 @@ public class Annotator
 		}
 		catch (Exception exception)
 		{
-			_errors.Add($"{node.CursorInfo}. Node: '{node.GetType()}'. {exception.Message}");
+			_errors.Add($"{node.Location}. Node: '{node.GetType()}'. {exception.Message}");
 		}
 
 		SymbolTable childrensSymbols = node.SymbolTable;
+
+		// Ensure that nested children do not affect the symbol tables of higher levels
+		if (node.CreatesNestedScope)
+		{
+			childrensSymbols = childrensSymbols.Clone();
+		}
+
 		foreach (Node child in node.Children)
 		{
 			CascadeAnnotate(child, childrensSymbols);
-			childrensSymbols = child.SymbolTable; // Inherit symbols from older sibling
 		}
 	}
 }

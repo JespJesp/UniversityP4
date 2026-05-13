@@ -19,12 +19,12 @@ public class ImportStrategy : ITokenizationStrategy
 
 		int startLine = lexer.Cursor.Line;
 		int startColumn = lexer.Cursor.Column;
-		string localFilePath = "";
+		string fileLocalPath = "";
 
 		// Chain characters together until closing quote
 		while (lexer.CursorChar != '"')
 		{
-			localFilePath += lexer.CursorChar;
+			fileLocalPath += lexer.CursorChar;
 			lexer.Cursor.MoveToNextColumn();
 
 			if (lexer.AtEndOfFile || lexer.CursorChar == '\n')
@@ -36,7 +36,8 @@ public class ImportStrategy : ITokenizationStrategy
 		// Skip closing quote
 		lexer.Cursor.MoveToNextColumn();
 
-		lexer.LexNewFile(startLine, startColumn, localFilePath);
+		lexer.LexNewFile(startLine, startColumn, fileLocalPath);
+		lexer.AddToken(TokenType.EndOfImportedFile, "", lexer.Cursor.Line, lexer.Cursor.Column);
 
 		return true;
 	}

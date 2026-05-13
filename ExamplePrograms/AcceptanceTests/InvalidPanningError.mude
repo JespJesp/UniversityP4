@@ -9,7 +9,7 @@ melody 4_badPan
 timeline
 	settings
 		bpm 120
-		timesignature 4/4
+		timesignature 4,4
 	badPan start 0
 		4_badPan
 	badPan stop 4

@@ -8,15 +8,18 @@ namespace Ast.Nodes.Timelines;
 
 public class TimelineNode : SymbolNode
 {
-	public static int TimelineNodeInstances = 0;
+	public static int InstanceCount = 0;
+	public static TimelineNode Instance = new();
 
 	public Timeline Timeline = new();
 
 	public override void CascadeParse(Parser parser)
 	{
-		TimelineNodeInstances++;
+		// Singleton-esque logic
+		Instance = this;
+		InstanceCount++;
 
-		while (parser.TryConsumeIndent(1))
+		while (parser.TryConsumeNewlineIndent(1))
 		{
 			if (parser.TryConsumeToken(TokenType.Identifier, "settings"))
 			{
@@ -35,7 +38,7 @@ public class TimelineNode : SymbolNode
 
 	public override void Validate(Validator validator)
 	{
-		if (TimelineNodeInstances > 1)
+		if (InstanceCount > 1)
 		{
 			throw new Exception("'timeline' keyword appears multiple times");
 		}

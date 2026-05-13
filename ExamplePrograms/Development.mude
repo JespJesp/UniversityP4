@@ -1,12 +1,15 @@
 
 % This is a comment %
 
-import "test.mude"
+import "Development2.mude"
 
 % 
 This is a 
 multi-line comment
 %
+
+% This string is also defined in the imported Development2.mude, but it will be overwritten in this file %
+string electricGuitarSample "/electric guitar E4.wav" 
 
 sample guitar instrumentsFolder+electricGuitarSample e4
 sample flute instrumentsFolder+"/flute E.wav" e5
@@ -105,7 +108,7 @@ melody 8_switchLead
 timeline
 	settings
 		bpm 148
-		timesignature 4/4
+		timesignature 4,4
 	intro start 0
 		8_darkPad
 		8_introKick
