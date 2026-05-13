@@ -39,7 +39,6 @@ public class StereoPanningSampleProvider : ISampleProvider
 		// Maps pan ∈ [-1, 1] → angle ∈ [0, π/2].
 		// cos²θ + sin²θ = 1, so total power is preserved at every pan position.
 		// A linear balance law produces a ~3 dB dip at centre by comparison.
-		// AI har lavet matematikken, jeg fatter ikke en bjælde af det men det bør checke ud med hvad DAW's har
 		float angle     = (pan + 1f) * MathF.PI / 4f;
 		float leftGain  = MathF.Cos(angle);
 		float rightGain = MathF.Sin(angle);
