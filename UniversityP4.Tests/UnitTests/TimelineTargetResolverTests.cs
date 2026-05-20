@@ -8,6 +8,7 @@ using Runtime.Objects;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class TimelineTargetResolverTests
 {
     [Fact]

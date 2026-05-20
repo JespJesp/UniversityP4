@@ -1,0 +1,22 @@
+% Minimal program for integration tests %
+
+sample guitar "/Samples/Instruments/electric guitar E4.wav" e4
+
+float exampleNumber 1.0
+
+
+
+melody 1 _test
+	samples
+		guitar
+	chords
+		0,1 c4
+
+timeline
+	settings
+		bpm 120
+		timesignature 4,4
+	start 0
+		1_test
+	stop 1
+		1_test

@@ -1,0 +1,22 @@
+% Heavy program with an unexpected token to force parse error %
+
+sample lead "/Samples/Instruments/synth C.wav" c4
+
+
+melody 4 _leadline
+	 samples
+		 lead
+	 chords
+		 0,4 c4 d4 e4 f4
+
+
+timeline
+	 settings
+		 bpm 120
+		 timesignature 4,4
+	 start 0
+		 4_leadline
+	 stop 4
+		 4_leadline
+
+??? unexpected_token

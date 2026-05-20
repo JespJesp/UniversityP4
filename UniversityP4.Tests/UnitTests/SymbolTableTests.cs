@@ -5,6 +5,7 @@ using Ast.Nodes.Samples;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class SymbolTableTests
 {
     [Fact]

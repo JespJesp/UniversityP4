@@ -6,6 +6,7 @@ using Runtime.Objects.Timelines;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class TimelineLoopBuilderTests
 {
     [Fact]
