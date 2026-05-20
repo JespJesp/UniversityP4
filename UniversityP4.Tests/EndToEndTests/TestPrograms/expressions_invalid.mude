@@ -1,0 +1,20 @@
+% Invalid expression: missing operand %
+
+sample lead "/Samples/Instruments/synth C.wav" c4
+
+
+melody 1 _expr_invalid
+	 samples
+		 lead
+	 chords
+		 0,1 c4(gain 1 + )
+
+
+timeline
+	 settings
+		 bpm 120
+		 timesignature 4,4
+	 start 0
+		 1_expr_invalid
+	 stop 1
+		 1_expr_invalid

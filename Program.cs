@@ -39,6 +39,11 @@ internal class Program
 		var astRoot = new Parser().Parse(tokens);
 		new Annotator().Annotate(astRoot);
 		new Validator().Validate(astRoot);
-		new Evaluator().Evaluate(astRoot, fileInfo);
+		
+		// Create output file in the same directory as input file
+		var outputPath = Path.Combine(fileInfo.DirectoryName ?? "", "ProgramOutput.wav");
+		var outputFile = new FileInfo(outputPath);
+		
+		new Evaluator().Evaluate(astRoot, outputFile);
 	}
 }
