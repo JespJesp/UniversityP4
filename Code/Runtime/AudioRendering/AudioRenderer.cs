@@ -11,21 +11,21 @@ namespace Runtime.AudioRendering;
 
 public class AudioRenderer
 {
-	public void RenderToFile(TimelineNode timelineNode, FileInfo fileInfo)
+	public void RenderToFile(TimelineNode timelineNode, FileInfo outputFile)
 	{
 		Timeline timeline = timelineNode.Timeline;
 		SymbolTable globalSymbols = timelineNode.SymbolTable;
 
 		var loops = new LoopBuilder().Build(timeline, globalSymbols);
-		string fileFolderFullPath = fileInfo.DirectoryName ?? "";
+		string fileFolderFullPath = outputFile.DirectoryName ?? "";
 
 		List<ISampleProvider> sounds = CreateSounds(timeline, loops, fileFolderFullPath);
 		var mixer = new MixingSampleProvider(sounds);
-		var outputPath = fileInfo.FullName;
+		var outputPath = outputFile.FullName;
 		WaveFileWriter.CreateWaveFile16(outputPath, mixer);
 	}
 
-	private List<ISampleProvider> CreateSounds(Timeline timeline, List<Loop> loops, string fileFolderFullPath)
+	private List<ISampleProvider> CreateSounds(Timeline timeline, List<Loop> loops, string outputFolderFullPath)
 	{
 		List<ISampleProvider> sounds = new();
 
@@ -63,7 +63,7 @@ public class AudioRenderer
 
 						float durationInBeats = note.EndBeat - note.StartBeat;
 
-						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, fileFolderFullPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, outputFolderFullPath);
 						sounds.Add(sound);
 					}
 
@@ -82,7 +82,7 @@ public class AudioRenderer
 						float unclampedDurationInBeats = note.EndBeat - note.StartBeat;
 						float durationInBeats = Math.Clamp(unclampedDurationInBeats, 0, durationInBeatsMax);
 
-						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, fileFolderFullPath);
+						ISampleProvider sound = CreateSound(timeline, sample, note, globalStartBeat, durationInBeats, outputFolderFullPath);
 						sounds.Add(sound);
 					}
 				}
@@ -92,9 +92,9 @@ public class AudioRenderer
 		return sounds;
 	}
 
-	private ISampleProvider CreateSound(Timeline timeline, Sample sample, Note note, float globalStartBeat, float durationInBeats, string fileFolderFullPath)
+	private ISampleProvider CreateSound(Timeline timeline, Sample sample, Note note, float globalStartBeat, float durationInBeats, string outputFolderFullPath)
 	{
-		var reader = new AudioFileReader(fileFolderFullPath + sample.FilePath);
+		var reader = new AudioFileReader(outputFolderFullPath + sample.FilePath);
 
 		// Resample the sound to ensure it uses the output's sample rate
 		var resampler = new WdlResamplingSampleProvider(reader, timeline.SampleRate);
@@ -111,7 +111,7 @@ public class AudioRenderer
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
-		var envelopeProvider = new Runtime.AudioRendering.SampleProviders.AdsrEnvelopeSampleProvider(
+		var envelopeProvider = new AdsrEnvelopeSampleProvider(
 				pitchShifter,
 				noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),
 				attackSeconds: ConvertBeatsToSeconds(timeline, sample.AttackBeats),

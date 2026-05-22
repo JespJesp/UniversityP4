@@ -16,7 +16,7 @@ public class IdentifierStrategy : ITokenizationStrategy
 
 		// Chain characters together
 		while (!lexer.AtEndOfFile
-			&& (lexer.CursorChar == '_' || char.IsLetterOrDigit(lexer.CursorChar)))
+			&& (lexer.CursorChar == '_' || lexer.CursorChar == '#' || char.IsLetterOrDigit(lexer.CursorChar)))
 		{
 			id += lexer.CursorChar;
 			lexer.Cursor.MoveToNextColumn();
