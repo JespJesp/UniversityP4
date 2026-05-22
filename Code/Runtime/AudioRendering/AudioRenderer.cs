@@ -11,8 +11,6 @@ namespace Runtime.AudioRendering;
 
 public class AudioRenderer
 {
-	const string OutputFileName = "ProgramOutput.wav";
-
 	public void RenderToFile(TimelineNode timelineNode, FileInfo fileInfo)
 	{
 		Timeline timeline = timelineNode.Timeline;
@@ -23,9 +21,8 @@ public class AudioRenderer
 
 		List<ISampleProvider> sounds = CreateSounds(timeline, loops, fileFolderFullPath);
 		var mixer = new MixingSampleProvider(sounds);
-		WaveFileWriter.CreateWaveFile16(OutputFileName, mixer);
-
-		Console.WriteLine($"Successfully created audio file: '{OutputFileName}'");
+		var outputPath = fileInfo.FullName;
+		WaveFileWriter.CreateWaveFile16(outputPath, mixer);
 	}
 
 	private List<ISampleProvider> CreateSounds(Timeline timeline, List<Loop> loops, string fileFolderFullPath)
@@ -114,7 +111,7 @@ public class AudioRenderer
 			PitchFactor = GetPitchFactor(sample.ReferencePitch, note.Pitch)
 		};
 
-		var envelopeProvider = new AdsrEnvelopeSampleProvider(
+		var envelopeProvider = new Runtime.AudioRendering.SampleProviders.AdsrEnvelopeSampleProvider(
 				pitchShifter,
 				noteDurationSeconds: ConvertBeatsToSeconds(timeline, durationInBeats),
 				attackSeconds: ConvertBeatsToSeconds(timeline, sample.AttackBeats),

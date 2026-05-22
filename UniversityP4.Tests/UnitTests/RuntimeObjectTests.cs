@@ -2,6 +2,7 @@ using Runtime.Objects;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class MelodyTests
 {
     [Fact]
@@ -31,6 +32,7 @@ public class MelodyTests
     }
 }
 
+[Trait("Category","Unit")]
 public class PatternTests
 {
     [Fact]
@@ -59,6 +61,7 @@ public class PatternTests
     }
 }
 
+[Trait("Category","Unit")]
 public class SampleTests
 {
     [Fact]

@@ -1,0 +1,19 @@
+% Notes-list style fixture %
+
+sample bell "/Samples/Instruments/Siren C.wav" c5
+
+melody 8 _notes_list
+	samples
+		bell
+	chords
+		0,2 c5 e5
+		2,4 g5 b5
+
+timeline
+	settings
+		bpm 100
+		timesignature 4,4
+	start 0
+		8_notes_list
+	stop 4
+		8_notes_list

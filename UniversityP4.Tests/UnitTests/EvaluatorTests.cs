@@ -1,15 +1,17 @@
 using Ast;
 using Ast.Nodes;
+using Ast.Nodes.Timelines;
 using Phases.Evaluation;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class EvaluatorTests
 {
     [Fact]
     public void CascadeEvaluate_Should_Call_Evaluate_On_All_Nodes()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var childNode = new TrackingEvaluationNode();
         programNode.Children.Add(childNode);
 
@@ -22,7 +24,7 @@ public class EvaluatorTests
     [Fact]
     public void CascadeEvaluate_Should_Traverse_All_Children()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var child1 = new TrackingEvaluationNode();
         var child2 = new TrackingEvaluationNode();
         var grandChild = new TrackingEvaluationNode();
@@ -42,7 +44,7 @@ public class EvaluatorTests
     [Fact]
     public void CascadeEvaluate_Should_Throw_When_Node_Evaluation_Fails()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var errorNode = new ErrorThrowingEvaluationNode();
         programNode.Children.Add(errorNode);
 
@@ -57,7 +59,7 @@ public class EvaluatorTests
     [Fact]
     public void CascadeEvaluate_Should_Report_Node_Type_In_Error()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var errorNode = new ErrorThrowingEvaluationNode();
         programNode.Children.Add(errorNode);
 
@@ -71,7 +73,7 @@ public class EvaluatorTests
     [Fact]
     public void CascadeEvaluate_Should_Report_Line_And_Column_In_Error()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var errorNode = new ErrorThrowingEvaluationNode { Location = new Location("file.mude", 25, 12) };
         programNode.Children.Add(errorNode);
 
@@ -86,7 +88,7 @@ public class EvaluatorTests
     [Fact]
     public void CascadeEvaluate_Should_Accumulate_Multiple_Errors()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var errorNode1 = new ErrorThrowingEvaluationNode();
         var errorNode2 = new ErrorThrowingEvaluationNode();
         programNode.Children.Add(errorNode1);
@@ -102,7 +104,7 @@ public class EvaluatorTests
     [Fact]
     public void CascadeEvaluate_Should_Evaluate_Children_Before_Siblings()
     {
-        var programNode = CreateProgramNode();
+        var programNode = CreateProgramNode(out var timelineNode);
         var callOrder = new List<string>();
         
         var parent = new OrderTrackingEvaluationNode { CallOrder = callOrder, NodeName = "parent" };
@@ -123,9 +125,13 @@ public class EvaluatorTests
         callOrder.IndexOf("child2").ShouldBeLessThan(callOrder.IndexOf("sibling"));
     }
 
-    private ProgramNode CreateProgramNode()
+    private FileNode CreateProgramNode(out TimelineNode timelineNode)
     {
-        var programNode = new ProgramNode { Location = new Location("file.mude", 1, 1) };
+        var programNode = new FileNode { Location = new Location("file.mude", 1, 1) };
+        timelineNode = new TimelineNode();
+        TimelineNode.Instance = timelineNode;
+        TimelineNode.InstanceCount = 1;
+
         var melodyNode = new Ast.Nodes.Melodies.MelodyNode
         {
             Id = "_lead",
@@ -151,26 +157,36 @@ public class EvaluatorTests
             }
         };
 
-        programNode.timelineNode.SymbolTable.Upsert(melodyNode, melodyNode.Id);
-        programNode.timelineNode.Timeline.Commands.Add(new Runtime.Objects.Timelines.TimelineCommand
+        timelineNode.SymbolTable.Upsert(melodyNode, melodyNode.Id);
+        timelineNode.Timeline.Commands.Add(new Runtime.Objects.Timelines.TimelineCommand
         {
             Type = Runtime.Objects.Timelines.TimelineCommandType.Start,
             Beat = 0,
             TargetIds = new List<string> { "_lead" }
         });
-        programNode.timelineNode.Timeline.Commands.Add(new Runtime.Objects.Timelines.TimelineCommand
+        timelineNode.Timeline.Commands.Add(new Runtime.Objects.Timelines.TimelineCommand
         {
             Type = Runtime.Objects.Timelines.TimelineCommandType.Stop,
             Beat = 1,
             TargetIds = new List<string> { "_lead" }
         });
 
+        programNode.Children.Add(timelineNode);
+
         return programNode;
     }
 
     private FileInfo CreateFileInfo()
     {
-        return new FileInfo(Path.Combine("/Users/chriller/Documents/GitHub/UniversityP4", "UniversityP4.EvaluatorTests.wav"));
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (current != null && !Directory.Exists(Path.Combine(current.FullName, "ExamplePrograms")))
+        {
+            current = current.Parent;
+        }
+
+        var projectRoot = current?.FullName ?? Directory.GetCurrentDirectory();
+        return new FileInfo(Path.Combine(projectRoot, "UniversityP4.EvaluatorTests.wav"));
     }
 
     private class TrackingEvaluationNode : Node

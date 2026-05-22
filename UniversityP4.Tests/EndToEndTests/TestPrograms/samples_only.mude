@@ -1,0 +1,21 @@
+% Samples-only fixture %
+
+string instrumentsFolder "/Samples/Instruments"
+
+sample guitar instrumentsFolder+"/electric guitar E4.wav" e4
+sample flute instrumentsFolder+"/flute E.wav" c5
+
+melody 1 _sample_test
+	samples
+		guitar
+	chords
+		0,1 c4
+
+timeline
+	settings
+		bpm 110
+		timesignature 4,4
+	start 0
+		1_sample_test
+	stop 1
+		1_sample_test

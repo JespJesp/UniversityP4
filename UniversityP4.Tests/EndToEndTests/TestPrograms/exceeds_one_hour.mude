@@ -1,0 +1,19 @@
+% This program exceeds 1 hour rendering limit %
+% At 120 BPM, 4/4 time: each beat = 0.5 seconds, need >7200 beats to exceed 1 hour %
+
+sample organ "/Samples/Instruments/synth C.wav" c4
+
+melody 7300 _verylongsection
+	samples
+		organ
+	chords
+		0,7300 c4
+
+timeline
+	settings
+		bpm 120
+		timesignature 4,4
+	start 0
+		7300_verylongsection
+	stop 7300
+		7300_verylongsection

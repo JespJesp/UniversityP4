@@ -1,0 +1,21 @@
+% Invalid chord syntax: missing closing parenthesis %
+
+sample bass "/Samples/Instruments/bass G.wav" c2
+
+
+melody 2 _chord_invalid
+	 samples
+		 bass
+	 chords
+		 0,2 c2(gain 1.0
+		 2,4 a1(gain 0.8)
+
+
+timeline
+	 settings
+		 bpm 90
+		 timesignature 4,4
+	 start 0
+		 2_chord_invalid
+	 stop 2
+		 2_chord_invalid

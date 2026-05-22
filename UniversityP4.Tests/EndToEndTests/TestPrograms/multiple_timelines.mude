@@ -1,0 +1,31 @@
+% Multiple distinct timeline sections %
+
+sample kick "/Samples/Drums/kick A#.wav" a2
+sample snare "/Samples/Drums/snare.wav" c3
+
+melody 2 _intro
+	samples
+		kick
+	chords
+		0,1 kick
+		1,2 kick
+
+melody 2 _verse
+	samples
+		snare
+	chords
+		0,1 snare
+		1,2 snare
+
+timeline
+	settings
+		bpm 120
+		timesignature 4,4
+	start 0
+		2_intro
+	stop 2
+		2_intro
+	start 2
+		2_verse
+	stop 4
+		2_verse

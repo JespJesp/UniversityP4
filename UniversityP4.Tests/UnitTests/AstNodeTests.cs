@@ -13,30 +13,23 @@ using Runtime.Objects;
 
 namespace UniversityP4.Tests;
 
-public class ProgramNodeTests
+[Trait("Category","Unit")]
+public class FileNodeTests
 {
     [Fact]
-    public void ProgramNode_Should_Initialize_With_TimelineNode()
+    public void FileNode_Should_Accept_Children()
     {
-        var programNode = new ProgramNode();
-
-        programNode.timelineNode.ShouldNotBeNull();
-        programNode.timelineNode.ShouldBeOfType<TimelineNode>();
-    }
-
-    [Fact]
-    public void ProgramNode_Should_Accept_Children()
-    {
-        var programNode = new ProgramNode();
+        var fileNode = new FileNode();
         var childNode = new MelodyNode();
 
-        programNode.Children.Add(childNode);
+        fileNode.Children.Add(childNode);
 
-        programNode.Children.Count.ShouldBe(1);
-        programNode.Children[0].ShouldBe(childNode);
+        fileNode.Children.Count.ShouldBe(1);
+        fileNode.Children[0].ShouldBe(childNode);
     }
 }
 
+[Trait("Category","Unit")]
 public class FloatConstantNodeTests
 {
     [Fact]
@@ -48,6 +41,7 @@ public class FloatConstantNodeTests
     }
 }
 
+[Trait("Category","Unit")]
 public class StringConstantNodeTests
 {
     [Fact]
@@ -59,6 +53,7 @@ public class StringConstantNodeTests
     }
 }
 
+[Trait("Category","Unit")]
 public class SymbolNodeTests
 {
     [Fact]
@@ -88,6 +83,7 @@ public class SymbolNodeTests
     }
 }
 
+[Trait("Category","Unit")]
 public class MelodyNodeTests
 {
     [Fact]
@@ -109,6 +105,7 @@ public class MelodyNodeTests
     }
 }
 
+[Trait("Category","Unit")]
 public class PatternNodeTests
 {
     [Fact]
@@ -130,6 +127,7 @@ public class PatternNodeTests
     }
 }
 
+[Trait("Category","Unit")]
 public class SampleNodeTests
 {
     [Fact]
@@ -159,6 +157,7 @@ public class SampleNodeTests
     }
 }
 
+[Trait("Category","Unit")]
 public class TimelineNodeTests
 {
     [Fact]

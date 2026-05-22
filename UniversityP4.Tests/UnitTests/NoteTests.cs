@@ -2,6 +2,7 @@ using Runtime.Objects;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class NoteTests
 {
     [Fact]

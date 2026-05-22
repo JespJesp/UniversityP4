@@ -4,6 +4,7 @@ using Phases.Validation;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class ValidatorTests
 {
     [Fact]
@@ -116,9 +117,9 @@ public class ValidatorTests
         validNode.ValidateWasCalled.ShouldBeTrue();
     }
 
-    private ProgramNode CreateProgramNode()
+    private FileNode CreateProgramNode()
     {
-        return new ProgramNode { Location = new Location("file.mude", 1, 1) };
+        return new FileNode { Location = new Location("file.mude", 1, 1) };
     }
 
     private class TrackingValidationNode : Node

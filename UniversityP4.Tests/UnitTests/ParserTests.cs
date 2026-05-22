@@ -4,19 +4,20 @@ using Tokens;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class ParserTests
 {
     [Fact]
-    public void TryConsumeToken_Should_Accept_Integer_When_Expecting_Float()
+    public void TryConsumeToken_Should_Not_Accept_Different_Types()
     {
         var parser = CreateParser(
-            new Token(TokenType.Integer, "7"));
+            new Token(TokenType.Float, "7"));
 
-        var consumed = parser.TryConsumeToken(TokenType.Float, out string consumedValue);
+        var consumed = parser.TryConsumeToken(TokenType.Identifier, out string consumedValue);
 
-        consumed.ShouldBeTrue();
-        consumedValue.ShouldBe("7");
-        parser.AtEndOfTokens.ShouldBeTrue();
+        consumed.ShouldBeFalse();
+        consumedValue.ShouldBeEmpty();
+        parser.AtEndOfTokens.ShouldBeFalse();
     }
 
     [Fact]
@@ -32,13 +33,13 @@ public class ParserTests
     }
 
     [Fact]
-    public void TryConsumeIndent_Should_Return_True_And_Advance_When_Newline_And_Indent_Match()
+    public void TryConsumeNewlineIndent_Should_Return_True_And_Advance_When_Newline_And_Indent_Match()
     {
         var parser = CreateParser(
             new Token(TokenType.Newline),
             new Token(TokenType.Indent, "2"));
 
-        var consumed = parser.TryConsumeIndent(2);
+        var consumed = parser.TryConsumeNewlineIndent(2);
 
         consumed.ShouldBeTrue();
         parser.AtEndOfTokens.ShouldBeTrue();
@@ -48,12 +49,12 @@ public class ParserTests
     public void TryConsumeTokens_Should_Return_False_And_Not_Advance_When_Value_Does_Not_Match()
     {
         var parser = CreateParser(
-            new Token(TokenType.Integer, "8"));
+            new Token(TokenType.Float, "8"));
 
         var consumed = parser.TryConsumeTokens(new[] { new Token(TokenType.Float, "7") });
 
         consumed.ShouldBeFalse();
-        parser.CursorToken.Type.ShouldBe(TokenType.Integer);
+        parser.CursorToken.Type.ShouldBe(TokenType.Float);
         parser.CursorToken.Value.ShouldBe("8");
     }
 
@@ -63,7 +64,7 @@ public class ParserTests
         var parser = CreateParser(
             new Token(TokenType.Identifier, "_lead"),
             new Token(TokenType.Comma),
-            new Token(TokenType.Integer, "42"));
+            new Token(TokenType.Float, "42"));
 
         string? parsedId = null;
         string? parsedNumber = null;
@@ -87,7 +88,7 @@ public class ParserTests
                 (
                     () =>
                     {
-                        if (parser.TryConsumeToken(TokenType.Integer, out string value))
+                        if (parser.TryConsumeToken(TokenType.Float, out string value))
                         {
                             parsedNumber = value;
                             return true;
@@ -109,9 +110,9 @@ public class ParserTests
     public void TryConsumeOptions_Should_Stop_When_Encountering_Duplicate_Option()
     {
         var parser = CreateParser(
-            new Token(TokenType.Integer, "1"),
+            new Token(TokenType.Float, "1"),
             new Token(TokenType.Comma),
-            new Token(TokenType.Integer, "2"));
+            new Token(TokenType.Float, "2"));
 
         string? parsedNumber = null;
 
@@ -121,7 +122,7 @@ public class ParserTests
                 (
                     () =>
                     {
-                        if (parser.TryConsumeToken(TokenType.Integer, out string value))
+                        if (parser.TryConsumeToken(TokenType.Float, out string value))
                         {
                             parsedNumber = value;
                             return true;
@@ -135,7 +136,7 @@ public class ParserTests
             [new Token(TokenType.Comma)]);
 
         parsedNumber.ShouldBe("1");
-        parser.CursorToken.Type.ShouldBe(TokenType.Integer);
+        parser.CursorToken.Type.ShouldBe(TokenType.Float);
         parser.CursorToken.Value.ShouldBe("2");
     }
 

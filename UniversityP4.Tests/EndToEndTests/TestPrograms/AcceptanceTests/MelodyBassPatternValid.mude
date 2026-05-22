@@ -1,9 +1,9 @@
 % Valid test: long drum pattern with panning and gain %
 
-sample kick "/../Samples/Drums/kick A#.wav" a2
-sample snare "/../Samples/Drums/snare.wav" c3
-sample hihat "/../Samples/Drums/closed hihat.wav" f4
-sample clap "/../Samples/Drums/clap.wav" c2
+sample kick "/Samples/Drums/kick A#.wav" a2
+sample snare "/Samples/Drums/snare.wav" c3
+sample hihat "/Samples/Drums/closed hihat.wav" f4
+sample clap "/Samples/Drums/clap.wav" c2
 
 melody 8_intro
 	chords
@@ -48,15 +48,15 @@ timeline
 	settings
 		bpm 96
 		timesignature 4,4
-	intro start 0
+	start 0
 		8_intro
-	intro stop 8
+	stop 8
 		8_intro
-	main start 8
+	start 8
 		8_main
-	main stop 24
+	stop 24
 		8_main
-	outro start 24
+	start 24
 		8_outro
-	outro stop 32
+	stop 32
 		8_outro

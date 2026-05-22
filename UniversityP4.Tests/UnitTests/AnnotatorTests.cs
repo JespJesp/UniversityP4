@@ -4,6 +4,7 @@ using Phases.Annotation;
 
 namespace UniversityP4.Tests;
 
+[Trait("Category","Unit")]
 public class AnnotatorTests
 {
     [Fact]
@@ -28,7 +29,7 @@ public class AnnotatorTests
         annotator.Annotate(programNode);
 
         childNode.SymbolTable.ShouldNotBeNull();
-        childNode.SymbolTable.ShouldNotBeSameAs(programNode.SymbolTable);
+        childNode.SymbolTable.ShouldBeSameAs(programNode.SymbolTable);
     }
 
     [Fact]
@@ -89,9 +90,9 @@ public class AnnotatorTests
         sibling2.SymbolTable.ShouldNotBeNull();
     }
 
-    private ProgramNode CreateProgramNode()
+    private FileNode CreateProgramNode()
     {
-        return new ProgramNode { Location = new Location("file.mude", 1, 1) };
+        return new FileNode { Location = new Location("file.mude", 1, 1) };
     }
 
     private class TestNode : Node
