@@ -35,7 +35,10 @@ public class SampleNode : SymbolNode
 	public override void Evaluate(Evaluator evaluator)
 	{
 		Sample.FilePath = _filePath.Value;
-		Sample.ReferencePitch = Pitch.FromString(_referencePitch);
+		if (!string.IsNullOrEmpty(_referencePitch))
+		{
+			Sample.ReferencePitch = Pitch.FromString(_referencePitch);
+		}
 	}
 }
 

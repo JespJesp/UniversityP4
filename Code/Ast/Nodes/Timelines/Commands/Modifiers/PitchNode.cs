@@ -25,7 +25,7 @@ public class PitchNode : Node
 	{
 		CommandNode commandNode = ModifiersNode.CommandNode;
 
-		if (commandNode.CommandType != nameof(TimelineCommandType.Stop).ToLower())
+		if (commandNode.CommandType != TimelineCommandType.Start)
 		{
 			throw new Exception($"Timeline command: '{commandNode.CommandType}'. Command cannot use pitch modifiers");
 		}

@@ -10,11 +10,11 @@ using Tokens;
 
 namespace Ast.Nodes.Timelines.Commands;
 
-public class CommandNode : SymbolNode
+public class CommandNode : Node
 {
 	public TimelineNode TimelineNode;
 	public TimelineCommand Command = new();
-	public string CommandType = "";
+	public TimelineCommandType CommandType;
 	private FloatExpressionNode _commandBeat = new();
 	private List<string> _commandTargetIds = new();
 
@@ -26,18 +26,9 @@ public class CommandNode : SymbolNode
 	public override void CascadeParse(Parser parser)
 	{
 		parser.ConsumeToken(TokenType.Identifier, out string firstIdentifierValue);
-		if (!Enum.TryParse(firstIdentifierValue, ignoreCase: true, out TimelineCommandType result))
+		if (!Enum.TryParse(firstIdentifierValue, ignoreCase: true, out CommandType))
 		{
-			throw new Exception($"Timeline commands must start with 'start' or 'stop', not '{firstIdentifierValue}'");
-		}
-		Id = "";
-		CommandType = firstIdentifierValue.ToLowerInvariant();
-
-		// Optional beat
-		if (CommandType == nameof(TimelineCommandType.Stop).ToLower()
-			&& parser.TryConsumeToken(TokenType.Identifier, "after"))
-		{
-			// Keep the existing sample syntax working while treating the beat as a relative offset
+			throw new Exception($"Command type '{firstIdentifierValue}' is undefined. Timeline commands must start with 'start' or 'stop'.");
 		}
 
 		_commandBeat = parser.ParseChild(this, new FloatExpressionNode(isOptional: true));
@@ -64,18 +55,13 @@ public class CommandNode : SymbolNode
 		}
 	}
 
-	public override void UpsertSymbol(Annotator annotator)
-	{
-	}
-
-	public override void AfterSymbolUpsert(Annotator annotator)
+	public override void Annotate(Annotator annotator)
 	{
 		foreach (string targetId in _commandTargetIds)
 		{
 			if (targetId != "EVERYTHING"
 				&& !SymbolTable.Contains<PatternNode>(targetId)
-				&& !SymbolTable.Contains<MelodyNode>(targetId)
-				&& !SymbolTable.Contains<CommandNode>(targetId))
+				&& !SymbolTable.Contains<MelodyNode>(targetId))
 			{
 				throw new Exception($"Timeline command type: '{CommandType}'. The pattern, melody, or command reference '{targetId}' is not declared");
 			}
@@ -90,18 +76,14 @@ public class CommandNode : SymbolNode
 		{
 			errors.Add($"Timeline beat '{_commandBeat.Value}' cannot be negative");
 		}
-		if (!Enum.TryParse(CommandType, ignoreCase: true, out TimelineCommandType result))
-		{
-			errors.Add($"Command type '{CommandType}' is undefined");
-		}
-		if (CommandType == nameof(TimelineCommandType.Start).ToLower())
+		if (CommandType == TimelineCommandType.Start)
 		{
 			if (_commandTargetIds.Count == 0)
 			{
 				errors.Add("Start commands must specify at least one target melody or pattern");
 			}
 		}
-		else if (CommandType == nameof(TimelineCommandType.Stop).ToLower())
+		else if (CommandType == TimelineCommandType.Stop)
 		{
 			if (!_commandBeat.HasValue)
 			{
@@ -120,8 +102,7 @@ public class CommandNode : SymbolNode
 
 	public override void Evaluate(Evaluator evaluator)
 	{
-		Command.Id = Id;
-		Command.Type = Enum.Parse<TimelineCommandType>(CommandType, ignoreCase: true);
+		Command.Type = CommandType;
 		if (_commandBeat.HasValue)
 		{
 			Command.Beat = _commandBeat.Value;

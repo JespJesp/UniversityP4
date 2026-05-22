@@ -13,19 +13,19 @@ internal class Program
 			throw new Exception("Program argument error: No file path provided to be interpreted");
 		}
 
-		string filePath = args[0];
-		FileInfo fileInfo = new FileInfo(filePath);
+		string inputFilePath = args[0];
+		FileInfo inputFileInfo = new FileInfo(inputFilePath);
 
-		if (!fileInfo.Exists)
+		if (!inputFileInfo.Exists)
 		{
 			throw new Exception("Program argument error: Input file does not exist");
 		}
 
-		string fileContent = File.ReadAllText(fileInfo.FullName);
+		string inputFileContent = File.ReadAllText(inputFileInfo.FullName);
 
 		try
 		{
-			InterpretFile(fileContent, fileInfo);
+			InterpretFile(inputFileContent, inputFileInfo);
 		}
 		catch (Exception exception)
 		{
@@ -33,15 +33,15 @@ internal class Program
 		}
 	}
 
-	private static void InterpretFile(string fileContent, FileInfo fileInfo)
+	private static void InterpretFile(string fileContent, FileInfo inputFile)
 	{
-		var tokens = new Lexer().Lex(fileContent, fileInfo);
+		var tokens = new Lexer().Lex(fileContent, inputFile);
 		var astRoot = new Parser().Parse(tokens);
 		new Annotator().Annotate(astRoot);
 		new Validator().Validate(astRoot);
 		
 		// Create output file in the same directory as input file
-		var outputPath = Path.Combine(fileInfo.DirectoryName ?? "", "ProgramOutput.wav");
+		var outputPath = Path.Combine(inputFile.DirectoryName ?? "", "ProgramOutput.wav");
 		var outputFile = new FileInfo(outputPath);
 		
 		new Evaluator().Evaluate(astRoot, outputFile);

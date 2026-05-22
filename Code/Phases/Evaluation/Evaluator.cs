@@ -9,7 +9,7 @@ public class Evaluator
 {
 	private List<string> _errors = new();
 
-	public void Evaluate(FileNode rootNode, FileInfo fileInfo)
+	public void Evaluate(FileNode rootNode, FileInfo outputFile)
 	{
 		_errors.Clear();
 
@@ -22,7 +22,7 @@ public class Evaluator
 				throw new Exception("\n- " + string.Join("\n- ", _errors));
 			}
 
-			new AudioRenderer().RenderToFile(TimelineNode.Instance, fileInfo);
+			new AudioRenderer().RenderToFile(TimelineNode.Instance, outputFile);
 		}
 		catch (Exception exception)
 		{

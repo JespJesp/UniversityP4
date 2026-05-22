@@ -1,7 +1,7 @@
 
 % This is a comment %
 
-import "Development2.mude"
+import "DevelopmentImport.mude"
 
 % 
 This is a 
@@ -11,18 +11,20 @@ multi-line comment
 % This string is also defined in the imported Development2.mude, but it will be overwritten in this file %
 string electricGuitarSample "/electric guitar E4.wav" 
 
+sample kick drumsFolder+"/kick A#.wav" a#5
+sample hihat drumsFolder+"/closed hihat.wav"
+sample clap drumsFolder+"/clap.wav"
+sample snare drumsFolder+"/snare.wav"
+
 sample guitar instrumentsFolder+electricGuitarSample e4
 sample flute instrumentsFolder+"/flute E.wav" e5
-sample kick drumsFolder+"/kick A#.wav" a2
-sample snare drumsFolder+"/snare.wav" c3
-sample hihat drumsFolder+"/closed hihat.wav" f4
-sample clap drumsFolder+"/clap.wav" c2
+sample synth instrumentsFolder+"/synth C.wav" c5
 sample siren instrumentsFolder+"/Siren C.wav" c5
 sample sirenWithStereoPan instrumentsFolder+"/Siren C stereo half pan to the right.wav" c5
 
 float exampleNumber 0.9
 
-melody 24_test
+melody 24_panTest
 	samples
 		sirenWithStereoPan
 	chords
@@ -33,109 +35,86 @@ melody 24_test
 		14,16 b5(gain 1.4*3, pan -0.5)
 		16,24 b5(gain 1.4*3, pan -1)
 
-melody 8_darkPad
+float kickGain 1.5
+
+melody 8_kickAndSnare
+	chords
+		0,2 kick(gain kickGain)
+		2,4 kick(gain kickGain)
+		2,4 snare(gain 0.8)
+		4,6 kick(gain kickGain)
+		6,8 kick(gain kickGain)
+		6,8 snare(gain 0.8)
+
+melody 4_hihat
+	chords
+		1,2 hihat(gain 0.05)
+		3,4 hihat(gain 0.05)
+
+melody 16_fastChords
+	samples
+		synth
+	chords
+		0,4 a4 c5 e5
+		1,4 a4 c5 e5
+		2,4 a4 c5 e5
+		3,4 a4 c5 e5
+		4,8 g4 b5 d5
+		5,8 g4 b5 d5
+		6,8 g4 b5 d5
+		7,8 g4 b5 d5
+		8,12 f4 a4 c5
+		9,12 f4 a4 c5
+		10,12 f4 a4 c5
+		11,12 f4 a4 c5
+		12,16 e4 g4 b4
+		13,16 e4 g4 b4
+		14,16 e4 g4 b4
+		15,16 e4 g4 b4
+
+melody 16_slowChords
 	samples
 		guitar
 	chords
-		0,4 a2(gain exampleNumber)
-		4,8 g2(gain exampleNumber)
+		0,4 a4 c5 e5
+		4,8 g4 b5 d5
+		8,12 f4 a4 c5
+		12,16 e4 g4 b4
 
-melody 8_introKick
-	chords
-		0,2 kick(gain 2.0 - 0.2)
-		4,6 kick(gain 2.0 + 0.2)
-
-melody 8_introHat
-	chords
-		1,2 hihat(gain 0.2 * 2)
-		3,4 hihat(gain 0.4 * 2)
-		5,6 hihat(gain 0.4 * 2)
-		7,8 hihat(gain 0.4 * 2)
-
-melody 8_leadMelody
+melody 16_flute
 	samples
 		flute
 	chords
-		0,1 e5
-		1,2 g5
-		2,3 a5
-		3,4 c6
-		4,5 a5
-		5,6 g5
-		6,7 e5
-		7,8 d5
-
-melody 8_bassLine
-	samples
-		guitar
-	chords
-		0,2 c2(gain 1.2)
-		2,4 a1(gain 1.2)
-		4,6 g2(gain 1.2)
-		6,8 a2(gain 1.2)
-
-melody 8_heavyDrums
-	chords
-		0,1 kick(gain 3.8)
-		1,2 hihat(gain 0.6)
-		2,3 kick(gain 3.8)
-		3,4 hihat(gain 0.6)
-		4,5 snare(gain 3.2)
-		5,6 hihat(gain 0.6)
-		6,7 kick(gain 3.8)
-		7,8 clap(gain 2.8)
-
-melody 8_snareSwitch
-	chords
-		0,1 snare(gain 3.8)
-		1,2 kick(gain 4.0)
-		2,3 snare(gain 3.8)
-		3,4 kick(gain 4.0)
-		4,5 snare(gain 3.8)
-		5,6 kick(gain 4.0)
-		6,7 snare(gain 3.8)
-		7,8 snare(gain 3.8)
-
-melody 8_switchLead
-	samples
-		flute
-	chords
-		0,2 a5
-		2,4 a5
-		4,6 c6
-		6,8 a5
+		0,3 a4
+		3,3.5 a4
+		3.5,4 b4
+		4,6 e5
+		0+8,2+8 c5
+		3+8,3.5+8 d5
+		3.5+8,4+8 c5
+		4+8,6+8 b4
 
 timeline
 	settings
-		bpm 148
+		bpm 160
 		timesignature 4,4
-	intro start 0
-		8_darkPad
-		8_introKick
-		8_introHat
-	intro stop 8
-		8_darkPad
-		8_introKick
-		8_introHat
-	main start 8
-		8_leadMelody
-		8_bassLine
-		8_heavyDrums
-	main stop 16
-		8_leadMelody
-		8_bassLine
-		8_heavyDrums
-	switch start 16
-		8_switchLead
-		8_snareSwitch
-	switch stop 24
-		8_switchLead
-		8_snareSwitch
-	outro start 24
-		8_darkPad
-	outro stop 32
-		8_darkPad
-	test start 32
-		24_test
-	test stop 32+24
-		24_test
+	start 0
+		16_fastChords
+	start 16
+		8_kickAndSnare
+		4_hihat
+	stop 32
+		8_kickAndSnare
+		4_hihat
+	stop 64
+		EVERYTHING
+	start 0 (gain 0.15)
+		16_slowChords
+	start 0
+		16_flute
+	stop 16
+		EVERYTHING
+	start 8
+		24_panTest
+	stop 24
+		24_panTest
