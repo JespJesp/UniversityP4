@@ -15,43 +15,22 @@ public class LoopBuilder
 		var activeMelodies = new Dictionary<Melody, List<ActiveLoopState>>();
 		var commandTargets = new Dictionary<string, List<Melody>>();
 
-		// Track global beats
-		float lastStartComputedBeat = 0f;
-		float lastStopComputedBeat = 0f;
-		float startChainOrigin = 0f;
-		float stopChainOrigin = 0f;
-		TimelineCommandType? prevCommandType = null;
-		bool hasSeenStart = false;
-		bool hasSeenStop = false;
+		float sectionOriginBeat = 0f;
+		float lastCommandBeat = 0f;
+		bool hasCommands = false;
 
 		foreach (TimelineCommand command in timeline.Commands)
 		{
+			hasCommands = true;
+
 			switch (command.Type)
 			{
 				case TimelineCommandType.Start:
 				{
-					// Start beats are relative to the last stop
-					float baseline;
-					if (hasSeenStop)
-					{
-						baseline = (prevCommandType == TimelineCommandType.Stop) ? stopChainOrigin : lastStopComputedBeat;
-					}
-					else
-					{
-						baseline = 0f;
-					}
-
-					float startBeat = baseline + (command.Beat ?? 0f);
-
-					if (prevCommandType != TimelineCommandType.Start)
-					{
-						startChainOrigin = startBeat;
-					}
-					hasSeenStart = true;
-					lastStartComputedBeat = startBeat;
+					float startBeat = sectionOriginBeat + (command.Beat ?? 0f);
+					lastCommandBeat = startBeat;
 
 					ExecuteStartCommand(command, activeMelodies, commandTargets, globalSymbols, startBeat);
-					prevCommandType = TimelineCommandType.Start;
 					break;
 				}
 				case TimelineCommandType.Stop:
@@ -61,28 +40,15 @@ public class LoopBuilder
 						throw new Exception("Timeline stop command is missing a beat value");
 					}
 
-					// Stop beats are relative to the last start
-					float baseline;
-					if (hasSeenStart)
-					{
-						baseline = (prevCommandType == TimelineCommandType.Start) ? startChainOrigin : lastStartComputedBeat;
-					}
-					else
-					{
-						baseline = 0f;
-					}
-
-					float stopBeat = baseline + command.Beat.Value;
-					
-					if (prevCommandType != TimelineCommandType.Stop)
-					{
-						stopChainOrigin = stopBeat;
-					}
-					hasSeenStop = true;
-					lastStopComputedBeat = stopBeat;
+					float stopBeat = sectionOriginBeat + command.Beat.Value;
+					lastCommandBeat = stopBeat;
 
 					ExecuteStopCommand(command, Loops, activeMelodies, commandTargets, globalSymbols, stopBeat);
-					prevCommandType = TimelineCommandType.Stop;
+
+					if (activeMelodies.Count == 0)
+					{
+						sectionOriginBeat = stopBeat;
+					}
 					break;
 				}
 				default:
@@ -91,11 +57,7 @@ public class LoopBuilder
 		}
 
 		// Determine final cursor for closing open loops
-		float finalCursor = 0f;
-		if (prevCommandType == TimelineCommandType.Start)
-			finalCursor = lastStartComputedBeat;
-		else if (prevCommandType == TimelineCommandType.Stop)
-			finalCursor = lastStopComputedBeat;
+		float finalCursor = hasCommands ? lastCommandBeat : 0f;
 
 		CloseOpenLoops(timeline, activeMelodies, finalCursor);
 

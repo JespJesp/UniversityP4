@@ -153,7 +153,7 @@ public class TimelineLoopBuilderTests
 
         loops.Count.ShouldBe(1);
         loops[0].StartBeat.ShouldBe(4f);
-        loops[0].EndBeat.ShouldBe(12f);
+        loops[0].EndBeat.ShouldBe(8f);
     }
 
     [Fact]
@@ -223,6 +223,58 @@ public class TimelineLoopBuilderTests
         loops[0].EndBeat.ShouldBe(16f);
         loops[1].StartBeat.ShouldBe(16f);
         loops[1].EndBeat.ShouldBe(48f);
+    }
+
+    [Fact]
+    public void Build_Should_Keep_Consecutive_Stop_Beats_Anchored_To_The_Section_Origin()
+    {
+        var fast = new Melody { LengthInBeats = 1f };
+        var drums = new Melody { LengthInBeats = 1f };
+        var hihat = new Melody { LengthInBeats = 1f };
+
+        var symbols = CreateSymbols(
+            (typeof(MelodyNode), "fastChords", CreateMelodyNode("fastChords", fast)),
+            (typeof(MelodyNode), "kickAndSnare", CreateMelodyNode("kickAndSnare", drums)),
+            (typeof(MelodyNode), "hihat", CreateMelodyNode("hihat", hihat)));
+
+        var timeline = new Timeline();
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Start,
+            Beat = 0,
+            TargetIds = new List<string> { "fastChords" }
+        });
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Start,
+            Beat = 16,
+            TargetIds = new List<string> { "kickAndSnare", "hihat" }
+        });
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Stop,
+            Beat = 32,
+            TargetIds = new List<string> { "kickAndSnare", "hihat" }
+        });
+        timeline.Commands.Add(new TimelineCommand
+        {
+            Type = TimelineCommandType.Stop,
+            Beat = 64,
+            TargetIds = new List<string> { "EVERYTHING" }
+        });
+
+        var loops = new LoopBuilder().Build(timeline, symbols);
+
+        loops.Count.ShouldBe(3);
+
+        loops.Single(loop => ReferenceEquals(loop.Melody, fast)).StartBeat.ShouldBe(0f);
+        loops.Single(loop => ReferenceEquals(loop.Melody, fast)).EndBeat.ShouldBe(64f);
+
+        loops.Single(loop => ReferenceEquals(loop.Melody, drums)).StartBeat.ShouldBe(16f);
+        loops.Single(loop => ReferenceEquals(loop.Melody, drums)).EndBeat.ShouldBe(32f);
+
+        loops.Single(loop => ReferenceEquals(loop.Melody, hihat)).StartBeat.ShouldBe(16f);
+        loops.Single(loop => ReferenceEquals(loop.Melody, hihat)).EndBeat.ShouldBe(32f);
     }
 
     private static MelodyNode CreateMelodyNode(string id, Melody melody)
