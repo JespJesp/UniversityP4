@@ -1,0 +1,18 @@
+% Invalid: unterminated string causes lexical error %
+
+sample s "/Samples/Instruments/electric guitar E4.wav
+
+melody 1 _test
+	samples
+		 s
+	chords
+		0,1 c4
+
+timeline
+	settings
+		bpm 120
+		timesignature 4,4
+	start 0
+		1_test
+	stop 1
+		1_test

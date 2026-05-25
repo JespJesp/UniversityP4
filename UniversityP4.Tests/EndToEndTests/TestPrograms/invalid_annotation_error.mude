@@ -1,0 +1,18 @@
+% Invalid: sample referenced before declaration (annotation error) %
+
+melody 1 _before
+	samples
+		missing
+	chords
+		0,1 c4
+
+sample missing "/Samples/Instruments/electric guitar E4.wav" e4
+
+timeline
+	settings
+		bpm 120
+		timesignature 4,4
+	start 0
+		1_before
+	stop 1
+		1_before
