@@ -5,14 +5,14 @@
   "editor.detectIndentation": false,
 
   "files.associations": {
-		"*.mude": "mude",
-	},
-	"[mude]": {
-		"files.autoSave": "off",
-	},
-	"[plaintext]": {
-		"files.autoSave": "off",
-	},
+    "*.mude": "mude"
+  },
+  "[mude]": {
+    "files.autoSave": "off"
+  },
+  "[plaintext]": {
+    "files.autoSave": "off"
+  },
 
   // Requires extension: emeraldwalk.runonsave
   "emeraldwalk.runonsave": {
@@ -22,14 +22,14 @@
         "match": "\\.mude$",
         "notMatch": "\\\\",
         "isAsync": true,
-        "cmd": "out_file=\"${workspaceFolder}/ExamplePrograms/ProgramOutput.wav\"; dotnet run --project \"${workspaceFolder}/UniversityP4.csproj\" -- \"${file}\" && cp -f \"${workspaceFolder}/ProgramOutput.wav\" \"$out_file\" && (killall afplay >/dev/null 2>&1 || true) && afplay \"$out_file\""
+        "cmd": "out_file=\"${workspaceFolder}/ExamplePrograms/ProgramOutput.wav\"; state_file=\"${workspaceFolder}/.vscode/.live-coding.token\"; live_coding_token=\"$(uuidgen)\"; printf '%s' \"$live_coding_token\" > \"$state_file\"; dotnet run --project \"${workspaceFolder}/UniversityP4.csproj\" -- \"${file}\" && cp -f \"${workspaceFolder}/ProgramOutput.wav\" \"$out_file\" && [ \"$(cat \"$state_file\" 2>/dev/null)\" = \"$live_coding_token\" ] && (pkill -x afplay >/dev/null 2>&1 || true) && afplay \"$out_file\""
       },
       {
         // Windows path style: backslashes in absolute path
         "match": "\\.mude$",
         "notMatch": "/",
         "isAsync": true,
-        "cmd": "dotnet run --project \"${workspaceFolder}\\\\UniversityP4.csproj\" -- \"${file}\" && powershell -NoProfile -Command \"$outFile='${workspaceFolder}\\\\ExamplePrograms\\\\ProgramOutput.wav'; Copy-Item '${workspaceFolder}\\\\ProgramOutput.wav' $outFile -Force; $player = New-Object System.Media.SoundPlayer $outFile; $player.PlaySync()\""
+        "cmd": "powershell -NoProfile -Command \"$outFile='${workspaceFolder}\\\\ExamplePrograms\\\\ProgramOutput.wav'; $stateFile='${workspaceFolder}\\\\.vscode\\\\.live-coding.token'; $liveCodingToken=[guid]::NewGuid().ToString(); Set-Content -Path $stateFile -Value $liveCodingToken -NoNewline; dotnet run --project '${workspaceFolder}\\\\UniversityP4.csproj' -- '${file}' ; if ($LASTEXITCODE -eq 0) { Copy-Item '${workspaceFolder}\\\\ProgramOutput.wav' $outFile -Force; if ((Get-Content -Path $stateFile -Raw) -eq $liveCodingToken) { $player = New-Object System.Media.SoundPlayer $outFile; $player.PlaySync() } }\""
       }
     ]
   }

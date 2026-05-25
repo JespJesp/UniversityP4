@@ -1,4 +1,4 @@
-% Invalid: sample referenced before declaration (annotation error) %
+% Invalid: sample referenced before declaration %
 
 melody 1 _before
 	samples
