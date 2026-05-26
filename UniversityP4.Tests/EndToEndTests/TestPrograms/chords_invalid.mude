@@ -1,6 +1,6 @@
 % Invalid chord syntax: missing closing parenthesis %
 
-sample bass "/Samples/Instruments/bass G.wav" c2
+sample bass "/ExamplePrograms/Samples/Instruments/bass G.wav" c2
 
 
 melody 2 _chord_invalid

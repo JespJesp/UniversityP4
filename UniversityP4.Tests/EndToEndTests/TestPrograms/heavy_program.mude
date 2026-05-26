@@ -1,6 +1,6 @@
 % Heavy evaluator fixture %
 
-sample lead "/Samples/Instruments/synth C.wav" c4
+sample lead "/ExamplePrograms/Samples/Instruments/synth C.wav" c4
 
 
 

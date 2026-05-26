@@ -127,7 +127,7 @@ public class EvaluatorPhaseIntegrationTests : IntegrationTestFixture
 
         var source = string.Join("\n", new[]
         {
-            "sample bad \"/Samples/Instruments/electric guitar E4.wav\" z9",
+            "sample bad \"/ExamplePrograms/Samples/Instruments/electric guitar E4.wav\" z9",
             "melody 1 _test",
             "\tsamples",
             "\t\tbad",
@@ -164,7 +164,7 @@ public class EvaluatorPhaseIntegrationTests : IntegrationTestFixture
 
         var source = string.Join("\n", new[]
         {
-            "sample ghost \"/Samples/Nonexistent/ghost.wav\" c4",
+            "sample ghost \"/ExamplePrograms/Samples/Nonexistent/ghost.wav\" c4",
             "melody 1 _test",
             "\tsamples",
             "\t\tghost",

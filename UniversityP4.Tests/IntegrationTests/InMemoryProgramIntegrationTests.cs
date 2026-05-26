@@ -13,7 +13,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
 
         var source = string.Join("\n", new[]
         {
-            "sample guitar \"/Samples/Instruments/electric guitar E4.wav\" e4",
+            "sample guitar \"/ExamplePrograms/Samples/Instruments/electric guitar E4.wav\" e4",
             "",
             "float exampleNumber 1.0",
             "",
@@ -58,7 +58,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
 
         var source = string.Join("\n", new[]
         {
-            "string instrumentsFolder \"/Samples/Instruments\"",
+            "string instrumentsFolder \"/ExamplePrograms/Samples/Instruments\"",
             "",
             "sample guitar instrumentsFolder+\"/electric guitar E4.wav\" e4",
             "sample flute instrumentsFolder+\"/flute E.wav\" c5",
@@ -105,7 +105,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
 
         var source = string.Join("\n", new[]
         {
-            "sample guitar \"/Samples/Instruments/electric guitar E4.wav\" e4",
+            "sample guitar \"/ExamplePrograms/Samples/Instruments/electric guitar E4.wav\" e4",
             "",
             "melody 1 _test",
             "\tsamples",
@@ -143,7 +143,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
         var source = string.Join("\n", new[]
         {
             "string badVal \"oops\"",
-            "sample guitar \"/Samples/Instruments/electric guitar E4.wav\" e4",
+            "sample guitar \"/ExamplePrograms/Samples/Instruments/electric guitar E4.wav\" e4",
             "melody 1 _test",
             "\tsamples",
             "\t\tguitar",
@@ -172,7 +172,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
         var source = string.Join("\n", new[]
         {
             "string s \"bad\"",
-            "sample bass \"/Samples/Instruments/bass G.wav\" c2",
+            "sample bass \"/ExamplePrograms/Samples/Instruments/bass G.wav\" c2",
             "melody 1 _test",
             "\tsamples",
             "\t\tbass",
@@ -200,7 +200,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
 
         var source = string.Join("\n", new[]
         {
-            "sample bass \"/Samples/Instruments/bass G.wav\" c2",
+            "sample bass \"/ExamplePrograms/Samples/Instruments/bass G.wav\" c2",
             "melody 1 _dup",
             "\tsamples",
             "\t\tbass",
@@ -235,7 +235,7 @@ public class InMemoryProgramIntegrationTests : IntegrationTestFixture
         {
             "float a 1.0",
             "float a 2.0",
-            "sample guitar \"/Samples/Instruments/electric guitar E4.wav\" e4",
+            "sample guitar \"/ExamplePrograms/Samples/Instruments/electric guitar E4.wav\" e4",
             "melody 1 _test",
             "\tsamples",
             "\t\tguitar",

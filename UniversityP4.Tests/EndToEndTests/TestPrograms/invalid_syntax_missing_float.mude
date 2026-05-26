@@ -1,6 +1,6 @@
 % Invalid: melody header missing length float %
 
-sample guitar "/Samples/Instruments/guitar.wav" e4
+sample guitar "/ExamplePrograms/Samples/Instruments/guitar.wav" e4
 
 melody test
 	samples

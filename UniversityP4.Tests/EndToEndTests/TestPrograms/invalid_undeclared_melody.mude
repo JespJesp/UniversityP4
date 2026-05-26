@@ -1,6 +1,6 @@
 % Invalid: timeline references an undeclared melody%
 
-sample s "/Samples/Instruments/s.wav" c4
+sample s "/ExamplePrograms/Samples/Instruments/s.wav" c4
 
 melody 1 _declared
 	samples

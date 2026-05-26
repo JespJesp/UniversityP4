@@ -6,7 +6,7 @@ melody 1 _before
 	chords
 		0,1 c4
 
-sample missing "/Samples/Instruments/electric guitar E4.wav" e4
+sample missing "/ExamplePrograms/Samples/Instruments/electric guitar E4.wav" e4
 
 timeline
 	settings

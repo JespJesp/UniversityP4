@@ -1,6 +1,6 @@
 % Panning and stereo test %
 
-sample siren "/Samples/Instruments/Siren C.wav" c5
+sample siren "/ExamplePrograms/Samples/Instruments/Siren C.wav" c5
 
 melody 1 _pan_test
 	samples

@@ -1,6 +1,6 @@
 % Heavy program with an unexpected token to force parse error %
 
-sample lead "/Samples/Instruments/synth C.wav" c4
+sample lead "/ExamplePrograms/Samples/Instruments/synth C.wav" c4
 
 
 melody 4 _leadline

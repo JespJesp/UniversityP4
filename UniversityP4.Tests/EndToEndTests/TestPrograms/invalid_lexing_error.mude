@@ -1,6 +1,6 @@
 % Invalid: unterminated string causes lexical error %
 
-sample s "/Samples/Instruments/electric guitar E4.wav
+sample s "/ExamplePrograms/Samples/Instruments/electric guitar E4.wav
 
 melody 1 _test
 	samples

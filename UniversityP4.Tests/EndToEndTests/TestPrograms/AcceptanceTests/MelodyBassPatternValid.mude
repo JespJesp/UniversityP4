@@ -1,9 +1,9 @@
 % Valid test: long drum pattern with panning and gain %
 
-sample kick "/Samples/Drums/kick A#.wav" a2
-sample snare "/Samples/Drums/snare.wav" c3
-sample hihat "/Samples/Drums/closed hihat.wav" f4
-sample clap "/Samples/Drums/clap.wav" c2
+sample kick "/ExamplePrograms/Samples/Drums/kick A#.wav" a2
+sample snare "/ExamplePrograms/Samples/Drums/snare.wav" c3
+sample hihat "/ExamplePrograms/Samples/Drums/closed hihat.wav" f4
+sample clap "/ExamplePrograms/Samples/Drums/clap.wav" c2
 
 melody 8_intro
 	chords

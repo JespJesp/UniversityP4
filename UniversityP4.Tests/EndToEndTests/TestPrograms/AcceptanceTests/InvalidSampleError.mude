@@ -1,6 +1,6 @@
 % Error test: sample file does not exist %
 
-sample kick "/Samples/Drums/DOES_NOT_EXIST.wav" a2
+sample kick "/ExamplePrograms/Samples/Drums/DOES_NOT_EXIST.wav" a2
 
 melody 4_badFile
 	chords
