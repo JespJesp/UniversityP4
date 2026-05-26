@@ -1,6 +1,6 @@
 % Multiple chord lines and note grouping %
 
-sample bass "/Samples/Instruments/bass G.wav" c2
+sample bass "/ExamplePrograms/Samples/Instruments/bass G.wav" c2
 
 
 melody 6 _chords_multi

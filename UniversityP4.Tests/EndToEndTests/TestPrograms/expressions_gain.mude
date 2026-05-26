@@ -1,6 +1,6 @@
 % Expressions and arithmetic in attributes %
 
-sample organ "/Samples/Instruments/synth C.wav" c4
+sample organ "/ExamplePrograms/Samples/Instruments/synth C.wav" c4
 
 melody 2 _expr_gain
 	samples

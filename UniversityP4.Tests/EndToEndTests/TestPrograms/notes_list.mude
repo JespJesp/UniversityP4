@@ -1,6 +1,6 @@
 % Notes-list style fixture %
 
-sample bell "/Samples/Instruments/Siren C.wav" c5
+sample bell "/ExamplePrograms/Samples/Instruments/Siren C.wav" c5
 
 melody 8 _notes_list
 	samples

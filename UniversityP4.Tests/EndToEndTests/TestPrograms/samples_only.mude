@@ -1,6 +1,6 @@
 % Samples-only fixture %
 
-string instrumentsFolder "/Samples/Instruments"
+string instrumentsFolder "/ExamplePrograms/Samples/Instruments"
 
 sample guitar instrumentsFolder+"/electric guitar E4.wav" e4
 sample flute instrumentsFolder+"/flute E.wav" c5

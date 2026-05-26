@@ -1,6 +1,6 @@
 % Invalid expression: missing operand %
 
-sample lead "/Samples/Instruments/synth C.wav" c4
+sample lead "/ExamplePrograms/Samples/Instruments/synth C.wav" c4
 
 
 melody 1 _expr_invalid

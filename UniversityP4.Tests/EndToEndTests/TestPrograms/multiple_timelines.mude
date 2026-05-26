@@ -1,7 +1,7 @@
 % Multiple distinct timeline sections %
 
-sample kick "/Samples/Drums/kick A#.wav" a2
-sample snare "/Samples/Drums/snare.wav" c3
+sample kick "/ExamplePrograms/Samples/Drums/kick A#.wav" a2
+sample snare "/ExamplePrograms/Samples/Drums/snare.wav" c3
 
 melody 2 _intro
 	samples

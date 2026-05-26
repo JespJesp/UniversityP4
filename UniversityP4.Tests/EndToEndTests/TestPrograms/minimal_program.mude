@@ -1,6 +1,6 @@
 % Minimal program for integration tests %
 
-sample guitar "/Samples/Instruments/electric guitar E4.wav" e4
+sample guitar "/ExamplePrograms/Samples/Instruments/electric guitar E4.wav" e4
 
 float exampleNumber 1.0
 
