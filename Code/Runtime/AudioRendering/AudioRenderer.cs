@@ -71,7 +71,8 @@ public class AudioRenderer
 					if (loopsRemainder != 0)
 					{
 						float melodyStartBeat = loop.StartBeat + wholeLoops * melody.LengthInBeats;
-						if (melodyStartBeat + note.StartBeat >= loop.LengthInBeats)
+						float remainderLength = loop.LengthInBeats - wholeLoops * melody.LengthInBeats;
+						if (note.StartBeat >= remainderLength)
 						{
 							continue; // Skip "dead" notes that are played afte the loop has ended
 						}
