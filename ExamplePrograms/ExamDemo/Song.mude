@@ -1,4 +1,5 @@
 
+
 import "Guitars.mude"
 import "Drums.mude"
 
@@ -25,7 +26,6 @@ timeline
 
 
 %
-	Commands:
-	- dotnet run examplePrograms/ExamDemo/Song.mude
-	- dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
+dotnet run examplePrograms/ExamDemo/Song.mude
+dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
 %
