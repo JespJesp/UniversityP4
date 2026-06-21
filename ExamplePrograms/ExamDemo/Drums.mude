@@ -1,6 +1,6 @@
 
 
-import "Instruments.mude"
+import "Samples.mude"
 
 
 float x 1.5

@@ -1,9 +1,8 @@
 
 string instrumentsFolder "../../Samples/Instruments"
 
-sample pluck instrumentsFolder + "/electric guitar E4.wav" e4
-sample guitar instrumentsFolder + "/electric guitar E2.wav" e5
-
+sample guitar1 instrumentsFolder + "/electric guitar E4.wav" e4
+sample guitar2 instrumentsFolder + "/electric guitar E2.wav" e5
 
 
 
