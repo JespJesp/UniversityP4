@@ -26,6 +26,7 @@ timeline
 
 
 %
-dotnet run examplePrograms/ExamDemo/Song.mude
-dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
+- dotnet run examplePrograms/ExamDemo/Song.mude
+- introduce an error
+- dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
 %
