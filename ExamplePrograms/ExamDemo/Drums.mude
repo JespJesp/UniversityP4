@@ -1,0 +1,24 @@
+
+
+import "Instruments.mude"
+
+float x 1.5
+
+melody 8_kick_snare
+	chords
+		0,2 kick(gain x)
+		2,4 snare
+		3,4 kick(gain x - 0.4)
+		4,6 kick(gain x)
+		6,8 snare
+
+melody 4_hihat
+	chords
+		0,1 hihat(pan 0.8, gain 0.3)
+		1,2 hihat(pan 0.2, gain 0.3)
+		2,3 hihat(pan -0.8, gain 0.3)
+		3,4 hihat(pan -0.2, gain 0.3)
+
+pattern 8_kick_snare_hihat
+	8_kick_snare
+	4_hihat

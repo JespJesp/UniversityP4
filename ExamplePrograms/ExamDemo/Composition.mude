@@ -1,0 +1,30 @@
+
+%
+	Commands:
+	- dotnet run examplePrograms/ExamDemo/Composition.mude
+	- dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
+%
+
+import "Plucks.mude"
+import "Guitars.mude"
+import "Drums.mude"
+
+timeline
+	settings
+		bpm 142
+		timesignature 4,4
+	start 0 (gain 0.35)
+		16_guitar
+	start 8
+		8_kick_snare
+		4_hihat
+	start 8*2 (gain 0.3)
+		16_pluck
+	stop 8*3
+		8_kick_snare_hihat
+	stop 8*4+4
+		EVERYTHING
+	start 4 (gain 0.35)
+		16_moreAttackGuitar
+	stop 16
+		EVERYTHING

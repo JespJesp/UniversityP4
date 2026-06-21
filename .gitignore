@@ -485,3 +485,6 @@ $RECYCLE.BIN/
 
 # Custom gitignore stuff for our project
 ProgramOutput.wav
+pipeline_evaluation_test.wav
+UniversityP4.EvaluatorTests.wav
+UniversityP4.IntegrationTests.wav
