@@ -4,6 +4,10 @@ string instrumentsFolder "../../Samples/Instruments"
 sample pluck instrumentsFolder + "/electric guitar E4.wav" e4
 sample guitar instrumentsFolder + "/electric guitar E2.wav" e5
 
+
+
+
+
 string drumsFolder "../../Samples/Drums"
 
 sample kick drumsFolder + "/kick A#.wav" a#5

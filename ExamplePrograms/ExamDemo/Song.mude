@@ -1,13 +1,8 @@
 
-%
-	Commands:
-	- dotnet run examplePrograms/ExamDemo/Composition.mude
-	- dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
-%
-
 import "Plucks.mude"
 import "Guitars.mude"
 import "Drums.mude"
+
 
 timeline
 	settings
@@ -28,3 +23,10 @@ timeline
 		16_moreAttackGuitar
 	stop 16
 		EVERYTHING
+
+
+%
+	Commands:
+	- dotnet run examplePrograms/ExamDemo/Song.mude
+	- dotnet test UniversityP4.Tests/UniversityP4.Tests.csproj
+%

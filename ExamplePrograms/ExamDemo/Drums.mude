@@ -2,7 +2,10 @@
 
 import "Instruments.mude"
 
+
 float x 1.5
+
+
 
 melody 8_kick_snare
 	chords
@@ -18,6 +21,9 @@ melody 4_hihat
 		1,2 hihat(pan 0.2, gain 0.3)
 		2,3 hihat(pan -0.8, gain 0.3)
 		3,4 hihat(pan -0.2, gain 0.3)
+
+
+
 
 pattern 8_kick_snare_hihat
 	8_kick_snare
