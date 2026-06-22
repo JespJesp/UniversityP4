@@ -1,36 +1,34 @@
 {
-  // Indent styling
-  "editor.tabSize": 3,
-  "editor.insertSpaces": false,
-  "editor.detectIndentation": false,
-
-  "files.associations": {
-    "*.mude": "mude"
-  },
-  "[mude]": {
-    "files.autoSave": "off"
-  },
-  "[plaintext]": {
-    "files.autoSave": "off"
-  },
-
-  // Requires extension: emeraldwalk.runonsave
-  "emeraldwalk.runonsave": {
-    "commands": [
-      {
-        // macOS/Linux path style: no backslashes in absolute path
-        "match": "\\.mude$",
-        "notMatch": "\\\\",
-        "isAsync": true,
-        "cmd": "out_file=\"${workspaceFolder}/ExamplePrograms/ProgramOutput.wav\"; state_file=\"${workspaceFolder}/.vscode/.live-coding.token\"; live_coding_token=\"$(uuidgen)\"; printf '%s' \"$live_coding_token\" > \"$state_file\"; dotnet run --project \"${workspaceFolder}/UniversityP4.csproj\" -- \"${file}\" && cp -f \"${workspaceFolder}/ProgramOutput.wav\" \"$out_file\" && [ \"$(cat \"$state_file\" 2>/dev/null)\" = \"$live_coding_token\" ] && (pkill -x afplay >/dev/null 2>&1 || true) && afplay \"$out_file\""
-      },
-      {
-        // Windows path style: backslashes in absolute path
-        "match": "\\.mude$",
-        "notMatch": "/",
-        "isAsync": true,
-          "cmd": "powershell -NoProfile -Command \"$wav='${workspaceFolder}\\\\ExamplePrograms\\\\ProgramOutput.wav'; $stateFile='${workspaceFolder}\\\\.vscode\\\\.live-coding.token'; $pidFile='${workspaceFolder}\\\\.vscode\\\\.live-coding.pid'; $liveCodingToken=[guid]::NewGuid().ToString(); Set-Content -Path $stateFile -Value $liveCodingToken -NoNewline; if (Test-Path $pidFile) { $oldPid = Get-Content -Path $pidFile -Raw; if ($oldPid) { Stop-Process -Id ([int]$oldPid) -Force -ErrorAction SilentlyContinue } }; dotnet run --project '${workspaceFolder}\\\\UniversityP4.csproj' -- '${file}' ; if ($LASTEXITCODE -eq 0 -and (Get-Content -Path $stateFile -Raw) -eq $liveCodingToken -and (Test-Path $wav)) { $childScript='& { [System.Media.SoundPlayer]::new(''' + $wav + ''').PlaySync() }'; $encodedChildScript=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($childScript)); $playerProcess=Start-Process powershell -WindowStyle Hidden -PassThru -ArgumentList '-NoProfile','-EncodedCommand',$encodedChildScript; Set-Content -Path $pidFile -Value $playerProcess.Id -NoNewline }\""
-      }
-    ]
-  }
+	// Indent styling
+	"editor.tabSize": 3,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"files.associations": {
+		"*.mude": "mude"
+	},
+	"[mude]": {
+		"files.autoSave": "off"
+	},
+	"[plaintext]": {
+		"files.autoSave": "off"
+	},
+	// Requires extension: emeraldwalk.runonsave
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				// macOS/Linux path style: no backslashes in absolute path
+				"match": "\\.mude$",
+				"notMatch": "\\\\",
+				"isAsync": true,
+				"cmd": "out_file=\"${workspaceFolder}/ExamplePrograms/ProgramOutput.wav\"; state_file=\"${workspaceFolder}/.vscode/.live-coding.token\"; live_coding_token=\"$(uuidgen)\"; printf '%s' \"$live_coding_token\" > \"$state_file\"; dotnet run --project \"${workspaceFolder}/UniversityP4.csproj\" -- \"${file}\" && cp -f \"${workspaceFolder}/ExamDemo/ProgramOutput.wav\" \"$out_file\" && [ \"$(cat \"$state_file\" 2>/dev/null)\" = \"$live_coding_token\" ] && (pkill -x afplay >/dev/null 2>&1 || true) && afplay \"$out_file\""
+			},
+			{
+				// Windows path style: backslashes in absolute path
+				"match": "\\.mude$",
+				"notMatch": "/",
+				"isAsync": true,
+				"cmd": "powershell -NoProfile -Command \"$wav='${workspaceFolder}\\\\ExamplePrograms\\\\ExamDemo\\\\ProgramOutput.wav'; $stateFile='${workspaceFolder}\\\\.vscode\\\\.live-coding.token'; $pidFile='${workspaceFolder}\\\\.vscode\\\\.live-coding.pid'; $liveCodingToken=[guid]::NewGuid().ToString(); Set-Content -Path $stateFile -Value $liveCodingToken -NoNewline; if (Test-Path $pidFile) { $oldPid = Get-Content -Path $pidFile -Raw; if ($oldPid) { Stop-Process -Id ([int]$oldPid) -Force -ErrorAction SilentlyContinue } }; dotnet run --project '${workspaceFolder}\\\\UniversityP4.csproj' -- '${file}' ; if ($LASTEXITCODE -eq 0 -and (Get-Content -Path $stateFile -Raw) -eq $liveCodingToken -and (Test-Path $wav)) { $childScript='& { [System.Media.SoundPlayer]::new(''' + $wav + ''').PlaySync() }'; $encodedChildScript=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($childScript)); $playerProcess=Start-Process powershell -WindowStyle Hidden -PassThru -ArgumentList '-NoProfile','-EncodedCommand',$encodedChildScript; Set-Content -Path $pidFile -Value $playerProcess.Id -NoNewline }\""
+			}
+		]
+	}
 }
